@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+
+:root {
+  background: #f5f5f5;
+}
+body {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+}
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+.container {
+  max-width: 85%;
+  margin: 0 auto;
+}
+.shadownav {
+  box-shadow: 0px 0px 50px rgba(0, 0, 0, 0.15);
+}
+.player-wrapper {
+  position: relative;
+  padding-top: 56.25%;
+  border-radius: 25px;
+}
+.react-player {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+/* ::-webkit-scrollbar {
+  width: 0.5rem;
+  height: 7px;
+}
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+::-webkit-scrollbar-thumb {
+  border-radius: 500px;
+  background-color: #adadad;
+} */
+.imgLogo {
+  height: 10rem;
+  width: 25rem;
+}
+// header
+.ant-dropdown-trigger {
+  @apply text-neutral-80;
+}
+.flexBetween {
+  @apply flex;
+  @apply justify-between;
+  @apply items-center;
+}
+.position-right {
+  position: relative;
+  left: 0;
+  right: 0;
+  top: -4rem;
+}
+.ant-card-body {
+  padding: 18px !important;
+}
+.snackbar {
+  bottom: 5px !important;
+  background: #3e6282 !important;
+}
+.between {
+  display: flex;
+  justify-content: space-between;
+}
