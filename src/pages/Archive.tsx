@@ -1,8 +1,13 @@
 import React from 'react'
+import Sidebar from '../components/Sidebar'
 
 const Archive = () => {
   return (
-    <div>Archive</div>
+    <Sidebar 
+    isDashboard={false}
+    isArchive={true}
+    isDraft={false}
+    />
   )
 }
 

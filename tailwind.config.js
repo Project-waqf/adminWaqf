@@ -21,7 +21,8 @@ module.exports = {
         text03: "#969A9F",
         subText: "#3F4753",
         btnColor: "#F98D3E",
-        whiteBg: "#FBFBFB",
+        whiteBg: "#FAFAFA",
+        Green: "10A016",
       },
     },
     fontFamily: {

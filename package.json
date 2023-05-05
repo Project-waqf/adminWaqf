@@ -15,6 +15,7 @@
     "axios": "^1.4.0",
     "clsx": "^1.2.1",
     "react": "^18.2.0",
+    "react-cookie": "^4.1.1",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.43.9",
     "react-icons": "^4.8.0",
@@ -22,10 +23,12 @@
     "react-router-dom": "^6.11.0",
     "sass": "^1.62.1",
     "styled-components": "^5.3.10",
+    "sweetalert2": "^11.7.5",
     "swr": "^2.1.5",
     "use-query-params": "^2.2.1"
   },
   "devDependencies": {
+    "@types/node": "^18.16.3",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
     "@typescript-eslint/eslint-plugin": "^5.57.1",

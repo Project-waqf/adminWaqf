@@ -4,8 +4,10 @@ interface LayoutProps {
 }
 const Layout: React.FC<LayoutProps> = ({children}) => {
     return (
-        <div>
-            <div className="w-full h-full overflow-hidden ">{children}</div>
+        <div className="min-h-screen flex overflow-hidden ">
+            <div className="flex flex-rows w-screen">
+                {children}
+            </div>
         </div>
     )
 }

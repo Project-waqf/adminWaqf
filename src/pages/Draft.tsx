@@ -1,8 +1,41 @@
-import React from 'react'
+import React, { useState } from 'react'
+import Sidebar from '../components/Sidebar'
+import Button from '../components/CustomButton/Button'
+import { Modal, Spin } from 'antd';
+import ConfirmModal from '../components/Modal/ConfirmModal';
 
 const Draft = () => {
+  
+  const [showModal, setShowModal] = useState(false)
+
+  const handleCancel = () => {
+    setShowModal(!showModal)
+  }  
+
+
   return (
-    <div>Draft</div>
+    <>
+      <Sidebar 
+      isDashboard={false}
+      isArchive={false}
+      isDraft={true}/>
+      <div className="mx-40">
+        <Button
+          id='tes'
+          color='orange'
+          size='normal'
+          label='buka'
+          onClick={()=> setShowModal(true)}
+        />
+        <ConfirmModal
+        title='Yakin Ingin Menghapus?'
+        open={showModal}
+        handleCancel={handleCancel}
+        rOrl={true}
+        />
+      </div>
+      
+    </>
   )
 }
 
