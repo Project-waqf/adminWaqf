@@ -15,10 +15,7 @@ const Draft = () => {
 
   return (
     <>
-      <Sidebar 
-      isDashboard={false}
-      isArchive={false}
-      isDraft={true}/>
+      <Sidebar/>
       <div className="mx-40">
         <Button
           id='tes'

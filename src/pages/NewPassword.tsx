@@ -7,12 +7,20 @@ import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import Button from '../components/CustomButton/Button';
 import InputPassword from '../components/CustomInput/InputPassword';
 import LoadingAlert from '../components/Modal/LoadingAlert';
+import { useLocation } from 'react-router-dom';
+import axios from 'axios';
+import { APIUrl } from '../string';
+import Alert from '../components/Alert/Alert';
 
 const initalFormValues : LoginType = {
   password: ''
 }
 
 const NewPassword = () => {
+  
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const token = searchParams.get('token');
   const [value, setValue] = useState<LoginType>(initalFormValues) 
   const [loading, setLoading] = useState(false)
 
@@ -20,15 +28,30 @@ const NewPassword = () => {
     setValue({ ...value, [e.target.name]: e.target.value})
   }
 
-  const handleLogin =async (e:React.FormEvent<HTMLFormElement>) => {
+  const handleResetPassword =async (e:React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setLoading(true)
     setValue(initalFormValues)
+    axios.post(`${APIUrl}admin/forgot/update`, {
+      token: token,
+      password: value.password
+    })
+    .then((response) => {
+      console.log("Responese",response.data);
+      Alert('upload')
+    })
+    .catch((error) => {
+      console.log(error);
+    }).finally(() => setLoading(false))
   }
+  console.log(token);
+  
   return (
     <div className="flex flex-cols w-screen">
       <LoadingAlert open={loading} loading={loading}/>
       <Box
       id='box-left'
-      size='w-[800px] h-screen'
+      size='w-[900px] h-screen'
       customStyle='flex justify-center'
       >
         <img src='../assets/logoAlhambra.png' className='my-auto' alt="logo" />
@@ -39,7 +62,7 @@ const NewPassword = () => {
       customStyle='flex justify-center'
       >
         <Space direction="vertical" className='my-auto w-[450px]'>
-          <form onSubmit={handleLogin} className='flex flex-col space-y-5'>
+          <form onSubmit={handleResetPassword} className='flex flex-col space-y-5'>
             <div className="">
               <Typography variant='h3' color='white' type='normal'>
                 Reset Password

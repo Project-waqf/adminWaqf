@@ -9,7 +9,7 @@ import ForgotPassword from '../pages/ForgotPassword';
 import NewPassword from '../pages/NewPassword';
 import Archive from '../pages/Archive';
 import Draft from '../pages/Draft';
-import Profile from '../pages/profile';
+import Profile from '../pages/Profile';
 
 function App() {
   return (

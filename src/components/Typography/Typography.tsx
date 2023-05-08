@@ -26,6 +26,9 @@ const Typography : React.FC<TypographyProps> = ({ children, color, variant, type
             "text-text03": color === "text03",
             "text-subText": color === "subText",
             "text-btnColor": color === "btnColor",
+            "text-error-70": color === "error70",
+            "text-error-80": color === "error80",
+            "text-error-90": color === "error90",
             },
             {
             "text-[48px] leading-[60px]": variant === "h1",

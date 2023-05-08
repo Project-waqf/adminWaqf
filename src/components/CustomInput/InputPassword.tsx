@@ -4,19 +4,25 @@ import { Input } from 'antd'
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 
 interface InputProps{
-    label: string
-    minilabel: string
+    error?: string | any
+    register?: any
+    label?: string
+    minilabel?: string
     value: string | any
     onChange: React.ChangeEventHandler<HTMLInputElement>
     onClick?: React.MouseEventHandler
+    changePassword?: boolean
 }
 
 const InputPassword: React.FC<InputProps> = ({
+    error,
+    register,
     label,
     minilabel,
     value,
     onChange,
-    onClick
+    onClick,
+    changePassword
 }) => {
     const minilabelStyle = 'flex justify-end'
     return (
@@ -30,21 +36,34 @@ const InputPassword: React.FC<InputProps> = ({
                 name="password"
                 placeholder="masukan password"
                 size='large'
-                className='my-2'
+                status='error'
+                color='#EB2525'
+                style={{ color: "#EB2525" }}
+                className={`mt-2 h-12 border-neutral-80 ${error !== '' ? '' : "" }`}
                 iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
                 onChange={onChange}
                 value={value}
                 minLength={6}
+                {...(register
+                    ? register(name, {
+                        onChange: onChange,
+                    })
+                : {})}
             />
-            <label 
-            htmlFor="#" 
-            className={minilabel === "Lupa Password ?" ? minilabelStyle : ""}
-            onClick={onClick}
-            > 
-                <Typography variant='btnXS' color={minilabel === "Lupa Password ?" ? "btnColor" : "white"} type='normal' className={minilabel === "Lupa Password ?" ? "cursor-pointer" : ""}>
-                    {minilabel}
+            <div className="grid grid-cols-2 mt-2">
+                <Typography variant='body3' color='error80' type='normal'>
+                    {error}
                 </Typography>
-            </label>
+                <label 
+                htmlFor="#" 
+                className={changePassword ? minilabelStyle : ""}
+                onClick={onClick}
+                > 
+                    <Typography variant='btnXS' color={changePassword ? "btnColor" : "white"} type='normal' className={changePassword ? "cursor-pointer" : ""}>
+                        {minilabel}
+                    </Typography>
+                </label>
+            </div>
         </div>
     )
 }

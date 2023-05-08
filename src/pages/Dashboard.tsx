@@ -8,6 +8,9 @@ import { Collapse } from 'antd';
 import ConfirmModal from '../components/Modal/ConfirmModal';
 import CustomCollapse from '../components/Collapse';
 import CustomTable from '../components/Table';
+import { useCookies } from 'react-cookie';
+import Display from '../components/DisplayContent/Display';
+import profilePict from '../assets/default.png'
 
 const { Panel } = Collapse
 
@@ -19,6 +22,7 @@ const columns = [
 const Dashboard = () => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [cookie] = useCookies(['token', 'id', 'name', 'email', 'foto'])
 
     const showModal = () => {
         setIsModalOpen(true);
@@ -34,16 +38,13 @@ const Dashboard = () => {
 
     return (
         <>
-            <Sidebar 
-            isDashboard={true}
-            isArchive={false}
-            isDraft={false}/>
-            <div className="box-content w-[1200px] max-h-full xl:ml-28 mx-auto">
+            <Sidebar/>
+            <Display>
                 <div className="flex justify-between w-11/12 mx-auto mt-10">
                     <Typography color='text01' variant='h2' type='medium'>
                         Hello Admin!
                     </Typography>
-                    <Avatar size={80} src={'https://lh3.googleusercontent.com/a/AGNmyxZN4w0j4ID5TlK9xm6gHM3tqz8J4f_mTbtJIgby=s96-c-rg-br100'}/>
+                    <Avatar size={80} src={cookie.foto === '' ? profilePict : cookie.foto}/>
                 </div>
                 <div className="flex flex-row justify-center space-x-5 mx-auto w-11/12 my-10">
                     <Input
@@ -86,7 +87,7 @@ const Dashboard = () => {
                         
                     </CustomCollapse>
                 </div>
-            </div>
+            </Display>
             <ConfirmModal
             open={isModalOpen}
             handleOk={handleOk}

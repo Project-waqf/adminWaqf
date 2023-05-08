@@ -3,8 +3,10 @@ import Typography from '../Typography'
 import { Input } from 'antd'
 
 interface InputProps {
+    register?: any
+    error: string | any
     name: string
-    label: string
+    label?: string
     type: string
     placeholder: string
     value: string | any
@@ -12,6 +14,8 @@ interface InputProps {
 }
 
 const CustomInput: React.FC<InputProps> = ({
+    register,
+    error,
     name,
     label,
     type,
@@ -31,10 +35,18 @@ const CustomInput: React.FC<InputProps> = ({
             type={type}
             placeholder={placeholder}
             size='large'
-            className='mt-2'
+            className={`mt-2 h-12 bg-whiteBg border-neutral-80 ${error ? 'text-error-80' : "" }`}
             value={value}
             onChange={onChange}
+            {...(register
+                ? register(name, {
+                    onChange: onChange,
+                })
+            : {})}
         />
+        <Typography variant='body3' color='error80' type='normal' className='my-2'>
+            {error}
+        </Typography>
         </div>
     )
 }

@@ -1,29 +1,26 @@
 import clsx from 'clsx'
-import React from 'react'
+import React, { ButtonHTMLAttributes } from 'react'
 
-interface ButtonProps {
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>{
     id: string
     label: string
     onClick?: React.MouseEventHandler
     color?: string
     size?: string
     disabled?: boolean
+    type?: any
 }
-const Button: React.FC<ButtonProps> = ({id, label, onClick, color, size, disabled}) => {
-    const btn_color = {
-        Primary: "bg-btnColor py-2 px-4 md:py-2 md:px-6 lg:py-3 lg:px-6 ",
-        Biru: "bg-task py-1 px-3 md:py-2 md:px-4 text-primary-90 text-[8px] md:text-[10px]",
-    };
-    const colorClassname = color ? color : btn_color.Primary;
-    
-    const defaultSize = "w-full"
-    const sizeClassname = size ?  size : defaultSize
+const Button: React.FC<ButtonProps> = ({id, label, onClick, color, size, disabled, type}) => {
+
+
     return (
         <button
+        type={type}
+        disabled={disabled}
         className={clsx(
-            `rounded-[8px] font-normal text-sm cursor-pointer`,
+            `rounded-[8px] font-normal text-sm cursor-pointer ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`,
             {
-            "bg-btnColor border-none text-white hover:text-btnColor hover:border-btnColor hover:bg-white": color === "orange",
+            "bg-btnColor border-none text-white hover:text-btnColor hover:border-btnColor hover:bg-white disabled:bg-disable ": color === "orange",
             "border border-btnColor outline-none bg-white text-btnColor": color === "orangeBorder",
             "border-none bg-white text-btnColor": color === "whiteOrange",
             "border-primary-100 bg-white text-primary-100": color === "primaryBorder"
@@ -39,7 +36,6 @@ const Button: React.FC<ButtonProps> = ({id, label, onClick, color, size, disable
         )}
         id={id}
         onClick={onClick}
-        disabled={disabled}
         >
             {label}
         </button>
