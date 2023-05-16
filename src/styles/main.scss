@@ -74,3 +74,17 @@ body {
   display: flex;
   justify-content: space-between;
 }
+.ant-input-password-input {
+  color: red;
+}
+
+/* Rectangle 91 */
+.custom-confirm-button{
+  box-sizing: border-box;
+  width: 229px;
+  height: 57px;
+
+  background-color: #f5f5f5;
+  border: 2px solid #F98D3E;
+  border-radius: 10px;
+}

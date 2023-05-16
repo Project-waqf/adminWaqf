@@ -1,9 +1,8 @@
-import React, { useState } from 'react'
+import React from 'react'
 import {RiDashboardLine, RiInboxArchiveLine} from 'react-icons/ri'
 import {BsFileEarmark} from 'react-icons/bs'
 import { NavLink } from "react-router-dom";
 import logo from "../../assets/logoAlhambra.png"
-
 
 interface NavLinkStyleProps {
     isActive: boolean;

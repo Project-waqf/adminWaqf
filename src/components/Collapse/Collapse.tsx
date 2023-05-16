@@ -11,9 +11,7 @@ interface CollapseProps{
 
 const CustomCollapse: React.FC<CollapseProps> = ({header, children , key}) => {
     
-    const onChange = (key: string | string[]) => {
-        console.log(key);
-    };
+    
 
     const { token } = theme.useToken();
 
@@ -25,7 +23,6 @@ const CustomCollapse: React.FC<CollapseProps> = ({header, children , key}) => {
     <>
         <Collapse
             defaultActiveKey={key}
-            onChange={onChange}
             expandIconPosition={"end"}
             size='large'
             className='w-full border-white'
@@ -37,7 +34,7 @@ const CustomCollapse: React.FC<CollapseProps> = ({header, children , key}) => {
                 className="bg-white overflow-hidden"
             >
                 
-                <div className=''>{children}</div>
+                <div className='px-5'>{children}</div>
             </Panel>
             </Collapse>
     </>

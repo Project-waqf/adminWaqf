@@ -7,9 +7,10 @@ import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import Button from '../components/CustomButton/Button';
 import InputPassword from '../components/CustomInput/InputPassword';
 import LoadingAlert from '../components/Modal/LoadingAlert';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { APIUrl } from '../string';
+import logo from '../assets/logo.svg'
 import Alert from '../components/Alert/Alert';
 
 const initalFormValues : LoginType = {
@@ -19,6 +20,7 @@ const initalFormValues : LoginType = {
 const NewPassword = () => {
   
   const location = useLocation();
+  const navigate = useNavigate()
   const searchParams = new URLSearchParams(location.search);
   const token = searchParams.get('token');
   const [value, setValue] = useState<LoginType>(initalFormValues) 
@@ -37,7 +39,7 @@ const NewPassword = () => {
       password: value.password
     })
     .then((response) => {
-      console.log("Responese",response.data);
+      navigate('/')
       Alert('upload')
     })
     .catch((error) => {
@@ -54,7 +56,7 @@ const NewPassword = () => {
       size='w-[900px] h-screen'
       customStyle='flex justify-center'
       >
-        <img src='../assets/logoAlhambra.png' className='my-auto' alt="logo" />
+        <img src={logo} className='my-auto' alt="logo" />
       </Box>
       <Box
       id='box-rigth'

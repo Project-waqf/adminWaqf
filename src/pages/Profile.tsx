@@ -8,6 +8,7 @@ import { ProfileType } from '../utils/types/DataType'
 import InputPassword from '../components/CustomInput/InputPassword'
 import Button from '../components/CustomButton/Button'
 import { Collapse, theme } from 'antd';
+import { useCookies } from 'react-cookie'
 
 const { Panel } = Collapse;
 
@@ -24,6 +25,7 @@ const Profile = () => {
         marginBottom: 24,
         border: 'none',
     };
+    const [cookie, setCookie] = useCookies(['token', 'id', 'name', 'foto', 'email'])
 
     const [value, setValue] = useState<ProfileType>(initialFormValues)
 
@@ -43,10 +45,10 @@ const Profile = () => {
             </div>
             <div className="flex flex-col bg-white h-fit rounded-xl p-10 space-y-5 mx-auto w-11/12 my-10">
                 <div className="flex">
-                    <Avatar style={{ verticalAlign: 'middle' }} size={150} src={'https://lh3.googleusercontent.com/a/AGNmyxZN4w0j4ID5TlK9xm6gHM3tqz8J4f_mTbtJIgby=s96-c-rg-br100'}/>
+                    <Avatar style={{ verticalAlign: 'middle' }} size={150} src={cookie.foto}/>
                     <div className="flex flex-col justify-center ml-8">
                         <Typography color='text01' variant='h2' type='medium'>
-                            Admin Al-Hambra
+                            {cookie.name}
                         </Typography>
                         <div className="cursor-pointer">
                             <Typography color='btnColor' variant='body1' type='normal'>
@@ -65,7 +67,7 @@ const Profile = () => {
                             name='nama'
                             type='text'
                             placeholder='Your Name'
-                            value={value.name}
+                            value={cookie.name}
                             onChange={handleInputChange}
                             />
                         </div>
@@ -79,26 +81,12 @@ const Profile = () => {
                             name='nama'
                             type='text'
                             placeholder='Your Email'
-                            value={value.name}
+                            value={cookie.email}
                             onChange={handleInputChange}
-                            />
-                        </div>
-                    </div>
-                    <div className="flex mt-6 w-[1000px]">
-                        <Typography color='text01' variant='h4' type='medium' className='w-44 my-4'>
-                            Password
-                        </Typography>
-                        <div className="w-[523px]">
-                            <InputPassword
-                            value={value.name}
-                            onChange={handleInputChange}
-                            minilabel='Ganti Password ? '
-                            changePassword={true}
                             />
                         </div>
                     </div>
                     <Collapse
-
                         bordered={false}
                         defaultActiveKey={['1']}
                         style={{ background: "#FAFAFA" }}

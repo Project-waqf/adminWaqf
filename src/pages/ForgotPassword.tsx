@@ -9,6 +9,7 @@ import LoadingAlert from '../components/Modal/LoadingAlert';
 import { APIUrl } from '../string';
 import axios from 'axios';
 import Alert from '../components/Alert/Alert';
+import logo from '../assets/logo.svg'
 
 const initalFormValues : LoginType = {
   email: ''
@@ -55,7 +56,7 @@ const ForgotPassword = () => {
       size='w-[900px] h-screen'
       customStyle='flex justify-center'
       >
-        <img src='../assets/logoAlhambra.png' className='my-auto' alt="logo" />
+        <img src={logo} className='my-auto' alt="logo" />
       </Box>
       <Box
       id='box-rigth'

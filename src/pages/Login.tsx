@@ -6,24 +6,24 @@ import { loginSuccess } from '../stores/loginSLice';
 import { APIUrl } from '../string';
 import axios from 'axios';
 import { useCookies } from 'react-cookie';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import logo from '../assets/logo.svg';
 
 
 const schema = yup.object().shape({
   email: yup.string().required("Email tidak terdaftar atau salah"),
-  password: yup
-    .string()
+  password: yup.string()
     .required("Password is required")
-    .min(6, "password must be 6 characters")
-    .max(30, "password must not exceed 30 characters")
-    .matches(/^(?=.*[A-Z])/, "password must contain one uppercase")
-    .matches(/^(?=.*[0-9])/, "password must contain one number")
-    .matches(
-      /^(?=.*[!@#\$%\^&\*])/,
-      "password must contain one special character"
-    ),
+    // .min(6, "password must be 6 characters")
+    // .max(30, "password must not exceed 30 characters")
+    // .matches(/^(?=.*[A-Z])/, "password must contain one uppercase")
+    // .matches(/^(?=.*[0-9])/, "password must contain one number")
+    // .matches(
+    //   /^(?=.*[!@#\$%\^&\*])/,
+    //   "password must contain one special character"
+    // ),
 });
 
 const initalFormValues : LoginType = {
@@ -38,25 +38,22 @@ import CustomInput from '../components/CustomInput/CustomInput';
 import Button from '../components/CustomButton/Button';
 import LoadingAlert from '../components/Modal/LoadingAlert';
 import Alert from '../components/Alert/Alert';
-import InputPassword from '../components/CustomInput/InputPassword';
+import Loading from '../assets/svg/Loading';
 const Login = () => {
   
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm<LoginType>({
-    resolver: yupResolver(schema),
-  });
+  const { register, handleSubmit, formState: { errors } } = useForm<LoginType>();
+  
+  const methods = useForm();
+
+  type FormData = yup.InferType<typeof schema>;
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const [value, setValue] = useState<LoginType>(initalFormValues)
   const [loading, setLoading] = useState(false)
   const [cookie, setCookie] = useCookies(['token', 'id', 'name', 'email', 'foto'])
-  const [disabled, setDisabled] = useState(true);
   const [errorEmail, setErrorEmail] = useState('')
   const [errorPassword, setErrorPassword] = useState('')
+  const [disabled, setDisabled] = useState(true);
 
   useEffect(() => {
     if (value.email && value.password) {
@@ -65,7 +62,7 @@ const Login = () => {
       setDisabled(true);
     }
   }, [value.email, value.password]);
-
+  
   const handleInputChange = (e:React.ChangeEvent<HTMLInputElement>) => {
     setValue({ ...value, [e.target.name]: e.target.value})
   }
@@ -101,7 +98,13 @@ const Login = () => {
         }
       })
       .finally(() => setLoading(false));
-  };
+    };
+
+
+  useEffect(() => {
+    
+  }, [])
+  
   
   return (
 
@@ -112,7 +115,7 @@ const Login = () => {
       size='w-[900px] h-screen'
       customStyle='flex justify-center'
       >
-        <img src='https://github.com/Project-waqf/alhambra-waqf-fe/blob/main/src/assets/logoAlhambra.png' className='my-auto' alt="logo" />
+        <img src={logo} className='my-auto' alt="logo" />
       </Box>
       <Box
       id='box-rigth'
@@ -128,35 +131,42 @@ const Login = () => {
                 </Typography>
               </Typography>
             </div>
+            <FormProvider {...methods}>
+
             <form onSubmit={handleLogin} className='flex flex-col space-y-6'>
                 <CustomInput
+                  register={register}
                   name='email'
                   type='email'
                   label='Email'
                   placeholder='example@gmail.com'
                   value={value.email}
                   onChange={handleInputChange}
-                  error={errorEmail}
+                  error={errorEmail ? errorEmail : errors.email?.message}
                 />
-                <InputPassword
+                <CustomInput
+                  register={register}
+                  name='password'
+                  type='password'
                   label='Password'
-                  minilabel='Lupa Password ?'
-                  onChange={handleInputChange}
+                  placeholder='input your password'
                   value={value.password}
-                  onClick={() => navigate('/forgot-password')}
-                  changePassword={true}
-                  error={errorPassword}
+                  onChange={handleInputChange}
+                  error={errorPassword ? errorPassword : errors.password?.message}
+                  minilabel='Lupa password?'
+                  onClick={()=> navigate('/forgot-password')}
                 />
                 <Button
                 type="submit"
                 id='masuk'
-                label='Masuk'
+                label={loading ? "loading..." : 'Masuk'}
                 color='orange'
                 size='full'
                 onClick={()=> console.log(value)}
-                disabled={disabled}
+                disabled={disabled} 
                 />
             </form>
+            </FormProvider>
         </Space>
       </Box>
     </div>

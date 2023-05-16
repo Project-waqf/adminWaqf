@@ -36,7 +36,7 @@ const InputPassword: React.FC<InputProps> = ({
                 name="password"
                 placeholder="masukan password"
                 size='large'
-                status='error'
+                status={'error'}
                 color='#EB2525'
                 style={{ color: "#EB2525" }}
                 className={`mt-2 h-12 border-neutral-80 ${error !== '' ? '' : "" }`}

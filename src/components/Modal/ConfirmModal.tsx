@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Modal } from "antd";
 import Typography from '../Typography';
 import Button from '../CustomButton/Button';
@@ -12,7 +12,7 @@ interface ConfirmModalProps{
 }
 
 const ConfirmModal: React.FC<ConfirmModalProps> = ({title, open, handleOk, handleCancel, rOrl}) => {
-
+    
     return (
         <Modal
         open={open} 
