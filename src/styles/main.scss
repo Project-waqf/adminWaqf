@@ -88,3 +88,10 @@ body {
   border: 2px solid #F98D3E;
   border-radius: 10px;
 }
+.custom-menu-item.active {
+  background-color: #000000; /* Set the desired background color for the active menu item */
+  color: #ffffff; /* Set the desired text color for the active menu item */
+}
+.swal2-popup {
+  border-radius: 50px; /* Adjust the border-radius value to change the roundness */
+}

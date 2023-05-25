@@ -6,25 +6,9 @@ import { loginSuccess } from '../stores/loginSLice';
 import { APIUrl } from '../string';
 import axios from 'axios';
 import { useCookies } from 'react-cookie';
-import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
-import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
 import logo from '../assets/logo.svg';
 
 
-const schema = yup.object().shape({
-  email: yup.string().required("Email tidak terdaftar atau salah"),
-  password: yup.string()
-    .required("Password is required")
-    // .min(6, "password must be 6 characters")
-    // .max(30, "password must not exceed 30 characters")
-    // .matches(/^(?=.*[A-Z])/, "password must contain one uppercase")
-    // .matches(/^(?=.*[0-9])/, "password must contain one number")
-    // .matches(
-    //   /^(?=.*[!@#\$%\^&\*])/,
-    //   "password must contain one special character"
-    // ),
-});
 
 const initalFormValues : LoginType = {
   email: '',
@@ -40,12 +24,7 @@ import LoadingAlert from '../components/Modal/LoadingAlert';
 import Alert from '../components/Alert/Alert';
 import Loading from '../assets/svg/Loading';
 const Login = () => {
-  
-  const { register, handleSubmit, formState: { errors } } = useForm<LoginType>();
-  
-  const methods = useForm();
 
-  type FormData = yup.InferType<typeof schema>;
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const [value, setValue] = useState<LoginType>(initalFormValues)
@@ -70,6 +49,8 @@ const Login = () => {
   const handleLogin = async (e:React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setLoading(true);
+    const expiration = new Date();
+    expiration.setTime(expiration.getTime() + 2 * 60 * 60 * 1000);
     setValue(initalFormValues);
     const user: LoginType = {
       email: value.email,
@@ -79,7 +60,7 @@ const Login = () => {
       .post(`${APIUrl}admin/login`, user)
       .then((response) => {
         console.log("Responese", response.data);
-        setCookie("token", response.data.data.token, { path: "/" });
+        setCookie("token", response.data.data.token, { path: "/", expires: expiration});
         setCookie("id", response.data.data.id, { path: "/" });
         setCookie("name", response.data.data.name, { path: "/" });
         setCookie("email", response.data.data.email, { path: "/" });
@@ -131,28 +112,25 @@ const Login = () => {
                 </Typography>
               </Typography>
             </div>
-            <FormProvider {...methods}>
 
             <form onSubmit={handleLogin} className='flex flex-col space-y-6'>
                 <CustomInput
-                  register={register}
                   name='email'
                   type='email'
                   label='Email'
                   placeholder='example@gmail.com'
                   value={value.email}
                   onChange={handleInputChange}
-                  error={errorEmail ? errorEmail : errors.email?.message}
+                  error={errorEmail}
                 />
                 <CustomInput
-                  register={register}
                   name='password'
                   type='password'
                   label='Password'
-                  placeholder='input your password'
+                  placeholder='Masukan password'
                   value={value.password}
                   onChange={handleInputChange}
-                  error={errorPassword ? errorPassword : errors.password?.message}
+                  error={errorPassword}
                   minilabel='Lupa password?'
                   onClick={()=> navigate('/forgot-password')}
                 />
@@ -166,7 +144,6 @@ const Login = () => {
                 disabled={disabled} 
                 />
             </form>
-            </FormProvider>
         </Space>
       </Box>
     </div>

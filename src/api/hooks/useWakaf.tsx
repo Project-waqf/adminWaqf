@@ -1,0 +1,148 @@
+import { APIUrl } from "../../string"
+
+import axios from "axios"
+import { useCallback, useEffect, useState } from "react"
+
+export default function useWakaf(){
+    const [wakaf, setWakaf] = useState<any>()
+    const [totalOnlineWakaf, setTotalOnlineWakaf] = useState<number>(0)
+    const [totalDraftWakaf, setTotalDraftWakaf] = useState<number>(0)
+    const [totalArchiveWakaf, setTotalArchiveWakaf] = useState<number>(0)
+    const [totalWakaf, setTotalWakaf] = useState<number>()
+    const HOST = APIUrl
+    useEffect(() => {
+        setTotalWakaf(totalOnlineWakaf + totalArchiveWakaf + totalDraftWakaf)
+    }, [totalArchiveWakaf, totalDraftWakaf, totalOnlineWakaf])
+    const getWakaf = useCallback(async (payload?:any) => {
+        try {
+            const response = await axios.get(`${HOST}wakaf?page=${payload.page}&isUser=false&status=${payload.status}`)
+            console.log(response.data);
+            setWakaf(response.data.data)
+            setTotalOnlineWakaf(response.data.total_online)
+            setTotalDraftWakaf(response.data.total_draft)
+            setTotalArchiveWakaf(response.data.total_archive)
+            return response
+        } catch (error) {
+            console.log(error);
+        } 
+    },[])
+    const createWakaf = useCallback(async (payload: any) => {
+        const formData = new FormData()
+        formData.append('title', payload.name)
+        formData.append('category', payload.category)
+        formData.append('detail', payload.detail)
+        formData.append('due_date', payload.due_date)
+        formData.append('fund_target', payload.fund_target)
+        formData.append('picture', payload.picture || '')
+        formData.append('status', 'online')
+        try {
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${payload.token}`,
+                    "Content-Type": "multipart/form-data",
+                }
+            }
+            const response = await axios.post(`${HOST}admin/wakaf`, formData, config)
+            const newValue = response.data
+            setWakaf([...wakaf, newValue])
+            return newValue
+        } catch (error) {
+            console.log(error);
+        }
+    },[])
+
+    const editedWakaf = useCallback(async (payload: any) => {
+        const formData = new FormData()
+        formData.append('title', payload.name)
+        formData.append('category', payload.category)
+        formData.append('detail', payload.detail)
+        formData.append('due_date', payload.due_date)
+        formData.append('fund_target', payload.fund_target)
+        formData.append('picture', payload.picture || '')
+        formData.append('status', 'online')
+        try {
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${payload.token}`,
+                    "Content-Type": "multipart/form-data",
+                }
+            }
+            const response = await axios.put(`${HOST}admin/wakaf/${payload.id}`, formData, config)
+            const updatedValue = response.data
+            const updatedWakaf = wakaf.map((Asset: any) =>
+            wakaf.id === updatedValue.id ? updatedValue : Asset 
+            )
+            setWakaf(updatedWakaf)
+            return updatedValue                
+        } catch (error) {
+            console.log(error);
+        }
+    },[])
+
+    const draftWakaf = useCallback(async (payload: any) => {
+        const formData = new FormData()
+        formData.append('title', payload.name)
+        formData.append('category', payload.category)
+        formData.append('detail', payload.detail)
+        formData.append('due_date', payload.due_date)
+        formData.append('fund_target', payload.fund_target)
+        formData.append('picture', payload.picture || '')
+        formData.append('status', 'draft')
+        try {
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${payload.token}`,
+                    "Content-Type": "multipart/form-data",
+                }
+            }
+            const response = await axios.post(`${HOST}admin/wakaf`, formData, config)
+            const newValue = response.data
+            setWakaf([...wakaf, newValue])
+            return newValue
+        } catch (error) {
+            console.log(error);
+        }
+    },[])
+
+    const archiveWakaf = useCallback(async (payload: any) => {
+        const formData = new FormData()
+        formData.append('status', 'archive')
+        try {
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${payload.token}`,
+                    "Content-Type": "multipart/form-data",
+                }
+            }
+            const response = await axios.put(`${HOST}admin/wakaf/${payload.id}`, formData, config)
+            const updatedValue = response.data
+            const updatedWakaf = wakaf.map((Asset: any) =>
+            wakaf.id === updatedValue.id ? updatedValue : Asset 
+            )
+            setWakaf(updatedWakaf)
+            return updatedValue                
+        } catch (error) {
+            console.log(error);
+        }
+    },[])
+
+    const deleteWakaf = useCallback(async (payload: any) => {
+        try {
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${payload.token}`,
+                }
+            }
+            const response = await axios.delete(`${HOST}admin/wakaf/${payload.id}`, config)
+            const deletedValue = response.data
+            return deletedValue           
+        } catch (error) {
+            console.log(error);
+        }
+    },[])
+
+    useEffect(() => {
+        getWakaf()
+    },[])
+    return {wakaf, totalArchiveWakaf, totalDraftWakaf, totalOnlineWakaf, totalWakaf, getWakaf, createWakaf, editedWakaf, draftWakaf, archiveWakaf, deleteWakaf}
+}

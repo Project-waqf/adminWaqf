@@ -6,7 +6,9 @@ import { SmallLoading } from '../../assets/svg/SmallLoading';
 import { NewsType } from '../../utils/types/DataType';
 import TextArea from '../CustomInput/TextArea';
 import { TbFileDescription } from "react-icons/tb";
-
+import useCrudApi from '../../utils/hooks/useCrudApi';
+import { DraftState, newsToDraft } from "../../stores/draftSilce";
+import { useDispatch, useSelector } from 'react-redux';
 
 
 
@@ -16,7 +18,8 @@ import { TbFileDescription } from "react-icons/tb";
         editMode: boolean;
         open: boolean
         handleCancel: React.MouseEventHandler
-        handleDraft: React.MouseEventHandler
+        handleArchive?: React.MouseEventHandler
+
     }
     const initialFormValues: NewsType = {
         title: "",
@@ -24,11 +27,14 @@ import { TbFileDescription } from "react-icons/tb";
         picture: null
     };
 
-const NewsModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, handleCancel, handleDraft}) => {
+const NewsModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, handleCancel, handleArchive}) => {
     
     const [formValues, setFormValues] = useState<NewsType>(initialFormValues);
     const [loading , setLoading] = useState(false)
-    
+    const [error, setError] = useState<string>()
+    const dispatch = useDispatch()
+    const draft = useSelector((state: {draft: DraftState}) => state.draft)
+    const {draftNews} = useCrudApi()
     
     useEffect(() => {
         if (editMode || !editMode) {
@@ -39,7 +45,7 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, 
     const [disabled, setDisabled] = useState(true);
 
     useEffect(() => {
-        if (formValues.title && formValues.body && formValues.picture) {
+        if (formValues.title && formValues.body) {
             setDisabled(false);
         } else {
             setDisabled(true);
@@ -53,13 +59,34 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, 
         setFormValues({ ...formValues, [e.target.name]: e.target.value });
     };
 
+    const handleTODraft = async (formValues: NewsType) => {
+        const newItem: NewsType = {
+            title: formValues.title,
+            body: formValues.body,
+            picture: formValues.picture
+        }
+        dispatch(newsToDraft(newItem))
+    }
+    console.log("draft",draft.news);
+    
     const handleImageChange = (e: any) => {
         setLoading(true)
-        const selectedImage = e.target.files[0];
-        setFormValues((prev) => ({
-            ...prev,
-            picture: selectedImage
-        }));
+        const file = e.target.files[0];
+        const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+
+        if (file && file.size <= maxSize) {
+            setFormValues((prev) => ({
+                ...prev,
+                picture: file
+            }));
+            setError('');
+        } else {
+            setFormValues((prev) => ({
+                ...prev,
+                picture: null
+            }));
+            setError('File size exceeds the maximum allowed limit (5MB).');
+        }
         setLoading(false)
     };
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -75,9 +102,9 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, 
         centered closeIcon
         style={{padding: 5}}
         title={<Typography color='text01' variant='h1' type='semibold'>{editMode ? 'Edit Berita' : 'Tambah Berita'}</Typography>}
-        width={1325}
+        width={1120}
         footer={<></>}>
-                <div className="relative mx-5 my-12">
+                <div className="relative mx-5 my-8">
                     <form className='flex flex-col space-y-5' onSubmit={handleSubmit}>
                     <div className="flex space-x-8">
                         <div className="">
@@ -91,15 +118,9 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, 
                                 type='text'
                                 placeholder='Masukan Judul'
                                 size='large'
-                                className={`mt-2 h-12 w-[430px] bg-whiteBg border-neutral-80`}
+                                className={`mt-2 h-12 w-[430px] border-neutral-80`}
                                 value={formValues.title}
                                 onChange={handleInputChange}
-                                // {...(register
-                                //     ? register(name, {
-                                //         onChange: onChange,
-                                //         required: true
-                                //     })
-                                // : {})}
                             />
                             <Typography variant='body3' color='error80' type='normal' className='my-2'>
 
@@ -109,17 +130,21 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, 
                             <Typography variant='h4' color='text01' type='medium' className=''>
                                 Gambar
                             </Typography>
-                            <label className="block mt-2 bg-primary-60 flex justify-center space-x-1 p-2 w-52 h-12 rounded-lg cursor-pointer" htmlFor="file_input">
+                            <label className="block mt-2 bg-btnColor flex justify-center space-x-1 p-2 w-52 h-12 rounded-lg cursor-pointer" htmlFor="file_input">
                                 <TbFileDescription className='text-[28px] text-whiteBg' />
                                 <Typography variant='h5' color='' type='normal' className='mt-0.5 text-whiteBg'>
                                     Upload Gambar
                                 </Typography>
                             <input name='picture' onChange={handleImageChange} className="hidden w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50" aria-describedby="file_input_help" id="file_input" type="file"/>
                             </label>
+                            <Typography variant='text' color={error ? 'error80' : 'neutral-90'} type='normal' className=''>
+                                {error ? error : 'Max 5 mb'}
+                            </Typography>
                             {loading ? <SmallLoading/> : <></>}
                         </div>
                     </div>
                     <TextArea
+                    label='Deskripsi Berita'
                     name='body'
                     value={formValues.body}
                     onChange={handleTextAreaChange}
@@ -136,15 +161,16 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, 
                     />
             </div>
             </form >
-                <div className="w-[1050px] absolute left-0 bottom-0">
+                <div className="w-[845px] absolute left-0 bottom-0">
                     <div className="flex justify-between w-full">
                         <Button
-                            label='Simpan Ke Draft'
-                            id={`tidak`}
+                            label={editMode ? 'Simpan Ke Archive' : 'Simpan Ke Draft'}
+                            id={`draft`}
+                            type={'submit'}
                             color={'orangeBorder'}
                             size='base'
-                            onClick={()=> handleDraft}
-                            className={editMode ? 'hidden' : formValues.title !== '' ? 'block' : 'hidden'}
+                            onClick={editMode ? handleArchive : ()=>handleTODraft(formValues)}
+                            className={ formValues.title !== '' ? 'block' : 'hidden'}
                         />
                         <Button
                             label='Cancel'
@@ -152,7 +178,7 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, 
                             color={'whiteOrange'}
                             size='base'
                             onClick={handleCancel}
-                            className={formValues.title !== '' ? 'ml-0' : 'ml-[900px]'}
+                            className={ formValues.title !== '' ? 'ml-0' : 'ml-auto'}
                         />
                     </div>
                 </div>

@@ -29,11 +29,12 @@ const Typography : React.FC<TypographyProps> = ({ children, color, variant, type
             "text-error-70": color === "error70",
             "text-error-80": color === "error80",
             "text-error-90": color === "error90",
+            "text-green-500": color === "green",
             },
             {
             "text-[48px] leading-[60px]": variant === "h1",
             "text-[32px] leading-[40px]": variant === "h2",
-            "text-[32px] leading-9": variant === "h3",
+            "text-[24px] leading-[32px]": variant === "h3",
             "text-2xl leading-7": variant === "h4",
             "text-xl leading-6": variant === "h5",
             "text-lg leading-7": variant === "body1",

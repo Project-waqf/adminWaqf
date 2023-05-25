@@ -1,6 +1,6 @@
 import Swal, { SweetAlertOptions } from 'sweetalert2';
 import { DraftSuccess, UploadSuccess, DeleteSuccess, EditSuccess, ArchiveSuccess } from '../../assets/svg/AlertIcon';
-
+import '../../styles/main.scss'
 export const sweetAlert = (options: SweetAlertOptions) => {
     return Swal.fire(options);
 };
@@ -11,7 +11,7 @@ const Alert = ( icon?: 'upload' | 'edit' | 'draft' | 'archive' | 'delete' ): Pro
     return sweetAlert({
         title: icon === 'upload' ? 'Upload Sukses' : 
         icon === "edit" ? 'Berhasil Mengedit' :
-        icon === "draft" ? 'Berhasil Simpan Ke Archive' : 
+        icon === "draft" ? 'Berhasil Simpan Ke Draft' : 
         icon === "archive" ? 'Berhasil Simpan Ke Archive' :
         icon === "delete" ? 'Berhasil Menghapus' : 'Upload Sukses',
         imageUrl: `data:image/svg+xml,${encodeURIComponent(icon === 'upload' ? UploadSuccess : 

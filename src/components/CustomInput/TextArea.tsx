@@ -4,21 +4,25 @@ import Typography from '../Typography';
 interface TextAreaProps {
     name: string
     value: string
+    selectionStart: any
+    selectionEnd: any
+    onSelect: any
     onChange: React.ChangeEventHandler<HTMLTextAreaElement>
+    label: string
 }
 
-const TextArea:React.FC<TextAreaProps> = ({name, value, onChange}) => {
+const TextArea:React.FC<TextAreaProps> = ({name, value, onChange, label, selectionEnd, selectionStart, onSelect}) => {
     const [text, setText] = useState<string>('');
-    const [selectionStart, setSelectionStart] = useState(0);
-    const [selectionEnd, setSelectionEnd] = useState(0);
+    // const [selectionStart, setSelectionStart] = useState(0);
+    // const [selectionEnd, setSelectionEnd] = useState(0);
     
     
     return (
         <>
-            <Typography variant='h4' color='text01' type='medium' className=''>
-                Isi Berita
+            <Typography variant='h5' color='text01' type='medium' className=''>
+                {label}
             </Typography>
-            <div className="relative flex flex-col w-full h-96 border bg-white justify-center border-solid border-neutral-80 rounded-lg overflow-auto  focus:border-primary-80 focus:ring-1 focus:ring-primary-80">
+            <div className="relative flex flex-col w-full h-[300px] border bg-white justify-center border-solid border-neutral-80 rounded-lg overflow-auto  focus:border-primary-80 focus:ring-1 focus:ring-primary-80">
                 <div className="w-fit h-14 mx-auto bg-white border flex flex-row mt-0 px-2 border-solid border-x-neutral-80 border-b-neutral-80 border-t-whiteBg rounded-b-xl dark:bg-gray-800">
                     <div className="flex space-x-1 border border-solid border-r-neutral-60 rounded-bl-xl border-l-white border-y-white my-auto pr-2">
                         <svg
@@ -74,11 +78,7 @@ const TextArea:React.FC<TextAreaProps> = ({name, value, onChange}) => {
                     fontStyle: text.slice(selectionStart, selectionEnd).includes('<i>') ? 'italic' : 'normal', 
                     textDecoration: text.slice(selectionStart, selectionEnd).includes('<u>') ? 'underline' : 'none',
                     resize: "none" }} 
-                    onSelect={(e) => {
-                        const target = e.target as HTMLTextAreaElement
-                        setSelectionStart(target.selectionStart);
-                        setSelectionEnd(target.selectionEnd);
-                    }}
+                    onSelect={onSelect}
                     value={value} name={name} onChange={onChange} id="message" className=" w-full h-full text-text01 bg-white text-base leading-6 rounded-lg border-none focus:outline-none" placeholder="Write your thoughts here..."></textarea>
                 </div>
             </div>

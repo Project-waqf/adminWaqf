@@ -14,6 +14,7 @@ interface InputProps {
     onChange: React.ChangeEventHandler<HTMLInputElement>
     onClick?: React.MouseEventHandler
     minilabel?: string
+    disable?: boolean
 }
 
 const CustomInput: React.FC<InputProps> = ({
@@ -26,7 +27,8 @@ const CustomInput: React.FC<InputProps> = ({
     value,
     onChange,
     onClick,
-    minilabel
+    minilabel,
+    disable
 }) => {
     return (
         <div>
@@ -38,7 +40,7 @@ const CustomInput: React.FC<InputProps> = ({
         {type === "password" ?
         <>
             <Input.Password
-                name="password"
+                name={name}
                 placeholder="masukan password"
                 size='large'
                 status={error ? 'error' : ''}
@@ -48,6 +50,7 @@ const CustomInput: React.FC<InputProps> = ({
                 onChange={onChange}
                 value={value}
                 minLength={6}
+                disabled={disable}
                 {...(register
                     ? register(name, {
                         onChange: onChange,
@@ -87,6 +90,7 @@ const CustomInput: React.FC<InputProps> = ({
                         required: true
                     })
                 : {})}
+                disabled={disable}
             />
             <Typography variant='body3' color='error80' type='normal' className='my-2'>
                 {error}

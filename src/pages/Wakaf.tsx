@@ -1,21 +1,18 @@
-import { useEffect, useState } from 'react'
-import Sidebar from '../components/Sidebar'
-import Typography from '../components/Typography'
-import { Pagination, Space } from 'antd'
-import CustomCollapse from '../components/Collapse';
-import { useCookies } from 'react-cookie';
-import Display from '../components/DisplayContent/Display';
-import { WakafType } from '../utils/types/DataType';
-import ConfirmAlert from '../components/Alert/ConfirmAlert';
-import LoadingAlert from '../components/Modal/LoadingAlert';
-import useCrudApi from '../utils/hooks/useCrudApi';
+import React, { useEffect, useState } from 'react'
+import Display from '../components/DisplayContent/Display'
 import Headers from '../components/Headers/Headers';
-import WakafTable from '../components/Table/WakafTable';
+import Sidebar from '../components/Sidebar';
+import Button from '../components/CustomButton/Button';
+import { Pagination } from 'antd';
 import WakafModal from '../components/Modal/WakafModal';
+import CustomCollapse from '../components/Collapse';
+import ConfirmAlert from '../components/Alert/ConfirmAlert';
+import useCrudApi from '../utils/hooks/useCrudApi';
+import Alert from '../components/Alert/Alert';
+import { WakafType } from '../utils/types/DataType';
+import WakafTable from '../components/Table/WakafTable';
 import useWakaf from '../api/hooks/useWakaf';
-import assetIcon from "../assets/Group 26958.svg";
-import useDashboard from '../api/hooks/useDashboard';
-import Card from '../components/Card/Card';
+import LoadingAlert from '../components/Modal/LoadingAlert';
 
 const initialEditValue: WakafType = {
     title: "",
@@ -26,21 +23,26 @@ const initialEditValue: WakafType = {
     fund_target: 0,
     collected: 0
 }
-const Dashboard = () => {
-    const [showModal, setShowModal] = useState(false);
-    const [cookie] = useCookies(['token', 'id', 'name', 'email', 'foto'])
-    const [loading, setLoading] = useState(false)
+
+const Wakaf = () => {
+    
+    const [showModal, setShowModal] = useState<boolean>(false)
+    const [loading , setLoading] = useState<boolean>(false)
     const [page, setPage] = useState<number>(1)
     const { wakaf, getWakaf, totalOnlineWakaf, createWakaf, editedWakaf, draftWakaf, archiveWakaf, deleteWakaf } = useWakaf()
-    const {dashboardData} = useDashboard()
 
-    console.log(totalOnlineWakaf);
-    
-    
     useEffect(() => {
-        getWakaf({status: 'online', page: 1})
-    }, [])
+        getWakaf({page: page, status: 'online'})
+    }, [page])
     
+    const headers: Record<any, string> = {
+        created_at: "Tanggal",
+        title: "Judul",
+        collected: "Terkumpul",
+        fund_target: "Target",
+        due_date: "Hari",
+        alat: "Alat",
+    };
 
     const handlePageChange = (page: number) => {
         setPage(page)// data for the specified page
@@ -191,24 +193,28 @@ const Dashboard = () => {
     }
     return (
         <>
-                <LoadingAlert open={loading} loading={loading}/>
+            <LoadingAlert open={loading} loading={loading}/>
             <Sidebar/>
             <Display>
                 <Headers
-                label={`Hello, ${cookie.name}!!!`}
+                label='Wakaf'
                 />
-                <div className=" space-y-5 mx-auto w-11/12 my-10">
-                <Space direction="horizontal" className='my-auto w-full space-x-[90px]'>
-                    {dashboardData.data.map((item)=> {
-                        return(
-                            <Card
-                            icon={item.icon}
-                            header={item.header}
-                            count={item.count}
-                            />
-                        )
-                    })}
-                </Space>
+                <div className="flex flex-row justify-between space-x-5 mx-auto w-11/12 my-10">
+                    <Button
+                    id='wakaf'
+                    size=''
+                    className='w-72'
+                    onClick={()=> setShowModal(true)}
+                    color='orange'
+                    label="+ Buat Wakaf"
+                    />
+                    <Button
+                    id='filter'
+                    size='base'
+                    // onClick={showModalNews}
+                    label="Filter"
+                    color='orangeBorder'
+                    />
                 </div>
                 <div className="flex flex-col justify-center space-y-5 mx-auto w-11/12 my-10">
                 <CustomCollapse 
@@ -219,7 +225,6 @@ const Dashboard = () => {
                 data={wakaf}
                 handleArchive={handleArchive}
                 handleDelete={handleDelete}
-                dashboard={true}
                 handleEdit={handleEditModal}
                 />
                 <Pagination size='small' total={totalOnlineWakaf} onChange={handlePageChange} showSizeChanger={false} className='z-90 my-7 float-right'/>
@@ -238,4 +243,4 @@ const Dashboard = () => {
     )
 }
 
-export default Dashboard
+export default Wakaf

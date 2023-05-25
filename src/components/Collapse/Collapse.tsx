@@ -22,10 +22,11 @@ const CustomCollapse: React.FC<CollapseProps> = ({header, children , key}) => {
     return (
     <>
         <Collapse
-            defaultActiveKey={key}
+            defaultActiveKey={['1']}
             expandIconPosition={"end"}
             size='large'
-            className='w-full border-white'
+            className='w-full border-white shadow-xl'
+            ghost
             >
             <Panel
                 key={key}
@@ -33,8 +34,7 @@ const CustomCollapse: React.FC<CollapseProps> = ({header, children , key}) => {
                 style={panelStyle}
                 className="bg-white overflow-hidden"
             >
-                
-                <div className='px-5'>{children}</div>
+                <div>{children}</div>
             </Panel>
             </Collapse>
     </>

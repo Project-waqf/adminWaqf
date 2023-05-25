@@ -1,0 +1,378 @@
+import React, { useEffect, useState } from 'react'
+import { Input, Modal, Select,InputNumber, DatePicker, DatePickerProps } from "antd";
+import Typography from '../Typography';
+import Button from '../CustomButton/Button';
+import { SmallLoading } from '../../assets/svg/SmallLoading';
+import { WakafType } from '../../utils/types/DataType';
+import TextArea from '../CustomInput/TextArea';
+import { TbFileDescription } from "react-icons/tb";
+import useCrudApi from '../../utils/hooks/useCrudApi';
+import { DraftState, wakafToDraft } from "../../stores/draftSilce";
+import { useDispatch, useSelector } from 'react-redux';
+
+    interface FormProps {
+        onSubmit: (formValues: WakafType) => void;
+        editValues: WakafType;
+        editMode: boolean;
+        open: boolean
+        handleCancel: React.MouseEventHandler
+        handleArchive?: React.MouseEventHandler
+
+    }
+    const initialFormValues: WakafType = {
+        title: "",
+        category: "umum",
+        picture: null,
+        detail: '',
+        due_date: '',
+        fund_target: 0,
+        collected: 0
+    };
+
+    
+    const options = [
+        {
+            value: 'kesehatan',
+            label: 'Program Kesehatan',
+        },
+        {
+            value: 'pembangunan',
+            label: 'Produktif Pembangunan',
+        },
+        {
+            value: 'pendidikan',
+            label: 'Program Pendidikan',
+        },
+        {
+            value: 'quran',
+            label: "Program Quran",
+        },
+        {
+            value: 'dakwah',
+            label: "Pijar Dakwah dan Pilar",
+        },
+        {
+            value: 'produktif',
+            label: 'Program Usaha Produktif',
+        },
+        {
+            value: 'panganBarokah',
+            label: 'Pangan Barokah',
+        },
+        {
+            value: 'kemanusiaan',
+            label: 'Kemanusiaan dan Lingkungan',
+        },
+    ] 
+const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, handleCancel, handleArchive}) => {
+    
+    const [editorContent, setEditorContent] = useState('');
+
+    const handleEditorChange = (content: string) => {
+        setEditorContent(content);
+    };
+    const formats = [
+        "header",
+        "font",
+        "size",
+        "bold",
+        "italic",
+        "underline",
+        "align",
+        "strike",
+        "script",
+        "blockquote",
+        "background",
+        "list",
+        "bullet",
+        "indent",
+        "link",
+        "image",
+        "video",
+        "color",
+        "code-block"
+    ];
+      
+    const [formValues, setFormValues] = useState<WakafType>(initialFormValues);
+    const [loading , setLoading] = useState(false)
+    const [error, setError] = useState<string>()
+    const dispatch = useDispatch()
+    const draft = useSelector((state: {draft: DraftState}) => state.draft)
+    const {draftNews} = useCrudApi()
+    const [selectionStart, setSelectionStart] = useState(0);
+    const [selectionEnd, setSelectionEnd] = useState(0);
+    useEffect(() => {
+        if (editMode || !editMode) {
+            setFormValues(editValues);
+        }
+    }, [editValues, editMode]);
+
+    const [disabled, setDisabled] = useState(true);
+
+    useEffect(() => {
+        if (formValues.title && formValues.detail) {
+            setDisabled(false);
+        } else {
+            setDisabled(true);
+        }
+    }, [formValues]);
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFormValues({ ...formValues, [e.target.name]: e.target.value });
+    }
+    
+    const handleTextAreaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setFormValues({ ...formValues, [e.target.name]: e.target.value });
+    };
+    const modules = {
+        toolbar: [
+            [{ 'header': [1, 2, 3, false] }],
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+            ['link', 'image'],
+            [{ 'align': [] }],
+            ['clean'],
+        ],
+    };
+    
+    const applyFormatting = (tag: any) => {
+        const selectedText = formValues.detail.slice(selectionStart, selectionEnd);
+        const formattedText = `${tag}${selectedText}${tag}`;
+    
+        const updatedText =
+            formValues.detail.slice(0, selectionStart) +
+            formattedText +
+            formValues.detail.slice(selectionEnd);
+    
+        setFormValues({...formValues, detail: updatedText});
+        const updatedSelectionStart = selectionStart + tag.length;
+        const updatedSelectionEnd = updatedSelectionStart + selectedText.length;
+        setSelectionStart(updatedSelectionStart);
+        setSelectionEnd(updatedSelectionEnd);
+    };
+    const handleChange = (value: string) => {
+        console.log(`Selected: ${value}`);
+        setFormValues({...formValues, category: value})
+    };
+    const currenyChange = (value: number | null) => {
+        console.log(value);
+        setFormValues({...formValues, fund_target: value})
+    };
+    const dateChange: DatePickerProps['onChange'] = (date, dateString) => {
+        console.log(date, dateString);
+        setFormValues({...formValues, due_date: dateString})
+    }
+    const parser = (displayValue: string | undefined): number | undefined => {
+        if (!displayValue) {
+            return undefined;
+        }
+        
+        const numericValue = displayValue.replace(/\$\s?|(,*)/g, '');
+        return Number(numericValue);
+    };
+    const formatter = (value: number | string | undefined) => {
+        if (typeof value === 'number') {
+            return value.toLocaleString('en-ID');
+        }
+        return '';
+    };
+    const handleTODraft = async (formValues: WakafType) => {
+        const newItem: WakafType = {
+            title: formValues.title,
+            category: formValues.category,
+            detail: formValues.detail,
+            picture: formValues.picture,
+            due_date: formValues.due_date,
+            fund_target: formValues.fund_target,
+            collected: 0
+        }
+        dispatch(wakafToDraft(newItem))
+    }
+    console.log("draft",draft.news);
+    
+    const handleImageChange = (e: any) => {
+        setLoading(true)
+        const file = e.target.files[0];
+        const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+
+        if (file && file.size <= maxSize) {
+            setFormValues((prev) => ({
+                ...prev,
+                picture: file
+            }));
+            setError('');
+        } else {
+            setFormValues((prev) => ({
+                ...prev,
+                picture: null
+            }));
+            setError('File size exceeds the maximum allowed limit (5MB).');
+        }
+        setLoading(false)
+    };
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        onSubmit(formValues);
+        setFormValues(initialFormValues);
+    };
+    console.log(formValues);
+    
+    return (
+        <Modal
+        open={open}
+        onCancel={handleCancel} 
+        centered closeIcon
+        style={{padding: 5}}
+        title={<Typography color='text01' variant='h2' type='semibold'>{editMode ? 'Edit Wakaf' : 'Tambah Wakaf'}</Typography>}
+        width={1120}
+        footer={<></>}>
+                <div className="relative mx-5 my-8">
+                    <form className='flex flex-col space-y-5' onSubmit={handleSubmit}>
+                    <div className="flex space-x-8">
+                        <div className="">
+                                <label htmlFor='title'>
+                                    <Typography variant='h4' color='text01' type='medium' className=''>
+                                        Judul
+                                    </Typography>
+                                </label>
+                                <Input
+                                name='title'
+                                type='text'
+                                placeholder='Masukan Judul'
+                                size='large'
+                                className={`mt-1 w-[430px]`}
+                                value={formValues.title}
+                                onChange={handleInputChange}
+                            />
+                            <Typography variant='body3' color='error80' type='normal' className='my-2'>
+
+                            </Typography>
+                        </div>
+                        <div className="">
+                            <Typography variant='h4' color='text01' type='medium' className=''>
+                                Gambar
+                            </Typography>
+                            <label className="block mt-1 bg-btnColor flex justify-center space-x-1 px-2 py-1 w-52 h-10 rounded-lg cursor-pointer" htmlFor="file_input">
+                                <TbFileDescription className='text-[24px] mt-0.5 text-whiteBg' />
+                                <Typography variant='body1' color='' type='normal' className='text-whiteBg'>
+                                    Upload Gambar
+                                </Typography>
+                            <input name='picture' onChange={handleImageChange} className="hidden w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50" aria-describedby="file_input_help" id="file_input" type="file"/>
+                            </label>
+                            <Typography variant='text' color={error ? 'error80' : 'neutral-90'} type='normal' className=''>
+                                {error ? error : 'Max 5 mb'}
+                            </Typography>
+                            {loading ? <SmallLoading/> : <></>}
+                        </div>
+                    </div>
+                    <div className="flex space-x-8">
+                        <div className="">
+                                <label htmlFor='category'>
+                                    <Typography variant='h4' color='text01' type='medium' className=''>
+                                        Kategori
+                                    </Typography>
+                                </label>
+                                <Select
+                                size='large'
+                                value={formValues.category}
+                                defaultValue={formValues.category}
+                                onChange={handleChange}
+                                style={{ width: 238}}
+                                options={options}
+                                className='mt-1'
+                                />
+                            <Typography variant='body3' color='error80' type='normal' className='my-2'>
+
+                            </Typography>
+                        </div>
+                        <div className={editMode ? "block" : "hidden"}>
+                                <label >
+                                    <Typography variant='h4' color='text01' type='medium' className=''>
+                                        Terkumpul
+                                    </Typography>
+                                </label>
+                                <InputNumber
+                                value={formValues.collected}
+                                defaultValue={formValues.collected}
+                                size='large'
+                                className='mt-1 text-green-500'
+                                style={{width: 200}}
+                                formatter={(value) => `Rp. ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                parser={parser as (displayValue: string | undefined) => number | undefined}
+                                disabled
+                                />
+                            <Typography variant='body3' color='error80' type='normal' className='my-2'>
+
+                            </Typography>
+                        </div>
+                        <div className="">
+                                <label htmlFor='fund_date'>
+                                    <Typography variant='h4' color='text01' type='medium' className=''>
+                                        Target
+                                    </Typography>
+                                </label>
+                                <InputNumber
+                                name='fund_date'
+                                value={formValues.fund_target}
+                                defaultValue={formValues.fund_target}
+                                size='large'
+                                className='mt-1 text-green-500'
+                                style={{width: 200}}
+                                formatter={(value) => `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                parser={(value: any) => value!.replace(/\$\s?|(,*)/g, '')}
+                                onChange={currenyChange}
+                                />
+                            <Typography variant='body3' color='error80' type='normal' className='my-2'>
+
+                            </Typography>
+                        </div>
+                        <div className="">
+                                <label htmlFor='due_date'>
+                                    <Typography variant='h4' color='text01' type='medium' className=''>
+                                        Hari
+                                    </Typography>
+                                </label>
+                                <DatePicker name='due_date' onChange={dateChange} placeholder='/Hari' style={{width: 200}} size='large' className='mt-1'/>
+                            <Typography variant='body3' color='error80' type='normal' className='my-2'>
+
+                            </Typography>
+                        </div>
+                    </div>
+                    <div className='flex mt-10 justify-end'>
+                    <Button
+                        type={'submit'}
+                        label='Upload'
+                        id={`tidak`}
+                        color={'orange'}
+                        size='base'
+                        disabled={disabled}
+                        onClick={()=> console.log(formValues)}
+                    />
+            </div>
+            </form >
+                <div className="w-[845px] absolute left-0 bottom-0">
+                    <div className="flex justify-between w-full">
+                        <Button
+                            label={editMode ? 'Simpan Ke Archive' : 'Simpan Ke Draft'}
+                            id={`draft`}
+                            type={'submit'}
+                            color={'orangeBorder'}
+                            size='base'
+                            onClick={editMode ? handleArchive : ()=>handleTODraft(formValues)}
+                            className={ formValues.title !== '' ? 'block' : 'hidden'}
+                        />
+                        <Button
+                            label='Cancel'
+                            id={`tidak`}
+                            color={'whiteOrange'}
+                            size='base'
+                            onClick={handleCancel}
+                            className={ formValues.title !== '' ? 'ml-0' : 'ml-auto'}
+                        />
+                    </div>
+                </div>
+            </div>
+        </Modal>
+    )
+}
+
+export default WakafModal

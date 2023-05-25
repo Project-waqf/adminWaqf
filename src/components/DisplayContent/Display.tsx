@@ -6,7 +6,7 @@ interface DisplayProps{
 
 const Display: FC<DisplayProps> = ({children}) => {
     return (
-        <div className="box-content w-[1200px] 2xl:w-[1500px] max-h-full lg:ml-[150px] xl:ml-[180px] 2xl:mx-[180px]">
+        <div className="box-content w-[1200px] 2xl:w-[1700px] max-h-full lg:ml-[120px] xl:ml-[150px] 2xl:mx-[150px]">
         {children}
         </div>
     )
