@@ -4,7 +4,6 @@ import Display from '../components/DisplayContent/Display'
 import Headers from '../components/Headers/Headers';
 import Sidebar from '../components/Sidebar'
 import Button from '../components/CustomButton/Button';
-import useCrudApi from '../utils/hooks/useCrudApi';
 import CustomCollapse from '../components/Collapse';
 import CustomTable from '../components/Table';
 import { Pagination } from 'antd';

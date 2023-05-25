@@ -74,6 +74,8 @@ const Profile = () => {
                             "Content-Type": "application/json",
                         }
                     })
+                    Alert('edit')
+                    return response 
                 } catch (error) {
                     
                 }

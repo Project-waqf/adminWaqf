@@ -7,7 +7,6 @@ import { Pagination } from 'antd';
 import WakafModal from '../components/Modal/WakafModal';
 import CustomCollapse from '../components/Collapse';
 import ConfirmAlert from '../components/Alert/ConfirmAlert';
-import useCrudApi from '../utils/hooks/useCrudApi';
 import Alert from '../components/Alert/Alert';
 import { WakafType } from '../utils/types/DataType';
 import WakafTable from '../components/Table/WakafTable';
