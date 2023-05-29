@@ -56,7 +56,7 @@ const WakafTable: React.FC<TableProps> = ({ dashboard, archives, draft, data, ha
                     data ? 
                     data.map((item: any)=> {
                         return(
-                        <tr key={item.id_wakaf} className="bg-white">
+                        <tr key={item.id} className="bg-white">
                             <td scope="row" className="px-6 py-4 w-40">
                             <Typography color='text01' variant='body3' type='semibold'>
                                 {item.created_at}
@@ -85,35 +85,35 @@ const WakafTable: React.FC<TableProps> = ({ dashboard, archives, draft, data, ha
                             <td className="flex space-x-3 py-4">
                                 {draft ?
                                 <>
-                                <div className="cursor-pointer" onClick={() => handleEdit && handleEdit(item.id_wakaf)}>
+                                <div className="cursor-pointer" onClick={() => handleEdit && handleEdit(item.id)}>
                                     <img src={edit} alt="" />
                                 </div>
-                                <div className="cursor-pointer" onClick={() => handleDelete && handleDelete(item.id_wakaf)}>
+                                <div className="cursor-pointer" onClick={() => handleDelete && handleDelete(item.id)}>
                                     <img src={delet} alt="" />
                                 </div>
                                 </>
                                 :
                                 archives ?
                                 <>
-                                <div className={"cursor-pointer"} onClick={() => handleArchive && handleArchive(item.id_wakaf)}>
+                                <div className={"cursor-pointer"} onClick={() => handleArchive && handleArchive(item.id)}>
                                     <img src={send} alt="" />
                                 </div>
-                                <div className="cursor-pointer"  onClick={() => handleEdit && handleEdit(item.id_wakaf)}>
+                                <div className="cursor-pointer"  onClick={() => handleEdit && handleEdit(item.id)}>
                                     <img src={edit} alt=""/>
                                 </div>
-                                <div className="cursor-pointer" onClick={() => handleDelete && handleDelete(item.id_wakaf)}>
+                                <div className="cursor-pointer" onClick={() => handleDelete && handleDelete(item.id)}>
                                     <img src={delet} alt="" />
                                 </div>
                                 </>
                                 :
                                 <>
-                                <div className="cursor-pointer"  onClick={() => handleEdit && handleEdit(item.id_wakaf)}>
+                                <div className="cursor-pointer"  onClick={() => handleEdit && handleEdit(item.id)}>
                                     <img src={edit} alt=""/>
                                 </div>
-                                <div className={"cursor-pointer"} onClick={() => handleArchive && handleArchive(item.id_wakaf)}>
+                                <div className={"cursor-pointer"} onClick={() => handleArchive && handleArchive(item.id)}>
                                     <img src={archive} alt="" />
                                 </div>
-                                <div className="cursor-pointer" onClick={() => handleDelete && handleDelete(item.id_wakaf)}>
+                                <div className="cursor-pointer" onClick={() => handleDelete && handleDelete(item.id)}>
                                     <img src={delet} alt="" />
                                 </div>
                                 </>
@@ -132,7 +132,7 @@ const WakafTable: React.FC<TableProps> = ({ dashboard, archives, draft, data, ha
                 data ?
                 data?.map((item:any)=>{
                 return(
-                    <tr key={item.id_wakaf} className="bg-white">
+                    <tr key={item.id} className="bg-white">
                         <td scope="row" className="px-6 py-4 w-40">
                         <Typography color={item.collected >= item.fund_target ? 'green' : item.collected < item.fund_target && item.due_date == 0 ? 'error90' : 'text01'} variant='body3' type='semibold'>
                             {item.created_at}
@@ -161,10 +161,10 @@ const WakafTable: React.FC<TableProps> = ({ dashboard, archives, draft, data, ha
                         <td className="flex space-x-3 py-4">
                             {draft ?
                             <>
-                            <div className="cursor-pointer" onClick={() => handleEdit && handleEdit(item.id_wakaf)}>
+                            <div className="cursor-pointer" onClick={() => handleEdit && handleEdit(item.id)}>
                                 <img src={edit} alt="" />
                             </div>
-                            <div className="cursor-pointer" onClick={() => handleDelete && handleDelete(item.id_wakaf)}>
+                            <div className="cursor-pointer" onClick={() => handleDelete && handleDelete(item.id)}>
                                 <img src={delet} alt="" />
                             </div>
                             </>
@@ -175,7 +175,7 @@ const WakafTable: React.FC<TableProps> = ({ dashboard, archives, draft, data, ha
                                 <img src={editdisa} alt=""/>
                             </div>
                             :
-                            <div className="cursor-pointer"  onClick={() => handleEdit && handleEdit(item.id_wakaf)}>
+                            <div className="cursor-pointer"  onClick={() => handleEdit && handleEdit(item.id)}>
                                 <img src={edit} alt=""/>
                             </div>
                             }
@@ -189,11 +189,11 @@ const WakafTable: React.FC<TableProps> = ({ dashboard, archives, draft, data, ha
                                 <img src={archiveDis} alt=""/>
                             </div>
                             :
-                            <div className={ item.collected === item.fund_target && item.due_date > 1 ?"cursor-not-allowed" : "cursor-pointer"} onClick={() => handleArchive && handleArchive(item.id_wakaf)}>
+                            <div className={ item.collected === item.fund_target && item.due_date > 1 ?"cursor-not-allowed" : "cursor-pointer"} onClick={() => handleArchive && handleArchive(item.id)}>
                                 <img src={archive} alt="" />
                             </div>
                             }
-                            <div className="cursor-pointer" onClick={() => handleDelete && handleDelete(item.id_wakaf)}>
+                            <div className="cursor-pointer" onClick={() => handleDelete && handleDelete(item.id)}>
                                 <img src={delet} alt="" />
                             </div>
                             </>

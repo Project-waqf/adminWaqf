@@ -35,7 +35,7 @@ const MitraModal: React.FC<FormProps> = ({onSubmit, editMode, editValues, open, 
     const [disabled, setDisabled] = useState(true);
 
     useEffect(() => {
-        if (formValues.name && formValues.link && formValues.picture) {
+        if (formValues.name && formValues.link) {
             setDisabled(false);
         } else {
             setDisabled(true);
@@ -79,20 +79,20 @@ const MitraModal: React.FC<FormProps> = ({onSubmit, editMode, editValues, open, 
                     <form className='flex flex-col space-y-5' onSubmit={handleSubmit}>
                     <div className="flex space-x-8">
                         <div className="">
-                                <label htmlFor='title'>
-                                    <Typography variant='h4' color='text01' type='medium' className=''>
-                                        Nama Mitra
-                                    </Typography>
-                                </label>
-                                <Input
-                                name='name'
-                                type='text'
-                                placeholder='Masukan Nama Mitra'
-                                size='large'
-                                className={`mt-2 h-12 w-[584px] border-neutral-80`}
-                                value={formValues.name}
-                                onChange={handleInputChange}
-                                />
+                            <label htmlFor='title'>
+                                <Typography variant='h4' color='text01' type='medium' className=''>
+                                    Nama Mitra
+                                </Typography>
+                            </label>
+                            <Input
+                            name='name'
+                            type='text'
+                            placeholder='Masukan Nama Mitra'
+                            size='large'
+                            className={`mt-2 h-12 w-[584px] border-neutral-80`}
+                            value={formValues.name}
+                            onChange={handleInputChange}
+                            />
                             <Typography variant='body3' color='error80' type='normal' className='my-2'>
 
                             </Typography>
@@ -116,7 +116,7 @@ const MitraModal: React.FC<FormProps> = ({onSubmit, editMode, editValues, open, 
                             Link
                         </Typography>
                         <Input
-                        name='name'
+                        name='link'
                         type='text'
                         placeholder='Masukan Link Mitra/Perusahaan'
                         size='large'

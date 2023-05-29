@@ -1,19 +1,33 @@
+import Alert from "../../components/Alert/Alert"
 import { APIUrl } from "../../string"
 import axios from "axios"
 import { useCallback, useEffect, useState } from "react"
 
 export default function useNews() {
     const [news, setNews] = useState<any>()
+    const [allNews, setAllNews] = useState<any>()
     const [totalOnlineNews, setTotalOnlineNews] = useState<number>(0)
     const [totalDraftNews, setTotalDraftNews] = useState<number>(0)
     const [totalArchiveNews, setTotalArchiveNews] = useState<number>(0)
     const [totalNews, setTotalNews] = useState<number>()
+    const [totalAllNews, setTotalAllNews] = useState<number>()
     const HOST = APIUrl
     
     useEffect(() => {
         setTotalNews(totalOnlineNews + totalArchiveNews + totalDraftNews)
     }, [totalArchiveNews, totalDraftNews, totalOnlineNews])
     
+    const getAllNews = useCallback(async () => {
+        try {
+            const response = await axios.get(`${HOST}news?status=&page=`)
+            console.log(response.data)
+            setAllNews(response.data.data)
+            setTotalAllNews(response.data.data.length - 1)
+            return response
+        } catch (error) {
+            console.log(error)
+        }
+    },[])
 
     const getNews = useCallback(async (payload?: any) => {
         try {
@@ -46,8 +60,10 @@ export default function useNews() {
             const newValue = response.data
             setNews([...news, newValue])
             getNews()
+            Alert('upload')
             return newValue
         } catch (error) {
+            Alert('fail')
             console.log(error);
         }
     },[])
@@ -71,9 +87,11 @@ export default function useNews() {
             news.id === updatedValue.id ? updatedValue : news 
             )
             setNews(updatedNews)
+            Alert('edit')
             getNews()
             return updatedValue                
         } catch (error) {
+            Alert('fail')
             console.log(error);
         }
     },[])
@@ -94,9 +112,11 @@ export default function useNews() {
             const response = await axios.post(`${HOST}admin/news`, formData, config)
             const newValue = response.data
             setNews([...news, newValue])
+            Alert('draft')
             getNews()
             return newValue
         } catch (error) {
+            Alert('fail')
             console.log(error);
         }
     },[])
@@ -114,8 +134,10 @@ export default function useNews() {
             const newValue = response.data
             setNews([...news, newValue])
             getNews()
+            Alert('archive')
             return newValue
         } catch (error) {
+            Alert('fail')
             console.log(error);
         }
     },[])
@@ -131,9 +153,11 @@ export default function useNews() {
             const deletedValue = response.data
             getNews()
             console.log(deletedValue);
+            Alert('delete')
             return deletedValue           
         } catch (error) {
             console.log(error);
+            Alert('fail')
         }
 
     },[])
@@ -141,5 +165,8 @@ export default function useNews() {
     useEffect(() => {
         getNews()
     }, [])
-    return{ news, totalOnlineNews, totalArchiveNews, totalDraftNews, totalNews, createNews, getNews, editedNews, draftNews, archiveNews, deleteNews}
+    useEffect(() => {
+        getAllNews()
+    }, [])
+    return{ news, allNews, totalAllNews, totalOnlineNews, totalArchiveNews, totalDraftNews, totalNews, createNews, getNews, editedNews, draftNews, archiveNews, deleteNews}
 }

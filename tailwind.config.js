@@ -41,7 +41,7 @@ module.exports = {
       inter: ["sans-serif"],
     },
   },
-  plugins: [],
+  plugins: [require("daisyui")],
   corePlugins: {
     preflight: false, // <== disable this!
   },

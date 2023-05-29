@@ -6,9 +6,9 @@ import { SmallLoading } from '../../assets/svg/SmallLoading';
 import { WakafType } from '../../utils/types/DataType';
 import TextArea from '../CustomInput/TextArea';
 import { TbFileDescription } from "react-icons/tb";
-import useCrudApi from '../../utils/hooks/useCrudApi';
 import { DraftState, wakafToDraft } from "../../stores/draftSilce";
 import { useDispatch, useSelector } from 'react-redux';
+import CurrencyInput from 'react-currency-input-field';
 
     interface FormProps {
         onSubmit: (formValues: WakafType) => void;
@@ -17,8 +17,8 @@ import { useDispatch, useSelector } from 'react-redux';
         open: boolean
         handleCancel: React.MouseEventHandler
         handleArchive?: React.MouseEventHandler
-
     }
+
     const initialFormValues: WakafType = {
         title: "",
         category: "umum",
@@ -29,7 +29,6 @@ import { useDispatch, useSelector } from 'react-redux';
         collected: 0
     };
 
-    
     const options = [
         {
             value: 'kesehatan',
@@ -56,7 +55,7 @@ import { useDispatch, useSelector } from 'react-redux';
             label: 'Program Usaha Produktif',
         },
         {
-            value: 'panganBarokah',
+            value: 'pangan_barokah',
             label: 'Pangan Barokah',
         },
         {
@@ -65,42 +64,12 @@ import { useDispatch, useSelector } from 'react-redux';
         },
     ] 
 const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, handleCancel, handleArchive}) => {
-    
-    const [editorContent, setEditorContent] = useState('');
 
-    const handleEditorChange = (content: string) => {
-        setEditorContent(content);
-    };
-    const formats = [
-        "header",
-        "font",
-        "size",
-        "bold",
-        "italic",
-        "underline",
-        "align",
-        "strike",
-        "script",
-        "blockquote",
-        "background",
-        "list",
-        "bullet",
-        "indent",
-        "link",
-        "image",
-        "video",
-        "color",
-        "code-block"
-    ];
-      
     const [formValues, setFormValues] = useState<WakafType>(initialFormValues);
     const [loading , setLoading] = useState(false)
     const [error, setError] = useState<string>()
     const dispatch = useDispatch()
     const draft = useSelector((state: {draft: DraftState}) => state.draft)
-    const {draftNews} = useCrudApi()
-    const [selectionStart, setSelectionStart] = useState(0);
-    const [selectionEnd, setSelectionEnd] = useState(0);
     useEffect(() => {
         if (editMode || !editMode) {
             setFormValues(editValues);
@@ -123,39 +92,9 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
     const handleTextAreaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setFormValues({ ...formValues, [e.target.name]: e.target.value });
     };
-    const modules = {
-        toolbar: [
-            [{ 'header': [1, 2, 3, false] }],
-            ['bold', 'italic', 'underline', 'strike'],
-            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-            ['link', 'image'],
-            [{ 'align': [] }],
-            ['clean'],
-        ],
-    };
-    
-    const applyFormatting = (tag: any) => {
-        const selectedText = formValues.detail.slice(selectionStart, selectionEnd);
-        const formattedText = `${tag}${selectedText}${tag}`;
-    
-        const updatedText =
-            formValues.detail.slice(0, selectionStart) +
-            formattedText +
-            formValues.detail.slice(selectionEnd);
-    
-        setFormValues({...formValues, detail: updatedText});
-        const updatedSelectionStart = selectionStart + tag.length;
-        const updatedSelectionEnd = updatedSelectionStart + selectedText.length;
-        setSelectionStart(updatedSelectionStart);
-        setSelectionEnd(updatedSelectionEnd);
-    };
     const handleChange = (value: string) => {
         console.log(`Selected: ${value}`);
         setFormValues({...formValues, category: value})
-    };
-    const currenyChange = (value: number | null) => {
-        console.log(value);
-        setFormValues({...formValues, fund_target: value})
     };
     const dateChange: DatePickerProps['onChange'] = (date, dateString) => {
         console.log(date, dateString);
@@ -169,12 +108,7 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
         const numericValue = displayValue.replace(/\$\s?|(,*)/g, '');
         return Number(numericValue);
     };
-    const formatter = (value: number | string | undefined) => {
-        if (typeof value === 'number') {
-            return value.toLocaleString('en-ID');
-        }
-        return '';
-    };
+
     const handleTODraft = async (formValues: WakafType) => {
         const newItem: WakafType = {
             title: formValues.title,
@@ -182,13 +116,11 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
             detail: formValues.detail,
             picture: formValues.picture,
             due_date: formValues.due_date,
-            fund_target: formValues.fund_target,
-            collected: 0
+            fund_target: formValues.fund_target
         }
         dispatch(wakafToDraft(newItem))
     }
-    console.log("draft",draft.news);
-    
+
     const handleImageChange = (e: any) => {
         setLoading(true)
         const file = e.target.files[0];
@@ -215,7 +147,34 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
         setFormValues(initialFormValues);
     };
     console.log(formValues);
-    
+
+    useEffect(() => {
+        const numberInput = document.getElementById('number-input') as HTMLInputElement | null;
+        if (numberInput) {
+            numberInput.addEventListener('input', formatCurrency);
+        }
+        
+        return () => {
+            if (numberInput) {
+                numberInput.removeEventListener('input', formatCurrency);
+            }
+        };
+    }, []);
+    function formatCurrency() {
+        const numberInput = document.getElementById('number-input') as HTMLInputElement | null;
+        if (numberInput) {
+            const value = parseFloat(numberInput.value);
+            if (!isNaN(value)) {
+                const formattedValue = value.toLocaleString('id-ID', {
+                style: 'currency', 
+                currency: 'IDR'
+                });
+                numberInput.value = formattedValue;
+            }
+        }
+    }
+
+
     return (
         <Modal
         open={open}
@@ -242,7 +201,7 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                                 className={`mt-1 w-[430px]`}
                                 value={formValues.title}
                                 onChange={handleInputChange}
-                            />
+                                />
                             <Typography variant='body3' color='error80' type='normal' className='my-2'>
 
                             </Typography>
@@ -273,8 +232,7 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                                 </label>
                                 <Select
                                 size='large'
-                                value={formValues.category}
-                                defaultValue={formValues.category}
+                                value={formValues.category ? formValues.category : options[0].value}
                                 onChange={handleChange}
                                 style={{ width: 238}}
                                 options={options}
@@ -310,16 +268,17 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                                         Target
                                     </Typography>
                                 </label>
-                                <InputNumber
-                                name='fund_date'
+                                <CurrencyInput
+                                className='input input-bordered h-10 shadow-sm focus:outline-0 focus:border-sky-500 hover:border-sky-500 transition-all placeholder-gray-400 mt-1 w-[200px]'
+                                id="fund_target"
+                                name="fund_target"
+                                prefix='Rp. '
+                                decimalSeparator=','
+                                groupSeparator='.'
+                                placeholder="Rp. "
                                 value={formValues.fund_target}
-                                defaultValue={formValues.fund_target}
-                                size='large'
-                                className='mt-1 text-green-500'
-                                style={{width: 200}}
-                                formatter={(value) => `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                                parser={(value: any) => value!.replace(/\$\s?|(,*)/g, '')}
-                                onChange={currenyChange}
+                                decimalsLimit={2}
+                                onValueChange={(value, name) => setFormValues({ ...formValues, fund_target: value ? parseInt(value) : 0 })}
                                 />
                             <Typography variant='body3' color='error80' type='normal' className='my-2'>
 
@@ -337,6 +296,12 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                             </Typography>
                         </div>
                     </div>
+                    <TextArea
+                    label='Deskripsi Berita'
+                    name='detail'
+                    value={formValues.detail}
+                    onChange={handleTextAreaChange}
+                    />
                     <div className='flex mt-10 justify-end'>
                     <Button
                         type={'submit'}

@@ -1,3 +1,4 @@
+import Alert from "../../components/Alert/Alert"
 import { APIUrl } from "../../string"
 import axios from "axios"
 import { useCallback, useEffect, useState } from "react"
@@ -20,7 +21,7 @@ export default function useMitra() {
     const createMitra = useCallback(async (payload: any) => {
         const formData = new FormData()
         formData.append('name', payload.name)
-        formData.append('picture_name', payload.picture_name)
+        formData.append('link', payload.link)
         formData.append('picture', payload.picture || '')
         try {
             const config = {
@@ -33,8 +34,10 @@ export default function useMitra() {
             const newValue = response.data
             setMitra([...mitra, newValue])
             getMitra()
+            Alert('upload')
             return newValue
         } catch (error) {
+            Alert('fail')
             console.log(error);
         }
     },[])
@@ -42,7 +45,7 @@ export default function useMitra() {
     const editedMitra = useCallback(async (payload: any) => {
         const formData = new FormData()
         formData.append('name', payload.name)
-        formData.append('picture_name', payload.picture_name)
+        formData.append('link', payload.link)
         formData.append('picture', payload.picture || '')
         try {
             const config = {
@@ -58,8 +61,10 @@ export default function useMitra() {
             )
             setMitra(updatedMitra)
             getMitra()
+            Alert('edit')
             return updatedValue                
         } catch (error) {
+            Alert('fail')
             console.log(error);
         }
     },[])
@@ -74,8 +79,10 @@ export default function useMitra() {
             const deletedValue = response.data
             getMitra()
             console.log(deletedValue);
+            Alert('delete')
             return deletedValue           
         } catch (error) {
+            Alert('fail')
             console.log(error);
         }
 

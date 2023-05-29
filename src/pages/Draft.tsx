@@ -45,7 +45,8 @@ const Draft = () => {
   useEffect(() => {
     getWakaf({status: 'draft', page: pageWakaf})
   }, [pageWakaf])
-
+  console.log(pageWakaf);
+  
   useEffect(() => {
     getAsset({status: 'draft', page: pageAsset})
   }, [pageAsset])
@@ -55,10 +56,10 @@ const Draft = () => {
   const handlePageChange = (page: number) => {
     setPage(page)// data for the specified page
   };
-  const handlePageWakafChange = (page: number) => {
+  const handlePageWakafChange = (pageWakaf: number) => {
     setPageWakaf(pageWakaf)// data for the specified page
   };
-  const handlePageAssetChange = (page: number) => {
+  const handlePageAssetChange = (pageAsset: number) => {
     setPageAsset(pageAsset)// data for the specified page
   };
   const handleEditModalNews = (id: number) => {
@@ -89,7 +90,6 @@ const Draft = () => {
         id: selectedId,
         token: cookie.token
         })
-        Alert('edit')
         setShowModal(false)
         setLoading(false)
         getNews({status: 'online', page: page})
@@ -108,7 +108,6 @@ const Draft = () => {
             id: id,
             token: cookie.token
             })
-            Alert('delete')    
             getNews({status: 'online', page: page})
             setLoading(false)
             return result

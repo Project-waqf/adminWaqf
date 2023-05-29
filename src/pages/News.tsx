@@ -18,8 +18,9 @@ import Headers from '../components/Headers/Headers'
 import LoadingAlert from '../components/Modal/LoadingAlert'
 import { Pagination } from 'antd';
 import { useDispatch, useSelector } from 'react-redux'
-import { DraftState } from '../stores/draftSilce'
+import { DraftState, removeNewsFromDraft } from '../stores/draftSilce'
 import useNews from '../api/hooks/useNews'
+import Swal from 'sweetalert2'
 
 const initialEditNewsValue: NewsType = {
     title: "",
@@ -63,10 +64,10 @@ const News = () => {
     const showModalNews = () => {
         setisModalNews(true);
     };
-    console.log("ini asset",asset);
+    console.log("ini draft",draft.news);
 
     const handleCancel = () => {
-        ConfirmAlert('cancel').then((res) => {
+        ConfirmAlert( editMode ? 'cancelEdit' : 'cancel').then((res) => {
             if (res.isConfirmed) {
                 setisModalNews(false);
                 setEditMode(false)
@@ -93,13 +94,13 @@ const News = () => {
             })
             setLoading(false);
             setisModalNews(false)
-            Alert('upload')
             setEditNews({
                 title: '',
                 body: '',
                 picture: null
             })
             getNews({status: 'online', page: page})
+            Alert('upload')
             return result
             } catch (error) {}
             setLoading(false)
@@ -139,7 +140,6 @@ const News = () => {
             id: selectedId,
             token: cookie.token
             })
-            Alert('edit')
             setisModalNews(false)
             setLoading(false)
             getNews({status: 'online', page: page})
@@ -156,14 +156,27 @@ const News = () => {
             setLoading(true)
             try {
                 const response = await archiveNews({id: selectedId, token: cookie.token})
-                Alert('archive')
                 getNews({status: 'online', page: page})
                 setLoading(false)
                 setisModalNews(false)
                 return response
             } catch (error) {}
             setLoading(false)
-        }
+        } 
+    }
+    const handleArchiveTable = async (id:number) => {
+        const validation = await ConfirmAlert('archive')
+        if (validation.isConfirmed) {
+            setLoading(true)
+            try {
+                const response = await archiveNews({id: id, token: cookie.token})
+                getNews({status: 'online', page: page})
+                setLoading(false)
+                setisModalNews(false)
+                return response
+            } catch (error) {}
+            setLoading(false)
+        } 
     }
 
     const handleDraft = async (formValues: NewsType) => {
@@ -171,13 +184,15 @@ const News = () => {
         if (validation.isConfirmed) {
             try {
                 const response = await draftNews({title: formValues.title, body: formValues.body, picture: formValues.picture, token: cookie.token})
-                Alert('draft')
                 getNews({status: 'online', page: page})
                 setLoading(false)
                 setisModalNews(false)
+                dispatch(removeNewsFromDraft(formValues.title))
                 return response
             } catch (error) {}
             setLoading(false)
+        } else if (validation.dismiss === Swal.DismissReason.cancel) {
+            dispatch(removeNewsFromDraft(formValues.title))
         }
     }
 
@@ -190,7 +205,6 @@ const News = () => {
                 id: id,
                 token: cookie.token
                 })
-                Alert('delete')    
                 getNews({status: 'online', page: page})
                 setLoading(false)
                 return result
@@ -232,7 +246,7 @@ const News = () => {
                 data={news}
                 handleEdit={handleEditModalNews}
                 handleDelete={handleDelete}
-                handleArchive={handleArchive}
+                handleArchive={handleArchiveTable}
                 />
                 <Pagination size='small' total={totalOnlineNews} onChange={handlePageChange} showSizeChanger={false} className='z-90 my-7 float-right'/>
                 </CustomCollapse>

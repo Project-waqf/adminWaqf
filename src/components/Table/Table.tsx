@@ -9,13 +9,14 @@ interface TableProps {
     handleEdit?: (id: number) => void;
     handleDelete?: (id: number) => void;
     handleArchive?: (id: number) => void;
+    setId?: (id: number) => void;
     draft?: boolean
     archives?: boolean
     mitra?: boolean
 }
 
 
-const CustomTable: React.FC<TableProps> = ({ draft, archives, mitra, data, handleDelete, handleArchive, handleEdit}) => {
+const CustomTable: React.FC<TableProps> = ({ draft, archives, mitra, data, handleDelete, handleArchive, handleEdit, setId}) => {
   
     return (
       <div className="relative overflow-x-auto sm:rounded-lg">
@@ -51,35 +52,35 @@ const CustomTable: React.FC<TableProps> = ({ draft, archives, mitra, data, handl
                       <td className="flex space-x-5 py-4">
                         {draft || mitra ?
                         <>
-                          <div className="cursor-pointer" onClick={() => handleEdit && handleEdit(item.id_news ? item.id_news : item.id_asset)}>
+                          <div className="cursor-pointer" onClick={() => handleEdit && handleEdit(item.id_news ? item.id_news : item.id_asset ? item.id_asset : item.id)}>
                             <img src={edit} alt="" />
                           </div>
-                          <div className="cursor-pointer" onClick={() => handleDelete && handleDelete(item.id_news)}>
+                          <div className="cursor-pointer" onClick={() => handleDelete && handleDelete(item.id_news ? item.id_news : item.id_asset ? item.id_asset : item.id)}>
                             <img src={delet} alt="" />
                           </div>
                         </>
                         :
                         archives ?
                         <>
-                          <div className={"cursor-pointer"} onClick={() => handleArchive && handleArchive(item.id_wakaf)}>
+                          <div className={"cursor-pointer"} onClick={() => handleArchive && handleArchive(item.id_news ? item.id_news : item.id_asset ? item.id_asset : item.id)}>
                             <img src={send} alt="" />
                           </div>
-                          <div className="cursor-pointer"  onClick={() => handleEdit && handleEdit(item.id_wakaf)}>
+                          <div className="cursor-pointer"  onClick={() => handleEdit && handleEdit(item.id_news ? item.id_news : item.id_asset ? item.id_asset : item.id)}>
                             <img src={edit} alt=""/>
                           </div>
-                          <div className="cursor-pointer" onClick={() => handleDelete && handleDelete(item.id_wakaf)}>
+                          <div className="cursor-pointer" onClick={() => handleDelete && handleDelete(item.id_news ? item.id_news : item.id_asset ? item.id_asset : item.id)}>
                             <img src={delet} alt="" />
                           </div>
                         </>
                         :
                         <>
-                          <div className="cursor-pointer" onClick={() => handleEdit && handleEdit(item.id_news ? item.id_news : item.id_asset)}>
+                          <div className="cursor-pointer" onClick={() => handleEdit && handleEdit(item.id_news ? item.id_news : item.id_asset ? item.id_asset : item.id)}>
                             <img src={edit} alt="" />
                           </div>
-                          <div className="cursor-pointer" onClick={() => handleArchive && handleArchive(item.id_news)}>
+                          <div className="cursor-pointer" onClick={() => handleArchive && handleArchive(item.id_news ? item.id_news : item.id_asset ? item.id_asset : item.id)}>
                             <img src={archive} alt="" />
                           </div>
-                          <div className="cursor-pointer" onClick={() => handleDelete && handleDelete(item.id_news)}>
+                          <div className="cursor-pointer" onClick={() => handleDelete && handleDelete(item.id_news ? item.id_news : item.id_asset ? item.id_asset : item.id)}>
                             <img src={delet} alt="" />
                           </div>
                         </>

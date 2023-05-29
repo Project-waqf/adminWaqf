@@ -10,10 +10,13 @@ import CustomTable from '../components/Table';
 import ConfirmAlert from '../components/Alert/ConfirmAlert';
 import { AssetType } from '../utils/types/DataType';
 import Alert from '../components/Alert/Alert';
-import useCrudApi from '../utils/hooks/useCrudApi';
 import { useCookies } from 'react-cookie';
 import useAsset from '../api/hooks/useAsset';
 import { Pagination } from 'antd';
+import LoadingAlert from '../components/Modal/LoadingAlert';
+import { useDispatch, useSelector } from 'react-redux';
+import { DraftState, removeAssetFromDraft } from '../stores/draftSilce';
+import Swal from 'sweetalert2';
 
 const initialFormValues: AssetType ={
     name: '',
@@ -28,21 +31,30 @@ const Asset = () => {
     const [selectedId, setSelectedId] = useState<number>()
     const [value, setValue] = useState<AssetType>(initialFormValues)
     const [page, setPage] = useState<number>(1)
+    const draft = useSelector((state: {draft: DraftState}) => state.draft)
+    const dispatch = useDispatch()
     const {asset,totalOnlineAsset, getAsset,createAsset, editedAsset, deleteAsset, draftAsset, archiveAsset} = useAsset()
     const [cookie] = useCookies(['token', 'id', 'name', 'email', 'foto'])
 
     useEffect(() => {
         getAsset({status: "online", page: page})
     }, [])
+    useEffect(()=> {
+        if (draft.asset[0] && !editMode) {
+            handleDraft(draft.asset[0])
+        }
+    },[draft.asset])
     const handlePageChange = (page: number) => {
         setPage(page)// data for the specified page
     };
+
+    console.log("ini draft",draft.asset);
     
     const showModal = () => {
         setIsModal(true)
     }
     const handleCancel = () => {
-        ConfirmAlert('cancel').then((res) => {
+        ConfirmAlert( editMode ? 'cancelEdit' : 'cancel').then((res) => {
             if (res.isConfirmed) {
                 setIsModal(false);
                 setEditMode(false)
@@ -60,15 +72,15 @@ const Asset = () => {
         setValue({ name: formValues.name, detail: formValues.detail, picture: formValues.picture })
             const validation = await ConfirmAlert('upload')
             if (validation.isConfirmed) {
-                
-                setLoading(false);
-                setIsModal(false)
-                Alert('upload')
-                setValue({
-                    name: '',
-                    detail: '',
-                    picture: null
-                })
+                setLoading(true)
+                try {
+                    const result = await createAsset({name: formValues.name, detail: formValues.detail, picture: formValues.picture, token: cookie.token})
+                    setLoading(false);
+                    setIsModal(false)
+                    getAsset({status: 'online', page: page})
+                    return result
+                } catch (error) {}
+
             }
         setLoading(false)
     };
@@ -81,36 +93,84 @@ const Asset = () => {
         }
         setValue({
             name: selecetedAsset.name,
-            detail: selecetedAsset.detail,        
-            picture: selecetedAsset.picture,
+            detail: selecetedAsset.detail,
         });
-        setEditMode(true);
         setSelectedId(id);
     }
 
     const handleEdit = async(formValues: AssetType) => {
-
-    }
-
-    const handleArchive = async() => {
-        const validation = await ConfirmAlert('archive')
+        setValue({ name: formValues.name, detail: formValues.detail, picture: formValues.picture })
+        const validation = await ConfirmAlert('edit')
         if (validation.isConfirmed) {
+            setLoading(true);
             try {
-                const response = await archiveAsset({id: selectedId, token: cookie.token})
-            } catch (error) {
-                
-            }
+                const result = await editedAsset({
+                name: formValues.name,
+                detail: formValues.detail,
+                picture: formValues.picture,
+                id: selectedId,
+                token: cookie.token
+                })
+                setIsModal(false)
+                setLoading(false)
+                getAsset({status: 'online', page: page})
+                setValue({name: '', detail: ''})
+                return result
+            } catch (error) {}
+            setLoading(false)
         }
     }
 
+    const handleArchiveTable = async (id?:number) => {
+        const validation = await ConfirmAlert('archive')
+        if (validation.isConfirmed) {
+            setLoading(true)
+            try {
+                const response = await archiveAsset({id: id, token: cookie.token})
+                setLoading(false)
+                getAsset({status: 'online', page: page})
+                return response
+            } catch (error) {}
+        }
+    }
+    const handleArchive = async () => {
+        const validation = await ConfirmAlert('archive')
+        if (validation.isConfirmed) {
+            setLoading(true)
+            try {
+                const response = await archiveAsset({id: selectedId, token: cookie.token})
+                setLoading(false)
+                setIsModal(false)
+                getAsset({status: 'online', page: page})
+                return response
+            } catch (error) {}
+        }
+    }
+    const handleDraft = async (formValues: AssetType) => {
+        const validation = await ConfirmAlert('draft')
+        if (validation.isConfirmed) {
+            try {
+                const response = await draftAsset({name: formValues.name, detail: formValues.detail, picture: formValues.picture, token: cookie.token})
+                setLoading(false)
+                setIsModal(false)
+                dispatch(removeAssetFromDraft(formValues.name))
+                return response
+            } catch (error) {}
+            setLoading(false)
+        } else if (validation.dismiss === Swal.DismissReason.cancel) {
+            dispatch(removeAssetFromDraft(formValues.name))
+        }
+    }
     const handleDelete =async (id: number) => {
         const validation = await ConfirmAlert('delete')
         if (validation.isConfirmed) {
+            setLoading(true)
             try {
-                
-            } catch (error) {
-                
-            }
+                const response = await deleteAsset({id: id, token: cookie.token})
+                getAsset({status: 'online', page: page})
+                setLoading(false)
+                return response
+            } catch (error) {}
         }
     }
 
@@ -118,6 +178,7 @@ const Asset = () => {
         <>
             <Sidebar/>
             <Display>
+                <LoadingAlert open={loading} loading={loading}/>
                 <Headers
                 label='Asset'
                 />
@@ -147,7 +208,7 @@ const Asset = () => {
                 data={asset}
                 handleEdit={handleEditModal}
                 handleDelete={handleDelete}
-                handleArchive={handleArchive}
+                handleArchive={handleArchiveTable}
                 />
                 <Pagination size='small' total={totalOnlineAsset} onChange={handlePageChange} showSizeChanger={false} className='z-90 my-7 float-right'/>
                 </CustomCollapse>

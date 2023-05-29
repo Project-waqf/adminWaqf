@@ -3,31 +3,30 @@ import { Input, Modal } from "antd";
 import Typography from '../Typography';
 import Button from '../CustomButton/Button';
 import { SmallLoading } from '../../assets/svg/SmallLoading';
-import { AssetType } from '../../utils/types/DataType';
 import { TbFileDescription } from "react-icons/tb";
 import { DraftState, assetToDraft } from "../../stores/draftSilce";
 import { useDispatch, useSelector } from 'react-redux';
+import { AssetType } from '../../utils/types/DataType';
 
 const {TextArea} = Input
 
-    interface FormProps {
-        onSubmit: (formValues: AssetType) => void;
-        editValues: AssetType;
-        editMode: boolean;
-        open: boolean
-        handleCancel: React.MouseEventHandler
-        handleArchive: React.MouseEventHandler
-    }
-    const initialFormValues: AssetType = {
-        name: "",
-        detail: "",
-        picture: null
-    };
+interface FormProps {
+    onSubmit: (formValues: AssetType) => void;
+    editValues: AssetType;
+    editMode: boolean;
+    open: boolean
+    handleCancel: React.MouseEventHandler
+    handleArchive: React.MouseEventHandler
+}
+const initialFormValues: AssetType = {
+    name: "",
+    detail: "",
+    picture: null
+};
 
 const AssetModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, handleCancel, handleArchive}) => {
     
     const [formValues, setFormValues] = useState<AssetType>(initialFormValues);
-    const draft = useSelector((state: {draft: DraftState}) => state.draft)
     const dispatch  = useDispatch()
     const [loading , setLoading] = useState(false)
     
@@ -37,12 +36,11 @@ const AssetModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
             setFormValues(editValues);
         }
     }, [editValues, editMode]);
-    console.log(formValues);
     
     const [disabled, setDisabled] = useState(true);
 
     useEffect(() => {
-        if (formValues.name && formValues.detail && formValues.picture) {
+        if (formValues.name && formValues.detail ) {
             setDisabled(false);
         } else {
             setDisabled(true);
@@ -59,7 +57,7 @@ const AssetModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
     const handleImageChange = (e: any) => {
         setLoading(true)
         const selectedImage = e.target.files[0];
-        setFormValues((prev) => ({
+        setFormValues((prev: any) => ({
             ...prev,
             picture: selectedImage
         }));
@@ -81,6 +79,7 @@ const AssetModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
         }
         dispatch(assetToDraft(newItem))
     }
+    
     const charCount = formValues.detail.length
     const maxLength = 160;
     

@@ -95,3 +95,21 @@ body {
 .swal2-popup {
   border-radius: 50px; /* Adjust the border-radius value to change the roundness */
 }
+.custom-loader {
+  width:35px;
+  height:35px;
+  border-radius:50%;
+  background:conic-gradient(#0000 10%,#10A016);
+  -webkit-mask:radial-gradient(farthest-side,#0000 calc(100% - 7px),#000 0);
+  animation:s3 1s infinite linear;
+}
+@keyframes s3 {to{transform: rotate(1turn)}}
+.custom-loader-large {
+  width:150px;
+  height:150px;
+  border-radius:50%;
+  background:conic-gradient(#0000 10%,#10A016);
+  -webkit-mask:radial-gradient(farthest-side,#0000 calc(100% - 25px),#000 0);
+  animation:s3 1s infinite linear;
+}
+@keyframes s3 {to{transform: rotate(1turn)}}

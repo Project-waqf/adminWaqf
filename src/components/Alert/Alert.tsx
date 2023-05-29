@@ -1,5 +1,5 @@
 import Swal, { SweetAlertOptions } from 'sweetalert2';
-import { DraftSuccess, UploadSuccess, DeleteSuccess, EditSuccess, ArchiveSuccess } from '../../assets/svg/AlertIcon';
+import { DraftSuccess, UploadSuccess, DeleteSuccess, EditSuccess, ArchiveSuccess, Failed } from '../../assets/svg/AlertIcon';
 import '../../styles/main.scss'
 export const sweetAlert = (options: SweetAlertOptions) => {
     return Swal.fire(options);
@@ -7,23 +7,28 @@ export const sweetAlert = (options: SweetAlertOptions) => {
 
 
 
-const Alert = ( icon?: 'upload' | 'edit' | 'draft' | 'archive' | 'delete' ): Promise<any> => {
+const Alert = ( icon?: 'upload' | 'edit' | 'draft' | 'archive' | 'delete' | 'fail' ): Promise<any> => {
     return sweetAlert({
-        title: icon === 'upload' ? 'Upload Sukses' : 
-        icon === "edit" ? 'Berhasil Mengedit' :
-        icon === "draft" ? 'Berhasil Simpan Ke Draft' : 
-        icon === "archive" ? 'Berhasil Simpan Ke Archive' :
-        icon === "delete" ? 'Berhasil Menghapus' : 'Upload Sukses',
+        title: icon === 'upload' ? '<p class="text-text01 text-[20px] mb-10">Upload Sukses</p>' : 
+        icon === "edit" ? '<p class="text-text01 text-[20px] mb-10">Berhasil Mengedit</p>' :
+        icon === "draft" ? '<p class="text-text01 text-[20px] mb-10">Berhasil Simpan Ke Draft</p>' : 
+        icon === "archive" ? '<p class="text-text01 text-[20px] mb-10">Berhasil Simpan Ke Archive</p>' :
+        icon === "delete" ? '<p class="text-text01 text-[20px] mb-10">Berhasil Menghapus</p>' : 
+        icon === 'fail' ? '<p class="text-red-500 text-[20px] mb-10">Terjadi kesalahan, coba ulangi kembali</p>' : '',
         imageUrl: `data:image/svg+xml,${encodeURIComponent(icon === 'upload' ? UploadSuccess : 
         icon === "edit" ? EditSuccess :
         icon === "draft" ? DraftSuccess : 
         icon === "archive" ? ArchiveSuccess :
-        icon === "delete" ? DeleteSuccess : UploadSuccess)}`,
+        icon === "delete" ? DeleteSuccess : 
+        icon === "fail" ? Failed :Failed)}`,
+        customClass: {
+            title: 'text-red-500 mb-80'
+            },
         imageWidth: 210,
         imageHeight: 210,
         showConfirmButton: false,
-        width: 700,
-        padding: 80,
+        width: 480,
+        padding: 20,
         timer: 3000,
         background: '#FBFBFB'
     });

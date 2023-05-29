@@ -7,16 +7,18 @@ export const sweetAlert = (options: SweetAlertOptions) => {
 
 
 
-const ConfirmAlert = ( title?: 'upload' | 'edit' | 'draft' | 'archive' | 'delete' | 'cancel' ): Promise<any> => {
+const ConfirmAlert = ( title?: 'upload' | 'edit' | 'draft' | 'archive' | 'delete' | 'cancel' | 'cancelEdit'): Promise<any> => {
 
     return sweetAlert({
-        title: title === 'upload' ? 'apakah anda ingin <b>upload</b> data ini?' : 
-        title === "edit" ? 'Yakin ingin edit?' :
-        title === "draft" ? 'Simpan ke draft?' : 
-        title === "archive" ? 'Simpan ke archive?' :
-        title === "delete" ? 'Yakin ingin menghapus' : title === 'cancel' ? 'Yakin cancel?' : '',
+        title: title === 'upload' ? '<p class="text-text01 text-[16px]">apakah anda ingin <b>upload</b> data ini?</p>' : 
+        title === "edit" ? '<p class="text-text01 text-[16px]">Apakah anda ingin <b>simpan & perbarui</b> editan?</p>' :
+        title === "draft" ? '<p class="text-text01 text-[16px]">Apakah anda ingin menyimpan ke <b>Draft</b>?</p>' : 
+        title === "archive" ? '<p class="text-text01 text-[16px]">Apakah anda ingin memindahkan ke <b>Archive</b>?</p>' :
+        title === "delete" ? '<p class="text-text01 text-[16px]">Apakah anda ingin <b>menghapus</b> data ini?</p><p class="text-red-500 text-[12px] mt-2">Jika “YA”, data akan dihapus secara permanen!</p>' : 
+        title === 'cancel' ? '<p class="text-text01 text-[16px]">Apakah anda ingin <b>tutup</b> form ini?</p><p class="text-red-500 text-[12px] mt-2">Jika YA, data yang telah anda edit akan hilang!</p>' : 
+        title === 'cancelEdit' ? '<p class="text-text01 text-[16px]">Apakah anda ingin <b>tutup</b> pengeditan?</p><p class="text-red-500 text-[12px] mt-2">Jika YA, data yang telah anda edit akan hilang!</p>' : '',
         width: 500,
-        padding: 60,
+        padding: 40,
         background: '#FBFBFB',
         showCancelButton: true,
         confirmButtonText: 'Ya',
@@ -25,8 +27,8 @@ const ConfirmAlert = ( title?: 'upload' | 'edit' | 'draft' | 'archive' | 'delete
         buttonsStyling: false,
         customClass: {
             title: 'text-[2px]',
-            confirmButton: `mx-5 mt-[28px] rounded-[8px] font-normal text-sm cursor-pointer w-[118px] py-3 ${title === 'delete' ? 'border border-btnColor outline-none bg-white text-btnColor' : title === 'cancel'? 'border border-btnColor outline-none bg-white text-btnColor' : title === 'archive' ? 'border border-btnColor outline-none bg-white text-btnColor' : 'bg-btnColor border-none text-white'}`,
-            cancelButton: `mx-5 mt-[28px] rounded-[8px] font-normal text-sm cursor-pointer w-[118px] py-3 ${title === 'delete' ? 'bg-btnColor border-none text-white' : title === 'cancel' ? 'bg-btnColor border-none text-white' : title === 'archive' ? 'bg-btnColor border-none text-white' : 'border border-btnColor outline-none bg-white text-btnColor' }`
+            confirmButton: `mx-2 mt-[28px] rounded-[8px] font-normal text-sm cursor-pointer w-[118px] py-3 ${title === 'delete' ? 'border border-btnColor outline-none bg-white text-btnColor' : title === 'cancel' || title === 'cancelEdit' ? 'border border-btnColor outline-none bg-white text-btnColor' : title === 'archive' ? 'border border-btnColor outline-none bg-white text-btnColor' : 'bg-btnColor border-none text-white'}`,
+            cancelButton: `mx-2 mt-[28px] rounded-[8px] font-normal text-sm cursor-pointer w-[118px] py-3 ${title === 'delete' ? 'bg-btnColor border-none text-white' : title === 'cancel' || title === 'cancelEdit' ? 'bg-btnColor border-none text-white' : title === 'archive' ? 'bg-btnColor border-none text-white' : 'border border-btnColor outline-none bg-white text-btnColor' }`
         }
     });
 };

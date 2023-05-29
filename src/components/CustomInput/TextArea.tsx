@@ -4,9 +4,9 @@ import Typography from '../Typography';
 interface TextAreaProps {
     name: string
     value: string
-    selectionStart: any
-    selectionEnd: any
-    onSelect: any
+    selectionStart?: any
+    selectionEnd?: any
+    onSelect?: any
     onChange: React.ChangeEventHandler<HTMLTextAreaElement>
     label: string
 }

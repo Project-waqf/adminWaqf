@@ -35,7 +35,19 @@ const Profile = () => {
     const [value, setValue] = useState<ProfileType>(initialFormValues)
     const [loading, setLoading] = useState(false)
     const [passwordsMatch, setPasswordsMatch] = useState(true);
-    const [errorPassword, setErrorPassword] = useState<string>('') 
+    const [errorPassword, setErrorPassword] = useState<string>('')
+    const [errorOldPassword, setErrorOldPassword] = useState<string>('')
+    const [withPassword, setWithPassword] = useState(false)
+    
+    useEffect(() => {
+        if(value.old_password !== ''){
+            setWithPassword(true)
+        } else if(value.old_password === ''){
+            setWithPassword(false)
+        }
+    }, [value.old_password])
+    console.log(withPassword);
+    
     
     const handleInputChange = (e:React.ChangeEvent<HTMLInputElement>) => {
         setValue({ ...value, [e.target.name]: e.target.value})
@@ -52,8 +64,36 @@ const Profile = () => {
     };
     
     console.log(passwordsMatch);
-    
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        setLoading(true)
+        e.preventDefault()
+        setValue(initialFormValues);
+        const body = {
+            name: value.name,
+            email: value.email
+        }
+        const validation =  await ConfirmAlert('edit')
+            if (validation.isConfirmed) {
+                setLoading(true)
+                try {
+                    const response = await axios.put(APIUrl + 'admin/profile', body, {
+                        headers: {
+                            Authorization: `Bearer ${cookie.token}`,
+                            "Content-Type": "application/json",
+                        }
+                    })
+                    setCookie("name", response.data.data.name, { path: "/" });
+                    setCookie("email", response.data.data.email, { path: "/" });
+                    Alert('edit')
+                    return response 
+                } catch (error) {
+                    
+                }
+                setLoading(false)
+        }
+        setLoading(false)
+    };
+    const handleSubmitWithPassword = async (e: React.FormEvent<HTMLFormElement>) => {
         setLoading(true)
         e.preventDefault()
         setValue(initialFormValues);
@@ -61,7 +101,7 @@ const Profile = () => {
             name: value.name,
             email: value.email,
             old_password: value.old_password,
-            new_password: value.new_password
+            password: value.new_password
         }
         if (value.new_password === value.re_password) {
             const validation =  await ConfirmAlert('edit')
@@ -75,13 +115,18 @@ const Profile = () => {
                         }
                     })
                     Alert('edit')
+                    setLoading(false)
                     return response 
-                } catch (error) {
-                    
+                } catch (error:any) {
+                    if (error.response.status === 401){
+                        setValue({name: value.name,email: value.email, old_password: value.old_password, new_password: value.new_password, re_password: value.re_password, password: value.password})
+                        setErrorOldPassword("Password salah")
+                    }
                 }
                 setLoading(false)
             }
         } else {
+            setValue({name: value.name,email: value.email, old_password: value.old_password, new_password: value.new_password, re_password: '', password: value.password})
             setErrorPassword("Password Tidak sama")
         }
         setLoading(false)
@@ -105,7 +150,7 @@ const Profile = () => {
                         </div>
                     </div>
                 </div>
-                <form  className='flex flex-col w-full' onSubmit={handleSubmit}>
+                <form  className='flex flex-col w-full' onSubmit={withPassword ? handleSubmitWithPassword : handleSubmit}>
                     <div className="flex mt-6 w-[1000px]">
                         <Typography color='text01' variant='h5' type='medium' className='w-44 my-4'>
                             Nama
@@ -176,6 +221,7 @@ const Profile = () => {
                                     value={value.old_password}
                                     onChange={handleInputChange}
                                     placeholder='Masukan Password Lama'
+                                    error={errorOldPassword}
                                     />
                                 </div>
                                 {loading ?
@@ -185,6 +231,7 @@ const Profile = () => {
                                 :
                                 <></>
                                 }
+                                <div className="">{withPassword}</div>
                             </div>
                             <div className="flex mt-6 w-[1000px]">
                                 <Typography color='text01' variant='h5' type='medium' className='w-44 my-4'>

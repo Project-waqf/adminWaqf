@@ -12,6 +12,10 @@ import { WakafType } from '../utils/types/DataType';
 import WakafTable from '../components/Table/WakafTable';
 import useWakaf from '../api/hooks/useWakaf';
 import LoadingAlert from '../components/Modal/LoadingAlert';
+import { useCookies } from 'react-cookie';
+import { useDispatch, useSelector } from 'react-redux';
+import { DraftState, removeWakafFromDraft } from '../stores/draftSilce';
+import Swal from 'sweetalert2';
 
 const initialEditValue: WakafType = {
     title: "",
@@ -27,27 +31,28 @@ const Wakaf = () => {
     
     const [showModal, setShowModal] = useState<boolean>(false)
     const [loading , setLoading] = useState<boolean>(false)
-    const [page, setPage] = useState<number>(1)
+    const [page, setPage] = useState<number>(1)    
+    const dispatch = useDispatch()
+    const draft = useSelector((state: {draft: DraftState}) => state.draft)
     const { wakaf, getWakaf, totalOnlineWakaf, createWakaf, editedWakaf, draftWakaf, archiveWakaf, deleteWakaf } = useWakaf()
+    const [cookie] = useCookies(['token'])
 
     useEffect(() => {
         getWakaf({page: page, status: 'online'})
     }, [page])
-    
-    const headers: Record<any, string> = {
-        created_at: "Tanggal",
-        title: "Judul",
-        collected: "Terkumpul",
-        fund_target: "Target",
-        due_date: "Hari",
-        alat: "Alat",
-    };
 
+    useEffect(()=> {
+        if (draft.wakaf[0] && !editMode) {
+            handleDraft(draft.wakaf[0])
+        }
+    },[draft.wakaf])
+    console.log(draft.wakaf);
+    
     const handlePageChange = (page: number) => {
         setPage(page)// data for the specified page
     };
     const handleCancel = () => {
-        ConfirmAlert('cancel').then((res) => {
+        ConfirmAlert( editMode ? 'cancelEdit' : 'cancel').then((res) => {
             if (res.isConfirmed) {
                 setShowModal(false);
                 setEditMode(false)
@@ -69,28 +74,25 @@ const Wakaf = () => {
         const validation = await ConfirmAlert('upload')
         if (validation.isConfirmed) {
             setLoading(true)
-        //     try {
-        //     // const result = await createNews({
-        //     //     title: formValues.title, 
-        //     //     category:formValues.category, 
-        //     //     picture:formValues.picture,
-        //     //     token: cookie.token
-        //     // })
-        //     setLoading(false);
-        //     setShowModal(false)
-        //     Alert('upload')
-        //     setEditValue({
-        //         title: "",
-        //         category: "",
-        //         picture: null,
-        //         detail: '',
-        //         due_date: '',
-        //         fund_target: 0
-        //     })
-        //     getWakaf({status: 'online', page: page})
-        //     return result
-        //     } catch (error) {}
-        //     setLoading(false)
+            try {
+            const result = await createWakaf({
+                title: formValues.title,
+                category: formValues.category,
+                picture: formValues.picture,
+                detail: formValues.detail,
+                due_date: formValues.due_date,
+                fund_target: formValues.fund_target,
+                id: selectedId,
+                token: cookie.token
+            })
+            setEditValue({title: '', category: '', picture: null, detail: '', due_date: '', fund_target: 0, collected: 0});
+            setLoading(false);
+            setShowModal(false)
+            Alert('upload')
+            getWakaf({status: 'online', page: page})
+            return result
+            } catch (error) {}
+            setLoading(false)
         }          
     } 
     
@@ -101,7 +103,7 @@ const Wakaf = () => {
         
     const handleEditModal = (id: number) => {
         setShowModal(true)
-        const selectedWakaf: any = wakaf.find((item: any) => item.id_wakaf === id);
+        const selectedWakaf: any = wakaf.find((item: any) => item.id === id);
         if (!selectedWakaf) {
             return;
         }
@@ -124,18 +126,21 @@ const Wakaf = () => {
         if (validation.isConfirmed) {
             setLoading(true);
             try {
-            // const result = await editedNews({
-            // title: formValues.title,
-            // category: formValues.category,
-            // picture: formValues.picture,
-            // id: selectedId,
-            // token: cookie.token
-            // })
-            // Alert('edit')
-            // setShowModal(false)
-            // setLoading(false)
-            // getWakaf({status: 'online', page: page})
-            // return result
+            const result = await editedWakaf({
+                title: formValues.title,
+                category: formValues.category,
+                picture: formValues.picture,
+                detail: formValues.detail,
+                due_date: formValues.due_date,
+                fund_target: formValues.fund_target,
+                id: selectedId,
+                token: cookie.token
+            })
+            setShowModal(false)
+            setLoading(false)
+            getWakaf({status: 'online', page: page})
+            Alert('edit')
+            return result
             } catch (error) {}
             setLoading(false)
         }
@@ -147,29 +152,47 @@ const Wakaf = () => {
         if (validation.isConfirmed) {
             setLoading(true)
             try {
-                // const response = await archiveNews({id: selectedId, token: cookie.token})
-                // Alert('archive')
-                // getWakaf({status: 'online', page: page})
-                // setLoading(false)
-                // setShowModal(false)
-                // return response
+                const response = await archiveWakaf({id: selectedId, token: cookie.token})
+                getWakaf({status: 'online', page: page})
+                setLoading(false)
+                setShowModal(false)
+                Alert('archive')
+                return response
             } catch (error) {}
             setLoading(false)
         }
     }
 
+    const handleArchiveTable = async (id: number) => {
+        const validation = await ConfirmAlert('archive')
+        if (validation.isConfirmed) {
+            setLoading(true)
+            try {
+                const response = await archiveWakaf({id: id, token: cookie.token})
+                getWakaf({status: 'online', page: page})
+                setLoading(false)
+                setShowModal(false)
+                Alert('archive')
+                return response
+            } catch (error) {}
+            setLoading(false)
+        }
+    }
     const handleDraft = async (formValues: WakafType) => {
         const validation = await ConfirmAlert('draft')
         if (validation.isConfirmed) {
             try {
-                // const response = await draftNews({title: formValues.title, category: formValues.category, picture: formValues.picture, token: cookie.token})
-                // Alert('draft')
-                // getWakaf({status: 'online', page: page})
-                // setLoading(false)
-                // setShowModal(false)
-                // return response
+                const response = await draftWakaf({title: formValues.title, category: formValues.category, picture: formValues.picture, detail: formValues.detail, due_date: formValues.due_date, fund_target: formValues.fund_target, token: cookie.token})
+                getWakaf({status: 'online', page: page})
+                setLoading(false)
+                setShowModal(false)
+                Alert('draft')
+                dispatch(removeWakafFromDraft(formValues.title))
+                return response
             } catch (error) {}
             setLoading(false)
+        } else if (validation.dismiss === Swal.DismissReason.cancel) {
+            dispatch(removeWakafFromDraft(formValues.title))
         }
     }
 
@@ -177,18 +200,21 @@ const Wakaf = () => {
         const validation = await ConfirmAlert('delete')
         if (validation.isConfirmed) {
         setLoading(true)
-            // try {     
-            //     const result = await deleteNews({
-            //     id: id,
-            //     token: cookie.token
-            //     })
-            //     Alert('delete')    
-            //     getWakaf({status: 'online', page: page})
-            //     setLoading(false)
-            //     return result
-            // } catch (error) {}
+            try {     
+                const result = await deleteWakaf({
+                id: id,
+                token: cookie.token
+                })
+                getWakaf({status: 'online', page: page})
+                setLoading(false)
+                Alert('delete')
+                return result
+            } catch (error) {}
         setLoading(false)
         }
+    }
+    const testAlert = () => {
+        Alert()
     }
     return (
         <>
@@ -210,7 +236,7 @@ const Wakaf = () => {
                     <Button
                     id='filter'
                     size='base'
-                    // onClick={showModalNews}
+                    onClick={testAlert}
                     label="Filter"
                     color='orangeBorder'
                     />
@@ -222,7 +248,7 @@ const Wakaf = () => {
                 >
                 <WakafTable 
                 data={wakaf}
-                handleArchive={handleArchive}
+                handleArchive={handleArchiveTable}
                 handleDelete={handleDelete}
                 handleEdit={handleEditModal}
                 />

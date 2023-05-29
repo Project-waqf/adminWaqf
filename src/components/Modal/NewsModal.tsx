@@ -6,10 +6,8 @@ import { SmallLoading } from '../../assets/svg/SmallLoading';
 import { NewsType } from '../../utils/types/DataType';
 import TextArea from '../CustomInput/TextArea';
 import { TbFileDescription } from "react-icons/tb";
-import useCrudApi from '../../utils/hooks/useCrudApi';
 import { DraftState, newsToDraft } from "../../stores/draftSilce";
 import { useDispatch, useSelector } from 'react-redux';
-
 
 
     interface FormProps {
@@ -19,7 +17,6 @@ import { useDispatch, useSelector } from 'react-redux';
         open: boolean
         handleCancel: React.MouseEventHandler
         handleArchive?: React.MouseEventHandler
-
     }
     const initialFormValues: NewsType = {
         title: "",
@@ -34,7 +31,6 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, 
     const [error, setError] = useState<string>()
     const dispatch = useDispatch()
     const draft = useSelector((state: {draft: DraftState}) => state.draft)
-    const {draftNews} = useCrudApi()
     
     useEffect(() => {
         if (editMode || !editMode) {
@@ -51,6 +47,7 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, 
             setDisabled(true);
         }
     }, [formValues]);
+
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormValues({ ...formValues, [e.target.name]: e.target.value });
     }
@@ -67,13 +64,11 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, 
         }
         dispatch(newsToDraft(newItem))
     }
-    console.log("draft",draft.news);
     
     const handleImageChange = (e: any) => {
         setLoading(true)
         const file = e.target.files[0];
         const maxSize = 5 * 1024 * 1024; // 5MB in bytes
-
         if (file && file.size <= maxSize) {
             setFormValues((prev) => ({
                 ...prev,
@@ -89,12 +84,14 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, 
         }
         setLoading(false)
     };
+    
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         onSubmit(formValues);
         setFormValues(initialFormValues);
         
     };
+
     return (
         <Modal
         open={open}
@@ -108,12 +105,12 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, 
                     <form className='flex flex-col space-y-5' onSubmit={handleSubmit}>
                     <div className="flex space-x-8">
                         <div className="">
-                                <label htmlFor='title'>
-                                    <Typography variant='h4' color='text01' type='medium' className=''>
-                                        Judul
-                                    </Typography>
-                                </label>
-                                <Input
+                            <label htmlFor='title'>
+                                <Typography variant='h4' color='text01' type='medium' className=''>
+                                    Judul
+                                </Typography>
+                            </label>
+                            <Input
                                 name='title'
                                 type='text'
                                 placeholder='Masukan Judul'
