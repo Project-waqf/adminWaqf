@@ -38,7 +38,7 @@ const Dashboard = () => {
     
     useEffect(() => {
         getWakaf({status: 'online', page: page})
-    }, [])
+    }, [page])
     
 
     const handlePageChange = (page: number) => {

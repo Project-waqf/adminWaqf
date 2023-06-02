@@ -9,6 +9,7 @@ import { TbFileDescription } from "react-icons/tb";
 import { DraftState, wakafToDraft } from "../../stores/draftSilce";
 import { useDispatch, useSelector } from 'react-redux';
 import CurrencyInput from 'react-currency-input-field';
+import Editor from '../CustomInput/Editor';
 
     interface FormProps {
         onSubmit: (formValues: WakafType) => void;
@@ -132,14 +133,15 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                 picture: file
             }));
             setError('');
+            setLoading(false)
         } else {
             setFormValues((prev) => ({
                 ...prev,
                 picture: null
             }));
             setError('File size exceeds the maximum allowed limit (5MB).');
+            setLoading(false)
         }
-        setLoading(false)
     };
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -174,7 +176,11 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
         }
     }
 
-
+    const handleChangeEditor = (newContent: string) => {
+        setFormValues({...formValues, detail: newContent});
+    };
+    console.log(formValues);
+    
     return (
         <Modal
         open={open}
@@ -296,12 +302,37 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                             </Typography>
                         </div>
                     </div>
-                    <TextArea
+                    {/* <TextArea
                     label='Deskripsi Berita'
                     name='detail'
                     value={formValues.detail}
                     onChange={handleTextAreaChange}
+                    /> */}
+                    <Editor 
+                    name={formValues.detail} 
+                    onChange={handleChangeEditor}
                     />
+                    {/* <FroalaEditorComponent
+                    tag="textarea"
+                    config={{
+                        events: {
+                            initialized: function () {
+                              // Callback function to be executed when the editor is initialized
+                                console.log('Editor initialized');
+                              // Perform any additional actions or customization here
+                            },
+                        },
+                        reactIgnoreAttrs: ['class', 'id'],
+                        onChange: handleChangeEditor, 
+                        placeholderText: 'Type here...',
+                        toolbarButtons: ['bold', 'italic', 'underline', 'alignLeft', 'alignCenter', 'alignRight', 'alignJustify',],
+                        quickInsertButtons: ['image', 'table'],
+                        customColorButton: '#F98D3E',
+                        height: 300,
+                    }}
+                    model={formValues.detail}
+                    onModelChange={handleChangeEditor}
+                    /> */}
                     <div className='flex mt-10 justify-end'>
                     <Button
                         type={'submit'}

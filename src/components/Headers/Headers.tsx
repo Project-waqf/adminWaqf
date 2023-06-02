@@ -131,12 +131,13 @@ const Headers: React.FC<props> = ({label}) => {
             options={options}
             onSelect={onSelect}
             onSearch={handleSearch}
+            className='ml-auto'
             >
             <Input
             size='large'
             placeholder="Search"
             prefix={<FiSearch className="site-form-item-icon " />}
-            className='w-96 text-base  text-neutral-80 ml-auto'
+            className='w-96 text-base  text-neutral-80'
             />
             </AutoComplete>
             <Popover placement="bottom" content={content}  className='cursor-pointer' trigger={'hover'}>

@@ -29,7 +29,8 @@ module.exports = {
         btnColor: "#F98D3E",
         whiteBg: "#FAFAFA",
         Green: "#10A016",
-        disable: "#BB9171",
+        disable: "#FEEEE2",
+        hoverBtn: "#BB9171",
         error: {
           70: "#ED3D3D",
           80: "#EB2525",

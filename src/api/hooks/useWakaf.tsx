@@ -14,6 +14,7 @@ export default function useWakaf(){
     useEffect(() => {
         setTotalWakaf(totalOnlineWakaf + totalArchiveWakaf + totalDraftWakaf)
     }, [totalArchiveWakaf, totalDraftWakaf, totalOnlineWakaf])
+    
     const getWakaf = useCallback(async (payload?:any) => {
         try {
             const response = await axios.get(`${HOST}wakaf?page=${payload.page}&isUser=false&status=${payload.status}`)

@@ -14,6 +14,7 @@ import { NewsType, WakafType, AssetType } from '../utils/types/DataType';
 import ConfirmAlert from '../components/Alert/ConfirmAlert';
 import Alert from '../components/Alert/Alert';
 import { useCookies } from 'react-cookie';
+import NewsModal from '../components/Modal/NewsModal';
 
 const initialEditNewsValue: NewsType = {
   title: "",
@@ -40,9 +41,9 @@ const Archive = () => {
   const [page, setPage] = useState<number>(1)
   const [pageWakaf, setPageWakaf] = useState<number>(1)
   const [pageAsset, setPageAsset] = useState<number>(1)
-  const {asset, getAsset, editedAsset, deleteAsset, totalArchiveAsset} = useAsset()
-  const {wakaf, getWakaf, editedWakaf, deleteWakaf, totalArchiveWakaf} = useWakaf()
-  const {news, getNews, editedNews, deleteNews, totalArchiveNews} = useNews()
+  const {asset, getAsset, editedAsset, deleteAsset, archiveAsset, totalArchiveAsset} = useAsset()
+  const {wakaf, getWakaf, editedWakaf, deleteWakaf, archiveWakaf, totalArchiveWakaf} = useWakaf()
+  const {news, getNews, editedNews, deleteNews, archiveNews, totalArchiveNews} = useNews()
   const [editMode, setEditMode] = useState(false)
   const [selectedId, setSelectedId] = useState<number>(0)
   const [loading , setLoading] = useState(false)
@@ -104,13 +105,38 @@ const Archive = () => {
         Alert('edit')
         setShowModal(false)
         setLoading(false)
-        getNews({status: 'online', page: page})
+        getNews({status: 'archive', page: page})
         return result
         } catch (error) {}
         setLoading(false)
     }
   }
-
+  const handleOnlineNews =async (id:number) => {
+    const validation = await ConfirmAlert('upload')
+    if (validation.isConfirmed) {
+      setLoading(true)
+      try {
+        const result = await editedNews({id: id, token: cookie.token, status: "online"})
+        Alert('upload')
+        getNews({status: 'archive', page: page})
+        return result
+      } catch (error) {}
+    }
+  }
+  const handleArchiveNews = async (formValues: NewsType) => {
+    const validation = await ConfirmAlert('archive')
+    if (validation.isConfirmed) {
+        setLoading(true)
+        try {
+            const response = await archiveNews({ title: formValues.title, body: formValues.body, picture: formValues.picture, id: selectedId, token: cookie.token})
+            getNews({status: 'archive', page: page})
+            setLoading(false)
+            setShowModal(false)
+            return response
+        } catch (error) {}
+        setLoading(false)
+    } 
+}
   const handleDelete =async (id: number) => {
     const validation = await ConfirmAlert('delete')
     if (validation.isConfirmed) {
@@ -161,6 +187,7 @@ const Archive = () => {
           > 
           <CustomTable
           data={news}
+          handleArchive={handleOnlineNews}
           handleEdit={handleEditModalNews}
           handleDelete={handleDelete}
           archives={true}
@@ -180,6 +207,14 @@ const Archive = () => {
           <Pagination size='small' total={totalArchiveAsset} onChange={handlePageAssetChange} showSizeChanger={false} className='z-90 my-7 float-right'/>
           </CustomCollapse>
         </div>
+        <NewsModal
+          open={showModal}
+          handleCancel={handleCancel}
+          handleArchive={handleArchiveNews}
+          editMode={editMode}
+          onSubmit={handleEdit}
+          editValues={editNews}
+        />
       </Display>
     </>
   )

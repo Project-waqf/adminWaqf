@@ -21,7 +21,7 @@ const Button: React.FC<ButtonProps> = ({id, label, onClick, color, size, disable
         className={clsx(
             `rounded-[8px] font-normal text-sm cursor-pointer ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`,
             {
-            "bg-btnColor border-none text-white hover:text-btnColor hover:border-btnColor hover:bg-white disabled:bg-disable ": color === "orange",
+            "bg-btnColor border-none text-white hover:bg-hoverBtn disabled:bg-disable ": color === "orange",
             "border border-btnColor outline-none bg-white text-btnColor": color === "orangeBorder",
             "border-none bg-white text-btnColor hover:bg-btnColor hover:text-white": color === "whiteOrange",
             "border-primary-100 bg-white text-primary-100": color === "primaryBorder"

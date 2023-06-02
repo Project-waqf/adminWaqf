@@ -34,7 +34,7 @@ const WakafTable: React.FC<TableProps> = ({ dashboard, archives, draft, data, ha
                     <th scope="col" className="px-6 py-3 w-40">
                         Tanggal
                     </th>
-                    <th scope="col" className="px-6 py-3 w-[347px]">
+                    <th scope="col" className={`px-6 py-3 ${draft || archive ? 'lg:w-[550px] xl:w-[780px]' : 'lg:w-[347px] xl:w-[600px]'}`}>
                         Judul
                     </th>
                     <th scope="col" className={draft || archives ? "hidden" : "px-6 py-3 w-[120px]"}>

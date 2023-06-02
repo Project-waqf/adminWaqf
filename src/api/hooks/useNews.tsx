@@ -72,7 +72,7 @@ export default function useNews() {
         const formData = new FormData()
         formData.append('title', payload.title)
         formData.append('body', payload.body)
-        formData.append('status', 'online')
+        formData.append('status', payload.status ? payload.status : 'online')
         formData.append('picture', payload.picture || '')
         try {
             const config = {

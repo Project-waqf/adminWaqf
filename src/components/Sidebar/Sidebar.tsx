@@ -1,10 +1,12 @@
 import React from 'react'
 import {RiDashboardLine, RiInboxArchiveLine} from 'react-icons/ri'
-import {BsFileEarmark} from 'react-icons/bs'
+import {BsFileEarmark, BsNewspaper} from 'react-icons/bs'
+import { HiOutlineBookmarkAlt, HiOutlineNewspaper } from "react-icons/hi";
 import { AiOutlineGold } from "react-icons/ai";
 import { NavLink } from "react-router-dom";
 import logo from "../../assets/logoAlhambra.png"
 import Typography from '../Typography';
+import { FaRegHandshake } from 'react-icons/fa';
 
 interface NavLinkStyleProps {
     isActive: boolean;
@@ -42,7 +44,7 @@ const Sidebar= () => {
                     <NavLink to={'/wakaf'} style={navLinkStyle} className="no-underline flex w-[235px] h-14 transition-transform hover:bg-[#FBFBFB]">
                         <NavLink to={'/wakaf'} style={borderStyle} className={`w-[12px] h-[50px] my-auto rounded-r-xl`}></NavLink>
                         <li className='flex mx-6 my-auto hover:text-btnColor'>
-                            <RiDashboardLine className='h-[24px] w-[24px]'/>
+                            <HiOutlineBookmarkAlt className='h-[24px] w-[24px]'/>
                             <Typography variant='body2' color='' type='normal' className='ml-10'>
                                 Produk Wakaf
                             </Typography>
@@ -51,7 +53,7 @@ const Sidebar= () => {
                     <NavLink to={'/berita'} style={navLinkStyle} className="no-underline flex w-[235px] h-14 transition-transform hover:bg-[#FBFBFB]">
                         <NavLink to={'/berita'} style={borderStyle} className={`w-[12px] h-[50px] my-auto rounded-r-xl`}></NavLink>
                         <li className='flex mx-6 my-auto hover:text-btnColor'>
-                            <RiDashboardLine className='h-[24px] w-[24px]'/>
+                            <HiOutlineNewspaper className='h-[24px] w-[24px]'/>
                             <Typography variant='body2' color='' type='normal' className='ml-10'>
                                 Berita
                             </Typography>
@@ -69,7 +71,7 @@ const Sidebar= () => {
                     <NavLink to={'/mitra'} style={navLinkStyle} className="no-underline flex w-[235px] h-14 transition-transform hover:bg-[#FBFBFB]">
                         <NavLink to={'/mitra'} style={borderStyle} className={`w-[12px] h-[50px] my-auto rounded-r-xl`}></NavLink>
                         <li className='flex mx-6 my-auto hover:text-btnColor'>
-                            <RiDashboardLine className='h-[24px] w-[24px]'/>
+                            <FaRegHandshake className='h-[24px] w-[24px]'/>
                             <Typography variant='body2' color='' type='normal' className='ml-10'>
                                 Mitra
                             </Typography>

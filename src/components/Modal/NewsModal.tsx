@@ -8,12 +8,14 @@ import TextArea from '../CustomInput/TextArea';
 import { TbFileDescription } from "react-icons/tb";
 import { DraftState, newsToDraft } from "../../stores/draftSilce";
 import { useDispatch, useSelector } from 'react-redux';
+import Editor from '../CustomInput/Editor';
 
 
     interface FormProps {
         onSubmit: (formValues: NewsType) => void;
         editValues: NewsType;
         editMode: boolean;
+        archive: boolean
         open: boolean
         handleCancel: React.MouseEventHandler
         handleArchive?: React.MouseEventHandler
@@ -24,7 +26,7 @@ import { useDispatch, useSelector } from 'react-redux';
         picture: null
     };
 
-const NewsModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, handleCancel, handleArchive}) => {
+const NewsModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, archive, handleCancel, handleArchive}) => {
     
     const [formValues, setFormValues] = useState<NewsType>(initialFormValues);
     const [loading , setLoading] = useState(false)
@@ -55,7 +57,7 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, 
     const handleTextAreaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setFormValues({ ...formValues, [e.target.name]: e.target.value });
     };
-
+    
     const handleTODraft = async (formValues: NewsType) => {
         const newItem: NewsType = {
             title: formValues.title,
@@ -64,7 +66,9 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, 
         }
         dispatch(newsToDraft(newItem))
     }
-    
+    const handleChangeEditor = (newContent: string) => {
+        setFormValues({...formValues, body: newContent});
+    };
     const handleImageChange = (e: any) => {
         setLoading(true)
         const file = e.target.files[0];
@@ -140,13 +144,17 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, 
                             {loading ? <SmallLoading/> : <></>}
                         </div>
                     </div>
-                    <TextArea
+                    {/* <TextArea
                     label='Deskripsi Berita'
                     name='body'
                     value={formValues.body}
                     onChange={handleTextAreaChange}
+                    /> */}
+                    <Editor
+                    name={formValues.body}
+                    onChange={handleChangeEditor}
                     />
-                    <div className='flex mt-10 justify-end'>
+                <div className='flex mt-10 justify-end'>
                     <Button
                         type={'submit'}
                         label='Upload'
@@ -156,7 +164,7 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, 
                         disabled={disabled}
                         onClick={()=> console.log(formValues)}
                     />
-            </div>
+                </div>
             </form >
                 <div className="w-[845px] absolute left-0 bottom-0">
                     <div className="flex justify-between w-full">
