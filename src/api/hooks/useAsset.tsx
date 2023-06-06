@@ -65,7 +65,7 @@ export default function useAsset() {
         const formData = new FormData()
         formData.append('name', payload.name)
         formData.append('detail', payload.detail)
-        formData.append('status', 'online')
+        formData.append('status', payload.status ? payload.status : 'online')
         formData.append('picture', payload.picture || '')
         try {
             const config = {

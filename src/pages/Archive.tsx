@@ -15,6 +15,12 @@ import ConfirmAlert from '../components/Alert/ConfirmAlert';
 import Alert from '../components/Alert/Alert';
 import { useCookies } from 'react-cookie';
 import NewsModal from '../components/Modal/NewsModal';
+import WakafModal from '../components/Modal/WakafModal';
+import AssetModal from '../components/Modal/AssetModal';
+import ArchiveModal from '../components/Modal/ArchiveModal';
+import { useDispatch, useSelector } from 'react-redux';
+import { ArchiveState, removeNewsFromArchive, removeWakafFromArchive, removeAssetFromArchive } from '../stores/archiveSlice';
+import Swal from 'sweetalert2';
 
 const initialEditNewsValue: NewsType = {
   title: "",
@@ -37,7 +43,9 @@ const initialEditWakafValue: WakafType = {
 }
 const Archive = () => {
   
-  const [showModal, setShowModal] = useState(false)
+  const [isModalNews, setIsModalNews] = useState(false)
+  const [isModalAsset, setIsModalAsset] = useState(false)
+  const [isModalWakaf, setIsModalWakaf] = useState(false)
   const [page, setPage] = useState<number>(1)
   const [pageWakaf, setPageWakaf] = useState<number>(1)
   const [pageAsset, setPageAsset] = useState<number>(1)
@@ -46,8 +54,12 @@ const Archive = () => {
   const {news, getNews, editedNews, deleteNews, archiveNews, totalArchiveNews} = useNews()
   const [editMode, setEditMode] = useState(false)
   const [selectedId, setSelectedId] = useState<number>(0)
+  const dispatch = useDispatch() 
+  const archive = useSelector((state: {archive: ArchiveState}) => state.archive)
   const [loading , setLoading] = useState(false)
   const [editNews , setEditNews] = useState<NewsType>(initialEditNewsValue)
+  const [editAsset , setEditAsset] = useState<AssetType>(initialEditAssetValue)
+  const [editWakaf , setEditWakaf] = useState<WakafType>(initialEditWakafValue)
   const [cookie] = useCookies(['token', 'id', 'name', 'email', 'foto'])
 
 
@@ -62,20 +74,39 @@ const Archive = () => {
   useEffect(() => {
     getAsset({status: 'archive', page: pageAsset})
   }, [pageAsset])
+
+  useEffect(()=> {
+    if (archive.news[0]) {
+        handleArchiveNews(archive.news[0])
+    }
+  },[archive.news])
+
+  useEffect(()=> {
+    if (archive.wakaf[0] && editMode) {
+        handleArchiveWakaf(archive.wakaf[0])
+    }
+  },[archive.wakaf])
+console.log('archive', archive.news);
+
+  useEffect(()=> {
+    if (archive.asset[0] && editMode) {
+        handleArchiveAsset(archive.asset[0])
+    }
+  },[archive.asset])
   const handleCancel = () => {
-    setShowModal(!showModal)
+    setIsModalNews(!isModalNews)
   }  
   const handlePageChange = (page: number) => {
     setPage(page)// data for the specified page
   };
   const handlePageWakafChange = (page: number) => {
-    setPageWakaf(pageWakaf)// data for the specified page
+    setPageWakaf(page)// data for the specified page
   };
   const handlePageAssetChange = (page: number) => {
-    setPageAsset(pageAsset)// data for the specified page
+    setPageAsset(page)// data for the specified page
   };
   const handleEditModalNews = (id: number) => {
-    setShowModal(true)
+    setIsModalNews(true)
     const selectedNews: any = news.find((item: any) => item.id_news === id);
     if (!selectedNews) {
         return;
@@ -89,7 +120,7 @@ const Archive = () => {
     setSelectedId(id);
 }
 
-  const handleEdit = async (formValues: NewsType) => {
+  const handleEditNews = async (formValues: NewsType) => {
     setEditNews({ title: formValues.title, body: formValues.body, picture: formValues.picture })
     const validation = await ConfirmAlert('edit')
     if (validation.isConfirmed) {
@@ -103,7 +134,7 @@ const Archive = () => {
         token: cookie.token
         })
         Alert('edit')
-        setShowModal(false)
+        setIsModalNews(false)
         setLoading(false)
         getNews({status: 'archive', page: page})
         return result
@@ -128,16 +159,19 @@ const Archive = () => {
     if (validation.isConfirmed) {
         setLoading(true)
         try {
-            const response = await archiveNews({ title: formValues.title, body: formValues.body, picture: formValues.picture, id: selectedId, token: cookie.token})
+            const response = await editedNews({ title: formValues.title, body: formValues.body, picture: formValues.picture, id: selectedId, status: 'archive', token: cookie.token})
             getNews({status: 'archive', page: page})
             setLoading(false)
-            setShowModal(false)
+            setIsModalNews(false)
+            dispatch(removeNewsFromArchive(formValues.title))
             return response
         } catch (error) {}
         setLoading(false)
-    } 
+    } else if (validation.dismiss === Swal.DismissReason.cancel) {
+      dispatch(removeNewsFromArchive(formValues.title))
+  } 
 }
-  const handleDelete =async (id: number) => {
+  const handleDeleteNews =async (id: number) => {
     const validation = await ConfirmAlert('delete')
     if (validation.isConfirmed) {
     setLoading(true)
@@ -147,13 +181,192 @@ const Archive = () => {
             token: cookie.token
             })
             Alert('delete')    
-            getNews({status: 'online', page: page})
+            getNews({status: 'archive', page: page})
             setLoading(false)
             return result
         } catch (error) {}
     setLoading(false)
     }
   }
+  console.log(totalArchiveAsset);
+
+  const handleEditModalWakaf = (id: number) => {
+    setIsModalWakaf(true)
+    const selectedWakaf: any = wakaf.find((item: any) => item.id === id);
+    if (!selectedWakaf) {
+        return;
+    }
+    setEditWakaf({
+        title: selectedWakaf.title,
+        category: selectedWakaf.category,        
+        picture: selectedWakaf.picture,
+        detail: selectedWakaf.detail,
+        due_date: selectedWakaf.due_date,
+        fund_target: selectedWakaf.fund_target,
+        collected: selectedWakaf.collected
+    });
+    setEditMode(true);
+    setSelectedId(id);
+}
+
+const handleEditWakaf = async (formValues: WakafType) => {
+    setEditWakaf({ title: formValues.title, category: formValues.category, picture: formValues.picture, detail: formValues.detail, due_date: formValues.due_date, fund_target: formValues.fund_target, collected: formValues.collected })
+    const validation = await ConfirmAlert('edit')
+    if (validation.isConfirmed) {
+        setLoading(true);
+        try {
+        const result = await editedWakaf({
+            title: formValues.title,
+            category: formValues.category,
+            picture: formValues.picture,
+            detail: formValues.detail,
+            due_date: formValues.due_date,
+            fund_target: formValues.fund_target,
+            id: selectedId,
+            token: cookie.token
+        })
+        setIsModalWakaf(false)
+        setLoading(false)
+        getWakaf({status: 'archive', page: page})
+        Alert('edit')
+        return result
+        } catch (error) {}
+        setLoading(false)
+    }
+}
+console.log(wakaf);
+
+const handleArchiveWakaf = async (formValues: WakafType) => {
+    const validation = await ConfirmAlert('archive')
+    if (validation.isConfirmed) {
+        setLoading(true)
+        try {
+            const response = await editedWakaf({id: selectedId, status: 'archive', title: formValues.title, category: formValues.category, picture: formValues.picture, detail: formValues.detail, due_date: formValues.due_date, fund_target: formValues.fund_target, token: cookie.token})
+            getWakaf({status: 'archive', page: page})
+            setLoading(false)
+            setIsModalWakaf(false)
+            Alert('archive')
+            dispatch(removeWakafFromArchive(formValues.title))
+            return response
+        } catch (error) {}
+        setLoading(false)
+    } else if (validation.dismiss === Swal.DismissReason.cancel) {
+        dispatch(removeWakafFromArchive(formValues.title))
+    }
+}
+
+const handleOnlineWakaf = async (id: number) => {
+    const validation = await ConfirmAlert('archive')
+    if (validation.isConfirmed) {
+        setLoading(true)
+        try {
+            const response = await editedWakaf({id: id, token: cookie.token, status: "online"})
+            Alert('upload')
+            getWakaf({status: 'archive', page: page})
+            setLoading(false)
+            setIsModalWakaf(false)
+            return response
+        } catch (error) {}
+        setLoading(false)
+    }
+}
+
+const handleDeleteWakaf =async (id: number) => {
+    const validation = await ConfirmAlert('delete')
+    if (validation.isConfirmed) {
+    setLoading(true)
+        try {     
+            const result = await deleteWakaf({
+            id: id,
+            token: cookie.token
+            })
+            getWakaf({status: 'archive', page: page})
+            setLoading(false)
+            Alert('delete')
+            return result
+        } catch (error) {}
+    setLoading(false)
+    }
+}
+const handleEditModalAsset = (id: number) => {
+  setIsModalAsset(true)
+  setEditMode(true)
+  const selecetedAsset: any = asset.find((item: any) => item.id_asset === id);
+  if (!selecetedAsset) {
+      return;
+  }
+  setEditAsset({
+      name: selecetedAsset.name,
+      detail: selecetedAsset.detail,
+  });
+  setSelectedId(id);
+}
+
+const handleEditAsset = async(formValues: AssetType) => {
+  setEditAsset({ name: formValues.name, detail: formValues.detail, picture: formValues.picture })
+  const validation = await ConfirmAlert('edit')
+  if (validation.isConfirmed) {
+      setLoading(true);
+      try {
+          const result = await editedAsset({
+          name: formValues.name,
+          detail: formValues.detail,
+          picture: formValues.picture,
+          id: selectedId,
+          token: cookie.token
+          })
+          setIsModalAsset(false)
+          setLoading(false)
+          getAsset({status: 'archive', page: page})
+          setEditAsset({name: '', detail: ''})
+          return result
+      } catch (error) {}
+      setLoading(false)
+  }
+}
+
+const handleOnlineAsset = async (id?:number) => {
+  const validation = await ConfirmAlert('archive')
+  if (validation.isConfirmed) {
+      setLoading(true)
+      try {
+          const response = await editedAsset({id: id, token: cookie.token, status: "online"})
+          Alert('upload')
+          setLoading(false)
+          getAsset({status: 'archive', page: page})
+          return response
+      } catch (error) {}
+  }
+}
+const handleArchiveAsset = async (formValues: AssetType) => {
+  const validation = await ConfirmAlert('archive')
+  if (validation.isConfirmed) {
+      setLoading(true)
+      try {
+          const response = await editedAsset({id: selectedId, name: formValues.name, detail: formValues.detail, picture: formValues.picture, status: 'archive', token: cookie.token})
+          setLoading(false)
+          setIsModalAsset(false)
+          getAsset({status: 'archive', page: page})
+          dispatch(removeAssetFromArchive(formValues.name))
+          return response
+      } catch (error) {}
+  } else if (validation.dismiss === Swal.DismissReason.cancel) {
+      dispatch(removeAssetFromArchive(formValues.name))
+  }
+}
+
+const handleDeleteAsset =async (id: number) => {
+  const validation = await ConfirmAlert('delete')
+  if (validation.isConfirmed) {
+      setLoading(true)
+      try {
+          const response = await deleteAsset({id: id, token: cookie.token})
+          getAsset({status: 'archive', page: page})
+          setLoading(false)
+          return response
+      } catch (error) {}
+  }
+}
   return (
     <>
       <Sidebar/>
@@ -177,6 +390,9 @@ const Archive = () => {
           <WakafTable
           data={wakaf}
           archives={true}
+          handleArchive={handleOnlineWakaf}
+          handleDelete={handleDeleteWakaf}
+          handleEdit={handleEditModalWakaf}
           dashboard={true}
           />
           <Pagination size='small' total={totalArchiveWakaf} onChange={handlePageWakafChange} showSizeChanger={false} className='z-90 my-7 float-right'/>
@@ -189,7 +405,7 @@ const Archive = () => {
           data={news}
           handleArchive={handleOnlineNews}
           handleEdit={handleEditModalNews}
-          handleDelete={handleDelete}
+          handleDelete={handleDeleteNews}
           archives={true}
           />
           <Pagination size='small' total={totalArchiveNews} onChange={handlePageChange} showSizeChanger={false} className='z-90 my-7 float-right'/>
@@ -200,20 +416,40 @@ const Archive = () => {
           >
           <CustomTable
           data={asset}
-          handleEdit={handleEditModalNews}
-          handleDelete={handleDelete}
+          handleEdit={handleEditModalAsset}
+          handleArchive={handleOnlineAsset}
+          handleDelete={handleDeleteAsset}
           archives={true}
           />
-          <Pagination size='small' total={totalArchiveAsset} onChange={handlePageAssetChange} showSizeChanger={false} className='z-90 my-7 float-right'/>
+          <Pagination size='small' total={totalArchiveAsset} defaultPageSize={8} onChange={handlePageAssetChange} showSizeChanger={false} className='z-90 my-7 float-right'/>
           </CustomCollapse>
         </div>
         <NewsModal
-          open={showModal}
+          open={isModalNews}
+          isArchive={true}
+          isDraft={false}
           handleCancel={handleCancel}
-          handleArchive={handleArchiveNews}
           editMode={editMode}
-          onSubmit={handleEdit}
+          onSubmit={handleEditNews}
           editValues={editNews}
+        />
+        <WakafModal
+          open={isModalWakaf}
+          isArchive={true}
+          isDraft={false}
+          handleCancel={handleCancel}
+          editMode={editMode}
+          onSubmit={handleEditWakaf}
+          editValues={editWakaf}
+        />
+        <AssetModal
+          open={isModalAsset}
+          handleCancel={handleCancel}
+          isArchive={true}
+          isDraft={false}
+          editMode={editMode}
+          onSubmit={handleEditAsset}
+          editValues={editAsset}
         />
       </Display>
     </>

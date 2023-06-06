@@ -7,6 +7,7 @@ import { TbFileDescription } from "react-icons/tb";
 import { DraftState, assetToDraft } from "../../stores/draftSilce";
 import { useDispatch, useSelector } from 'react-redux';
 import { AssetType } from '../../utils/types/DataType';
+import { assetToArchive } from '../../stores/archiveSlice';
 
 const {TextArea} = Input
 
@@ -15,8 +16,9 @@ interface FormProps {
     editValues: AssetType;
     editMode: boolean;
     open: boolean
+    isArchive?: boolean
+    isDraft?: boolean
     handleCancel: React.MouseEventHandler
-    handleArchive: React.MouseEventHandler
 }
 const initialFormValues: AssetType = {
     name: "",
@@ -24,7 +26,7 @@ const initialFormValues: AssetType = {
     picture: null
 };
 
-const AssetModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, handleCancel, handleArchive}) => {
+const AssetModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, handleCancel, isArchive, isDraft }) => {
     
     const [formValues, setFormValues] = useState<AssetType>(initialFormValues);
     const dispatch  = useDispatch()
@@ -78,6 +80,15 @@ const AssetModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
             picture: formValues.picture
         }
         dispatch(assetToDraft(newItem))
+    }
+
+    const handleTOArchive = (formValues: AssetType)=>{
+        const newItem: AssetType = {
+            name: formValues.name,
+            detail: formValues.detail,
+            picture: formValues.picture
+        }
+        dispatch(assetToArchive(newItem))
     }
     
     const charCount = formValues.detail.length
@@ -151,11 +162,12 @@ const AssetModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                 <div className="w-[640px] absolute left-0 bottom-0">
                     <div className="flex justify-between w-full">
                         <Button
-                            label={editMode ? 'Simpan Ke Archive' : 'Simpan Ke Draft'}
+                            label={isArchive ? " Simpan & Perbarui Archive" : isDraft ? "Simpan & Perbarui Draft" : editMode ? 'Simpan Ke Archive' : 'Simpan Ke Draft'}
                             id={`draft`}
+                            type={'submit'}
                             color={'orangeBorder'}
                             size='base'
-                            onClick={editMode ? handleArchive : ()=>handleTODraft(formValues)}
+                            onClick={isArchive? ()=>handleTOArchive(formValues) : isDraft ? ()=>handleTODraft(formValues) : editMode ? ()=>handleTOArchive(formValues) : ()=>handleTODraft(formValues)}
                             className={ formValues.name !== '' ? 'block' : 'hidden'}
                         />
                         <Button

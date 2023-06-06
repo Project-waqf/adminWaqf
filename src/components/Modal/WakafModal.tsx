@@ -6,7 +6,8 @@ import { SmallLoading } from '../../assets/svg/SmallLoading';
 import { WakafType } from '../../utils/types/DataType';
 import TextArea from '../CustomInput/TextArea';
 import { TbFileDescription } from "react-icons/tb";
-import { DraftState, wakafToDraft } from "../../stores/draftSilce";
+import { wakafToDraft } from "../../stores/draftSilce";
+import { wakafToArchive } from '../../stores/archiveSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import CurrencyInput from 'react-currency-input-field';
 import Editor from '../CustomInput/Editor';
@@ -16,8 +17,9 @@ import Editor from '../CustomInput/Editor';
         editValues: WakafType;
         editMode: boolean;
         open: boolean
+        isArchive?: boolean
+        isDraft?: boolean
         handleCancel: React.MouseEventHandler
-        handleArchive?: React.MouseEventHandler
     }
 
     const initialFormValues: WakafType = {
@@ -64,13 +66,13 @@ import Editor from '../CustomInput/Editor';
             label: 'Kemanusiaan dan Lingkungan',
         },
     ] 
-const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, handleCancel, handleArchive}) => {
+const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, isArchive, isDraft, handleCancel}) => {
 
     const [formValues, setFormValues] = useState<WakafType>(initialFormValues);
     const [loading , setLoading] = useState(false)
     const [error, setError] = useState<string>()
     const dispatch = useDispatch()
-    const draft = useSelector((state: {draft: DraftState}) => state.draft)
+
     useEffect(() => {
         if (editMode || !editMode) {
             setFormValues(editValues);
@@ -120,6 +122,17 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
             fund_target: formValues.fund_target
         }
         dispatch(wakafToDraft(newItem))
+    }
+    const handleTOArchive = async (formValues: WakafType) => {
+        const newItem: WakafType = {
+            title: formValues.title,
+            category: formValues.category,
+            detail: formValues.detail,
+            picture: formValues.picture,
+            due_date: formValues.due_date,
+            fund_target: formValues.fund_target
+        }
+        dispatch(wakafToArchive(newItem))
     }
 
     const handleImageChange = (e: any) => {
@@ -346,14 +359,14 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
             </div>
             </form >
                 <div className="w-[845px] absolute left-0 bottom-0">
-                    <div className="flex justify-between w-full">
+                <div className="flex justify-between w-full">
                         <Button
-                            label={editMode ? 'Simpan Ke Archive' : 'Simpan Ke Draft'}
+                            label={isArchive ? " Simpan & Perbarui Archive" : isDraft ? "Simpan & Perbarui Draft" : editMode ? 'Simpan Ke Archive' : 'Simpan Ke Draft'}
                             id={`draft`}
                             type={'submit'}
                             color={'orangeBorder'}
                             size='base'
-                            onClick={editMode ? handleArchive : ()=>handleTODraft(formValues)}
+                            onClick={isArchive? ()=>handleTOArchive(formValues) : isDraft ? ()=>handleTODraft(formValues) : editMode ? ()=>handleTOArchive(formValues) : ()=>handleTODraft(formValues)}
                             className={ formValues.title !== '' ? 'block' : 'hidden'}
                         />
                         <Button

@@ -6,6 +6,7 @@ import archive from "../../assets/archive.svg";
 import archiveDis from "../../assets/archivedsiable.svg";
 import editdisa from "../../assets/editdsaible.svg";
 import send from "../../assets/send.svg";
+
 interface TableProps {
     data: WakafType[]
     handleEdit?: (id: number) => void;
@@ -22,8 +23,7 @@ const WakafTable: React.FC<TableProps> = ({ dashboard, archives, draft, data, ha
         const formatter = new Intl.NumberFormat('id-ID', {
             style: 'currency',
             currency: 'IDR',
-        });
-    
+        });    
         return formatter.format(amount).replace('IDR', 'Rp');
     }
     return (
@@ -37,7 +37,7 @@ const WakafTable: React.FC<TableProps> = ({ dashboard, archives, draft, data, ha
                     <th scope="col" className={`px-6 py-3 ${draft || archive ? 'lg:w-[550px] xl:w-[780px]' : 'lg:w-[347px] xl:w-[600px]'}`}>
                         Judul
                     </th>
-                    <th scope="col" className={draft || archives ? "hidden" : "px-6 py-3 w-[120px]"}>
+                    <th scope="col" className={draft || archives ? "hidden" : "px-6 py-3 w-[160px]"}>
                         Terkumpul
                     </th>
                     <th scope="col" className="px-6 py-3 w-[120px]">
@@ -67,7 +67,7 @@ const WakafTable: React.FC<TableProps> = ({ dashboard, archives, draft, data, ha
                                 {item.title}
                                 </Typography>
                             </td>
-                            <td className={draft || archives ? 'hidden' : "px-6 py-4 w-[120px]"}>
+                            <td className={draft || archives ? 'hidden' : "px-6 py-4 w-[140px]"}>
                                 <Typography color={'green'} variant='body3' type='semibold' >
                                 {convertToRupiah(item.collected)}
                                 </Typography>

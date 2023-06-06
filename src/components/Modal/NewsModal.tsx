@@ -7,6 +7,7 @@ import { NewsType } from '../../utils/types/DataType';
 import TextArea from '../CustomInput/TextArea';
 import { TbFileDescription } from "react-icons/tb";
 import { DraftState, newsToDraft } from "../../stores/draftSilce";
+import { newsToArchive, ArchiveState } from '../../stores/archiveSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import Editor from '../CustomInput/Editor';
 
@@ -15,10 +16,10 @@ import Editor from '../CustomInput/Editor';
         onSubmit: (formValues: NewsType) => void;
         editValues: NewsType;
         editMode: boolean;
-        archive: boolean
+        isArchive?: boolean
+        isDraft?: boolean
         open: boolean
         handleCancel: React.MouseEventHandler
-        handleArchive?: React.MouseEventHandler
     }
     const initialFormValues: NewsType = {
         title: "",
@@ -26,7 +27,7 @@ import Editor from '../CustomInput/Editor';
         picture: null
     };
 
-const NewsModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, archive, handleCancel, handleArchive}) => {
+const NewsModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, isArchive, isDraft, handleCancel}) => {
     
     const [formValues, setFormValues] = useState<NewsType>(initialFormValues);
     const [loading , setLoading] = useState(false)
@@ -65,6 +66,14 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, 
             picture: formValues.picture
         }
         dispatch(newsToDraft(newItem))
+    }
+    const handleTOArchive = async (formValues: NewsType) => {
+        const newItem: NewsType = {
+            title: formValues.title,
+            body: formValues.body,
+            picture: formValues.picture
+        }
+        dispatch(newsToArchive(newItem))
     }
     const handleChangeEditor = (newContent: string) => {
         setFormValues({...formValues, body: newContent});
@@ -169,12 +178,12 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, 
                 <div className="w-[845px] absolute left-0 bottom-0">
                     <div className="flex justify-between w-full">
                         <Button
-                            label={editMode ? 'Simpan Ke Archive' : 'Simpan Ke Draft'}
+                            label={isArchive ? " Simpan & Perbarui Archive" : isDraft ? "Simpan & Perbarui Draft" : editMode ? 'Simpan Ke Archive' : 'Simpan Ke Draft'}
                             id={`draft`}
                             type={'submit'}
                             color={'orangeBorder'}
                             size='base'
-                            onClick={editMode ? handleArchive : ()=>handleTODraft(formValues)}
+                            onClick={isArchive? ()=>handleTOArchive(formValues) : isDraft ? ()=>handleTODraft(formValues) : editMode ? ()=>handleTOArchive(formValues) : ()=>handleTODraft(formValues)}
                             className={ formValues.title !== '' ? 'block' : 'hidden'}
                         />
                         <Button

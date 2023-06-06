@@ -32,11 +32,13 @@ export interface ListType {
     collected?: any
 }
 export interface NewsType {
+    id?: number
     title: string;
     body: string;
     picture: File | null | any
 }
 export interface AssetType {
+    id?: number
     name: string
     detail: string
     picture?: File | null

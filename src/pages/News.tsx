@@ -19,6 +19,7 @@ import LoadingAlert from '../components/Modal/LoadingAlert'
 import { Pagination } from 'antd';
 import { useDispatch, useSelector } from 'react-redux'
 import { DraftState, removeNewsFromDraft } from '../stores/draftSilce'
+import { ArchiveState, removeNewsFromArchive } from '../stores/archiveSlice'
 import useNews from '../api/hooks/useNews'
 import Swal from 'sweetalert2'
 
@@ -40,6 +41,7 @@ const News = () => {
     const [page, setPage] = useState<number>(1)
     const dispatch = useDispatch()
     const draft = useSelector((state: {draft: DraftState}) => state.draft)
+    const archive = useSelector((state: {archive: ArchiveState}) => state.archive)
 
     console.log(totalNews);
     
@@ -57,9 +59,15 @@ const News = () => {
             handleDraft(draft.news[0])
         }
     },[draft.news])
+
+    useEffect(()=> {
+        if (archive.news[0] && editMode) {
+            handleArchive(archive.news[0])
+        }
+    },[archive.news])
     
 
-    console.log(page);
+    console.log("archive",archive.news);
     
     const showModalNews = () => {
         setisModalNews(true);
@@ -150,18 +158,21 @@ const News = () => {
     }
     console.log(selectedId);
     
-    const handleArchive = async () => {
+    const handleArchive = async (formValues: NewsType) => {
         const validation = await ConfirmAlert('archive')
         if (validation.isConfirmed) {
             setLoading(true)
             try {
-                const response = await archiveNews({id: selectedId, token: cookie.token})
+                const response = await editedNews({id: selectedId, title: formValues.title, body: formValues.body, status: 'archive',  token: cookie.token})
                 getNews({status: 'online', page: page})
                 setLoading(false)
+                dispatch(removeNewsFromArchive(formValues.title))
                 setisModalNews(false)
                 return response
             } catch (error) {}
             setLoading(false)
+        } else if (validation.dismiss === Swal.DismissReason.cancel) {
+            dispatch(removeNewsFromArchive(formValues.title))
         } 
     }
     const handleArchiveTable = async (id:number) => {
@@ -252,8 +263,9 @@ const News = () => {
                 </CustomCollapse>
                 <NewsModal
                 open={isModalNews}
+                isArchive={false}
+                isDraft={false}
                 handleCancel={handleCancel}
-                handleArchive={handleArchive}
                 editMode={editMode}
                 onSubmit={editMode ? handleEdit : handleAdd}
                 editValues={editNews}

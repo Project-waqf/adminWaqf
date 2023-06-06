@@ -17,6 +17,7 @@ import LoadingAlert from '../components/Modal/LoadingAlert';
 import { useDispatch, useSelector } from 'react-redux';
 import { DraftState, removeAssetFromDraft } from '../stores/draftSilce';
 import Swal from 'sweetalert2';
+import { ArchiveState, removeAssetFromArchive } from '../stores/archiveSlice';
 
 const initialFormValues: AssetType ={
     name: '',
@@ -32,6 +33,7 @@ const Asset = () => {
     const [value, setValue] = useState<AssetType>(initialFormValues)
     const [page, setPage] = useState<number>(1)
     const draft = useSelector((state: {draft: DraftState}) => state.draft)
+    const archive = useSelector((state: {archive: ArchiveState}) => state.archive)
     const dispatch = useDispatch()
     const {asset,totalOnlineAsset, getAsset,createAsset, editedAsset, deleteAsset, draftAsset, archiveAsset} = useAsset()
     const [cookie] = useCookies(['token', 'id', 'name', 'email', 'foto'])
@@ -39,11 +41,22 @@ const Asset = () => {
     useEffect(() => {
         getAsset({status: "online", page: page})
     }, [])
+
+
     useEffect(()=> {
         if (draft.asset[0] && !editMode) {
             handleDraft(draft.asset[0])
         }
     },[draft.asset])
+
+
+    useEffect(()=> {
+        if (archive.asset[0] && editMode) {
+            handleArchive(archive.asset[0])
+        }
+    },[archive.asset])
+    console.log("archive",archive.asset);
+
     const handlePageChange = (page: number) => {
         setPage(page)// data for the specified page
     };
@@ -133,17 +146,20 @@ const Asset = () => {
             } catch (error) {}
         }
     }
-    const handleArchive = async () => {
+    const handleArchive = async (formValues: AssetType) => {
         const validation = await ConfirmAlert('archive')
         if (validation.isConfirmed) {
             setLoading(true)
             try {
-                const response = await archiveAsset({id: selectedId, token: cookie.token})
+                const response = await editedAsset({id: selectedId, name: formValues.name, detail: formValues.detail, picture: formValues.picture, status: 'archive', token: cookie.token})
                 setLoading(false)
                 setIsModal(false)
                 getAsset({status: 'online', page: page})
+                dispatch(removeAssetFromArchive(formValues.name))
                 return response
             } catch (error) {}
+        } else if (validation.dismiss === Swal.DismissReason.cancel) {
+            dispatch(removeAssetFromArchive(formValues.name))
         }
     }
     const handleDraft = async (formValues: AssetType) => {
@@ -215,7 +231,6 @@ const Asset = () => {
                 <AssetModal
                 open={isModal}
                 handleCancel={handleCancel}
-                handleArchive={handleArchive}
                 editMode={editMode}
                 onSubmit={editMode ? handleEdit : handleAdd}
                 editValues={value}

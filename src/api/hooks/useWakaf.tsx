@@ -63,7 +63,7 @@ export default function useWakaf(){
         formData.append('due_date', payload.due_date)
         formData.append('fund_target', payload.fund_target)
         formData.append('picture', payload.picture || '')
-        formData.append('status', 'online')
+        formData.append('status', payload.status ? payload.status : 'online')
         try {
             const config = {
                 headers: {

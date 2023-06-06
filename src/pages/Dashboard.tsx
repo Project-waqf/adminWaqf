@@ -15,6 +15,9 @@ import useWakaf from '../api/hooks/useWakaf';
 import useDashboard from '../api/hooks/useDashboard';
 import Card from '../components/Card/Card';
 import Alert from '../components/Alert/Alert';
+import { useDispatch, useSelector } from 'react-redux';
+import { ArchiveState, removeWakafFromArchive } from '../stores/archiveSlice';
+import Swal from 'sweetalert2';
 
 const initialEditValue: WakafType = {
     title: "",
@@ -31,7 +34,12 @@ const Dashboard = () => {
     const [loading, setLoading] = useState(false)
     const [page, setPage] = useState<number>(1)
     const { wakaf, getWakaf, totalOnlineWakaf , editedWakaf, archiveWakaf, deleteWakaf } = useWakaf()
+    const dispatch = useDispatch()
+    const archive = useSelector((state: {archive: ArchiveState}) => state.archive)
     const {dashboardData} = useDashboard()
+    const [editValue , setEditValue] = useState<WakafType>(initialEditValue)
+    const [editMode, setEditMode] = useState(false)
+    const [selectedId, setSelectedId] = useState<number>(0)
 
     console.log(wakaf);
     
@@ -40,6 +48,11 @@ const Dashboard = () => {
         getWakaf({status: 'online', page: page})
     }, [page])
     
+    useEffect(()=> {
+        if (archive.wakaf[0] && editMode) {
+            handleArchive(archive.wakaf[0])
+        }
+    },[archive.wakaf])
 
     const handlePageChange = (page: number) => {
         setPage(page)// data for the specified page
@@ -63,9 +76,6 @@ const Dashboard = () => {
     };
     
 
-        const [editValue , setEditValue] = useState<WakafType>(initialEditValue)
-        const [editMode, setEditMode] = useState(false)
-        const [selectedId, setSelectedId] = useState<number>(0)
         
     const handleEditModal = (id: number) => {
         setShowModal(true)
@@ -110,18 +120,22 @@ const Dashboard = () => {
             setLoading(false)
         }
     }
-    const handleArchive = async () => {
+    const handleArchive = async (formValues: WakafType) => {
         const validation = await ConfirmAlert('archive')
         if (validation.isConfirmed) {
             setLoading(true)
             try {
-                const response = await archiveWakaf({id: selectedId, token: cookie.token})
+                const response = await editedWakaf({id: selectedId, status: 'archive', title: formValues.title, category: formValues.category, picture: formValues.picture, detail: formValues.detail, due_date: formValues.due_date, fund_target: formValues.fund_target, token: cookie.token})
                 getWakaf({status: 'online', page: page})
                 setLoading(false)
                 setShowModal(false)
+                Alert('archive')
+                dispatch(removeWakafFromArchive(formValues.title))
                 return response
             } catch (error) {}
             setLoading(false)
+        } else if (validation.dismiss === Swal.DismissReason.cancel) {
+            dispatch(removeWakafFromArchive(formValues.title))
         }
     }
     const handleArchiveTable = async (id: number) => {
@@ -157,7 +171,7 @@ const Dashboard = () => {
     }
     return (
         <>
-                <LoadingAlert open={loading} loading={loading}/>
+            <LoadingAlert open={loading} loading={loading}/>
             <Sidebar/>
             <Display>
                 <Headers
@@ -193,7 +207,6 @@ const Dashboard = () => {
                 <WakafModal
                 open={showModal}
                 handleCancel={handleCancel}
-                handleArchive={handleArchive}
                 editMode={editMode}
                 onSubmit={handleEdit}
                 editValues={editValue}
