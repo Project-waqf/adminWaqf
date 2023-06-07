@@ -71,6 +71,10 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
     const [formValues, setFormValues] = useState<WakafType>(initialFormValues);
     const [loading , setLoading] = useState(false)
     const [error, setError] = useState<string>()
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
+    const [totalDays, setTotalDays] = useState(0);
+    const [disabled, setDisabled] = useState(true);
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -79,7 +83,18 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
         }
     }, [editValues, editMode]);
 
-    const [disabled, setDisabled] = useState(true);
+    useEffect(() => {
+        if (formValues.due_date) {
+            const endsDate = formValues.due_date
+            setEndDate(formValues.due_date)
+            const today = new Date();
+            const formattedDate = today.toISOString().substr(0, 10);
+            setStartDate(formattedDate);
+            if (startDate) {
+                calculateDays(startDate, endsDate)
+            }
+        }
+    }, [formValues.due_date]);
 
     useEffect(() => {
         if (formValues.title && formValues.detail) {
@@ -103,6 +118,15 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
         console.log(date, dateString);
         setFormValues({...formValues, due_date: dateString})
     }
+    const calculateDays = (startDate: any, endDate: any) => {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        const timeDiff = end.getTime() - start.getTime();
+        const days = Math.ceil(timeDiff / (1000 * 3600 * 24));
+        setTotalDays(days);
+    };
+    console.log(startDate);
+    
     const parser = (displayValue: string | undefined): number | undefined => {
         if (!displayValue) {
             return undefined;

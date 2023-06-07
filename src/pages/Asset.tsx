@@ -226,7 +226,7 @@ const Asset = () => {
                 handleDelete={handleDelete}
                 handleArchive={handleArchiveTable}
                 />
-                <Pagination size='small' total={totalOnlineAsset} onChange={handlePageChange} showSizeChanger={false} className='z-90 my-7 float-right'/>
+                <Pagination size='small' total={totalOnlineAsset} defaultPageSize={8} onChange={handlePageChange} showSizeChanger={false} className='z-90 my-7 float-right'/>
                 </CustomCollapse>
                 <AssetModal
                 open={isModal}

@@ -16,6 +16,7 @@ import Asset from '../pages/Asset';
 import News from '../pages/News';
 import Mitra from '../pages/Mitra';
 import Wakaf from '../pages/Wakaf';
+import Search from "../pages/Search";
 
 function App() {
   const [cookie, setCookie] = useCookies(["token"]);
@@ -37,6 +38,7 @@ function App() {
             <Route path='/berita' element={checkToken ? <News/> : <Login/>}/>
             <Route path='/mitra' element={checkToken ? <Mitra/> : <Login/>}/>
             <Route path='/profile' element={checkToken ? <Profile/> : <Login/>}/>
+            <Route path='/search:query' element={checkToken ? <Search/> : <Login/>}/>
           </Routes>
         </Layout>
       </QueryParamProvider>

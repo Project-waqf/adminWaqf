@@ -49,9 +49,9 @@ const Archive = () => {
   const [page, setPage] = useState<number>(1)
   const [pageWakaf, setPageWakaf] = useState<number>(1)
   const [pageAsset, setPageAsset] = useState<number>(1)
-  const {asset, getAsset, editedAsset, deleteAsset, archiveAsset, totalArchiveAsset} = useAsset()
-  const {wakaf, getWakaf, editedWakaf, deleteWakaf, archiveWakaf, totalArchiveWakaf} = useWakaf()
-  const {news, getNews, editedNews, deleteNews, archiveNews, totalArchiveNews} = useNews()
+  const {asset, getAsset, editedAsset, deleteAsset, totalArchiveAsset} = useAsset()
+  const {wakaf, getWakaf, editedWakaf, deleteWakaf, totalArchiveWakaf} = useWakaf()
+  const {news, getNews, editedNews, deleteNews, totalArchiveNews} = useNews()
   const [editMode, setEditMode] = useState(false)
   const [selectedId, setSelectedId] = useState<number>(0)
   const dispatch = useDispatch() 
@@ -61,7 +61,6 @@ const Archive = () => {
   const [editAsset , setEditAsset] = useState<AssetType>(initialEditAssetValue)
   const [editWakaf , setEditWakaf] = useState<WakafType>(initialEditWakafValue)
   const [cookie] = useCookies(['token', 'id', 'name', 'email', 'foto'])
-
 
   useEffect(() => {
     getNews({status: 'archive', page: page})
@@ -93,8 +92,15 @@ console.log('archive', archive.news);
         handleArchiveAsset(archive.asset[0])
     }
   },[archive.asset])
+  
   const handleCancel = () => {
-    setIsModalNews(!isModalNews)
+    ConfirmAlert( editMode ? 'cancelEdit' : 'cancel').then((res) => {
+      if (res.isConfirmed) {
+        setIsModalNews(false)
+        setIsModalAsset(false)
+        setIsModalWakaf(false)
+      }
+    })
   }  
   const handlePageChange = (page: number) => {
     setPage(page)// data for the specified page
@@ -143,11 +149,15 @@ console.log('archive', archive.news);
     }
   }
   const handleOnlineNews =async (id:number) => {
+    const selectedNews: any = news.find((item: any) => item.id_news === id);
+    if (!selectedNews) {
+        return;
+    }
     const validation = await ConfirmAlert('upload')
     if (validation.isConfirmed) {
       setLoading(true)
       try {
-        const result = await editedNews({id: id, token: cookie.token, status: "online"})
+        const result = await editedNews({id: id, token: cookie.token, status: "online", title: selectedNews.title, body: selectedNews.body, picture: selectedNews.picture,})
         Alert('upload')
         getNews({status: 'archive', page: page})
         return result
@@ -256,11 +266,15 @@ const handleArchiveWakaf = async (formValues: WakafType) => {
 }
 
 const handleOnlineWakaf = async (id: number) => {
+    const selectedWakaf: any = wakaf.find((item: any) => item.id === id);
+    if (!selectedWakaf) {
+        return;
+    }
     const validation = await ConfirmAlert('archive')
     if (validation.isConfirmed) {
         setLoading(true)
         try {
-            const response = await editedWakaf({id: id, token: cookie.token, status: "online"})
+            const response = await editedWakaf({id: id, token: cookie.token, status: "online", title: selectedWakaf.title, category: selectedWakaf.category, picture: selectedWakaf.picture, detail: selectedWakaf.detail, due_date: selectedWakaf.due_date, fund_target: selectedWakaf.fund_target})
             Alert('upload')
             getWakaf({status: 'archive', page: page})
             setLoading(false)
@@ -326,11 +340,15 @@ const handleEditAsset = async(formValues: AssetType) => {
 }
 
 const handleOnlineAsset = async (id?:number) => {
+  const selecetedAsset: any = asset.find((item: any) => item.id_asset === id);
+  if (!selecetedAsset) {
+      return;
+  }
   const validation = await ConfirmAlert('archive')
   if (validation.isConfirmed) {
       setLoading(true)
       try {
-          const response = await editedAsset({id: id, token: cookie.token, status: "online"})
+          const response = await editedAsset({id: id, token: cookie.token, status: "online", name: selecetedAsset.name, detail: selecetedAsset.detail})
           Alert('upload')
           setLoading(false)
           getAsset({status: 'archive', page: page})

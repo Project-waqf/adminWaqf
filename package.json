@@ -16,6 +16,7 @@
     "clsx": "^1.2.1",
     "daisyui": "^2.52.0",
     "jodit": "^4.0.0-beta.50",
+    "lodash": "^4.17.21",
     "react": "^18.2.0",
     "react-cookie": "^4.1.1",
     "react-currency-input-field": "^3.6.10",
@@ -35,6 +36,7 @@
   "devDependencies": {
     "@types/draft-js": "^0.11.10",
     "@types/estree": "^1.0.1",
+    "@types/lodash": "^4.14.195",
     "@types/node": "^18.16.3",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",

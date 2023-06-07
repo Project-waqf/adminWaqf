@@ -10,50 +10,39 @@ import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import useAsset from '../../api/hooks/useAsset'
 import useNews from '../../api/hooks/useNews'
+import debounce from 'lodash/debounce';
+import axios from 'axios'
+import { APIUrl } from '../../string'
 interface props{
     label: string
 }
-const renderTitle = (title: string) => (
-    <span>
-        {title}
-        <a
-            style={{ float: 'right' }}
-            href="https://www.google.com/search?q=antd"
-            target="_blank"
-            rel="noopener noreferrer"
-        >
-            more
-        </a>
-    </span>
-);
-const renderItem = (title: string, status: string) => ({
-    value: title,
-    label: (
-        <div
-            style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            }}
-        >
-            {title}
-            <span>
-            <FaMixcloud /> {status}
-            </span>
-        </div>
-    ),
-});
-const getRandomInt = (max: number, min = 0) => Math.floor(Math.random() * (max - min + 1)) + min;
 
+const searchResult = async (query: string) => {
+    try {
+        const response = await axios.get(`${APIUrl}news?status=&page=`);
+        console.log('data', response.data);
+        const {data} = response.data
+        const filteredData = data.filter((item:any)=> item.title.includes(query))
+        return response.data.data.map((item: any, index: any) => ({
+            value: item.title,
+            label: (
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span>
+                Found {item.title}
+                </span>
+            </div>
+            ),
+        }));
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        return [];
+    }
+};
 const Headers: React.FC<props> = ({label}) => {
     const [cookie, setCookie, removeCookie] = useCookies(['token', 'id', 'name', 'foto', 'email'])
     const dispatch = useDispatch()
-    const [options, setOptions] = useState<SelectProps<object>['options']>([]);
     const navigate = useNavigate()
-    const {allAsset, totalAllAsset} = useAsset()
-    const {allNews, totalAllNews} = useNews()
-    console.log(allNews);
-    console.log(totalAllNews);
-    
+    const [query, setQuery] = useState('');
     const content = (
         <span className='text-btnColor w-96'>
             <div className="w-28 flex text-[16px] flex-col space-y-3">
@@ -62,55 +51,22 @@ const Headers: React.FC<props> = ({label}) => {
             </div>
         </span>
     );
-    const renderOptions = () =>
-    allNews.map((item:any) => renderItem(item.title, item.status));
-    // const options = [
-    //     {
-    //         label: renderTitle('Wakaf'),
-    //         options: renderOptions(),
-    //     },
-    //     {
-    //         label: renderTitle('Berita'),
-    //         options: [renderItem('AntDesign UI FAQ', 'Online'), renderItem('AntDesign FAQ', 'Online')],
-    //     },
-    //     {
-    //         label: renderTitle('Asset'),
-    //         options: [renderItem('AntDesign design language', 'Online')],
-    //     },
-    // ];
-    const generateOptions = (data:any) => {
-        return data.map((item:any) => {        
-            return {
-                value: item,
-                label: (
-                <div
-                    style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    }}
-                >
-                    <span>
-                    Found {item.title} on{' '}
-                    <a
-                        href={`https://s.taobao.com/search?q=${item.title}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        {item.status}
-                    </a>
-                    </span>
-                    <span>{item.id} results</span>
-                </div>
-                ),
-            };
-            });
-        };
-        const handleSearch = (value: string) => {
-            setOptions(value ? generateOptions(allNews) : []);
-        };
-        const onSelect = (value: string) => {
-            console.log('onSelect', value);
-        };
+    const [options, setOptions] = useState<SelectProps<object>['options']>([]);
+
+    const handleSearch = async (value: string) => {
+        if (value) {
+        const results = await searchResult(value);
+        setOptions(results);
+        } else {
+        setOptions([]);
+        }
+        console.log(value);
+        
+    };
+
+    const onSelect = (value: string) => {
+        console.log('onSelect', value);
+    };
     const handleLogout = () => {
         dispatch(logout());
         removeCookie('name');
@@ -126,12 +82,12 @@ const Headers: React.FC<props> = ({label}) => {
                 {label}
             </Typography>
             <AutoComplete
-            dropdownMatchSelectWidth={250}
-            style={{ width: 250 }}
+            dropdownMatchSelectWidth={252}
+            style={{ width: 300 }}
             options={options}
             onSelect={onSelect}
             onSearch={handleSearch}
-            className='ml-auto'
+            className='ml-auto mt-2'
             >
             <Input
             size='large'
