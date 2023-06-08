@@ -38,7 +38,7 @@ function App() {
             <Route path='/berita' element={checkToken ? <News/> : <Login/>}/>
             <Route path='/mitra' element={checkToken ? <Mitra/> : <Login/>}/>
             <Route path='/profile' element={checkToken ? <Profile/> : <Login/>}/>
-            <Route path='/search:query' element={checkToken ? <Search/> : <Login/>}/>
+            <Route path='/search/:query' element={checkToken ? <Search/> : <Login/>}/>
           </Routes>
         </Layout>
       </QueryParamProvider>

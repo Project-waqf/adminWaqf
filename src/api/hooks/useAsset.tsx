@@ -15,7 +15,7 @@ export default function useAsset() {
     useEffect(() => {
         setTotalAsset(totalOnlineAsset + totalArchiveAsset + totalDraftAsset)
     }, [totalArchiveAsset, totalDraftAsset, totalOnlineAsset])
-    const getAllAsset = useCallback(async (payload?: any) => {
+    const getAllAsset = useCallback(async () => {
         try {
             const response = await axios.get(`${HOST}asset`)
             console.log(response.data)
@@ -154,6 +154,9 @@ export default function useAsset() {
     
     useEffect(() => {
         getAsset()
+    }, [])
+    useEffect(() => {
+        getAllAsset()
     }, [])
     return {allAsset, totalAllAsset, asset, totalAsset, totalArchiveAsset, totalDraftAsset, totalOnlineAsset, getAsset, createAsset, editedAsset, draftAsset, archiveAsset, deleteAsset}
 }

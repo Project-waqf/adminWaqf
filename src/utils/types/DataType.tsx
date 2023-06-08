@@ -60,6 +60,13 @@ export interface DashboardType {
     count: number | string
 }
 
+export interface AllDataType{
+    id: number
+    id_news: number
+    id_wakaf: number
+    title: string
+    name: string
+}
 export interface DataDashboard{
     data: DashboardType[]
 }

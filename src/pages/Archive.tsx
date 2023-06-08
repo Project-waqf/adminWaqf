@@ -10,7 +10,7 @@ import CustomTable from '../components/Table';
 import useNews from '../api/hooks/useNews';
 import useWakaf from '../api/hooks/useWakaf';
 import useAsset from '../api/hooks/useAsset';
-import { NewsType, WakafType, AssetType } from '../utils/types/DataType';
+import { NewsType, WakafType, AssetType, AllDataType } from '../utils/types/DataType';
 import ConfirmAlert from '../components/Alert/ConfirmAlert';
 import Alert from '../components/Alert/Alert';
 import { useCookies } from 'react-cookie';
@@ -21,6 +21,7 @@ import ArchiveModal from '../components/Modal/ArchiveModal';
 import { useDispatch, useSelector } from 'react-redux';
 import { ArchiveState, removeNewsFromArchive, removeWakafFromArchive, removeAssetFromArchive } from '../stores/archiveSlice';
 import Swal from 'sweetalert2';
+import { array } from 'yup';
 
 const initialEditNewsValue: NewsType = {
   title: "",
@@ -61,6 +62,31 @@ const Archive = () => {
   const [editAsset , setEditAsset] = useState<AssetType>(initialEditAssetValue)
   const [editWakaf , setEditWakaf] = useState<WakafType>(initialEditWakafValue)
   const [cookie] = useCookies(['token', 'id', 'name', 'email', 'foto'])
+  const [allData, setAllData] = useState<AllDataType[]>([])
+  console.log("all data",allData);
+
+  useEffect(() => {
+    if (news) {
+      const newsData: any[] = [] 
+        for (let i = 0; i < news.length; i++) {
+          newsData.push(news[i]);
+        } 
+        if (newsData.length === news.length && asset) {
+          const modifAsset = asset.map((item:any)=>{return{...item, title: item.name, name:undefined}})
+          const assetData: any[]= []
+          for (let i = 0; i < modifAsset.length; i++) {
+            assetData.push(modifAsset[i]);
+          } if (assetData.length === asset.length && asset) {
+            const wakafData: any[] = []
+            for (let i = 0; i < wakaf.length; i++) {
+                wakafData.push(wakaf[i])
+            }
+            setAllData([...newsData, ...assetData, ...wakafData])
+          }
+      }
+    }
+  }, [news, asset, wakaf])
+  
 
   useEffect(() => {
     getNews({status: 'archive', page: page})

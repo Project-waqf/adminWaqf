@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from "react"
 
 export default function useWakaf(){
     const [wakaf, setWakaf] = useState<any>()
+    const [allWakaf, setAllWakaf] = useState<[]>()
     const [totalOnlineWakaf, setTotalOnlineWakaf] = useState<number>(0)
     const [totalDraftWakaf, setTotalDraftWakaf] = useState<number>(0)
     const [totalArchiveWakaf, setTotalArchiveWakaf] = useState<number>(0)
@@ -14,7 +15,16 @@ export default function useWakaf(){
     useEffect(() => {
         setTotalWakaf(totalOnlineWakaf + totalArchiveWakaf + totalDraftWakaf)
     }, [totalArchiveWakaf, totalDraftWakaf, totalOnlineWakaf])
-    
+    const getAllWakaf = useCallback(async () => {
+        try {
+            const response = await axios.get(`${HOST}wakaf?isUser=false`)
+            console.log(response.data);
+            setAllWakaf(response.data.data)
+            return response
+        } catch (error) {
+            console.log(error);
+        } 
+    },[])
     const getWakaf = useCallback(async (payload?:any) => {
         try {
             const response = await axios.get(`${HOST}wakaf?page=${payload.page}&isUser=false&status=${payload.status}`)
@@ -155,5 +165,8 @@ export default function useWakaf(){
     useEffect(() => {
         getWakaf()
     },[])
-    return {wakaf, totalArchiveWakaf, totalDraftWakaf, totalOnlineWakaf, totalWakaf, getWakaf, createWakaf, editedWakaf, draftWakaf, archiveWakaf, deleteWakaf}
+    useEffect(() => {
+        getAllWakaf()
+    },[])
+    return {allWakaf, wakaf, totalArchiveWakaf, totalDraftWakaf, totalOnlineWakaf, totalWakaf, getWakaf, createWakaf, editedWakaf, draftWakaf, archiveWakaf, deleteWakaf}
 }

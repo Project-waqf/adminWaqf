@@ -36,7 +36,7 @@ const CustomCollapse: React.FC<CollapseProps> = ({header, children , key}) => {
             >
                 <div>{children}</div>
             </Panel>
-            </Collapse>
+        </Collapse>
     </>
     );
 };

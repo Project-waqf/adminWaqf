@@ -15,6 +15,7 @@ import ConfirmAlert from '../components/Alert/ConfirmAlert'
 import Alert from '../components/Alert/Alert'
 import axios from 'axios'
 import { APIUrl } from '../string'
+import profilePict from '../assets/default.png'
 import { SmallLoading } from '../assets/svg/SmallLoading'
 
 const { Panel } = Collapse;
@@ -34,10 +35,14 @@ const Profile = () => {
 
     const [value, setValue] = useState<ProfileType>(initialFormValues)
     const [loading, setLoading] = useState(false)
-    const [passwordsMatch, setPasswordsMatch] = useState(true);
     const [errorPassword, setErrorPassword] = useState<string>('')
     const [errorOldPassword, setErrorOldPassword] = useState<string>('')
+    const [errorValidationPassword, setErrorValidationPassword] = useState<string>('')
     const [withPassword, setWithPassword] = useState(false)
+    const [changeFoto, setChangeFoto] = useState(false)
+    const [changeImage, setChangeImage] = useState<File | any>()
+    const [disable, setDisabled] = useState(false)
+
     
     useEffect(() => {
         if(value.old_password !== ''){
@@ -46,12 +51,31 @@ const Profile = () => {
             setWithPassword(false)
         }
     }, [value.old_password])
-    console.log(withPassword);
+    
+    useEffect(() => {
+        if (changeImage) {
+            setChangeFoto(true)
+        }
+    }, [changeImage])
+    console.log(changeFoto);
+    
     
     
     const handleInputChange = (e:React.ChangeEvent<HTMLInputElement>) => {
         setValue({ ...value, [e.target.name]: e.target.value})
     }
+
+    useEffect(() => {
+        if (value.new_password) {
+            isPasswordValid(value.new_password)
+        }
+    }, [value.new_password])
+    const isPasswordValid = (password: string) => {
+        // Password validation regex
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
+        return passwordRegex.test(password);
+    };
+    
 
     const customExpandIcon = (panelProps: any) => {
         const { isActive } = panelProps;
@@ -62,8 +86,7 @@ const Profile = () => {
             return <BsArrowDownShort style={{color: '#FFFFFF'}}/>;
         }
     };
-    
-    console.log(passwordsMatch);
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         setLoading(true)
         e.preventDefault()
@@ -85,6 +108,7 @@ const Profile = () => {
                     setCookie("name", response.data.data.name, { path: "/" });
                     setCookie("email", response.data.data.email, { path: "/" });
                     Alert('edit')
+                    setLoading(false)
                     return response 
                 } catch (error) {
                     
@@ -93,6 +117,7 @@ const Profile = () => {
         }
         setLoading(false)
     };
+
     const handleSubmitWithPassword = async (e: React.FormEvent<HTMLFormElement>) => {
         setLoading(true)
         e.preventDefault()
@@ -120,37 +145,70 @@ const Profile = () => {
                 } catch (error:any) {
                     if (error.response.status === 401){
                         setValue({name: value.name,email: value.email, old_password: value.old_password, new_password: value.new_password, re_password: value.re_password, password: value.password})
-                        setErrorOldPassword("Password salah")
+                        setErrorOldPassword("Password yang anda masukan salah")
                     }
                 }
                 setLoading(false)
             }
         } else {
             setValue({name: value.name,email: value.email, old_password: value.old_password, new_password: value.new_password, re_password: '', password: value.password})
-            setErrorPassword("Password Tidak sama")
+            setErrorPassword("Password yang anda masukan tidak serasi ")
         }
         setLoading(false)
     };
+    const handleChangePicture = async (e: React.FormEvent<HTMLFormElement>) => {
+        setLoading(true)
+        e.preventDefault()
+        if (changeImage) {
+            const formData = new FormData()
+            formData.append('picture', changeImage)
+            try {
+                const response = await axios.put(APIUrl + 'admin/profile/image', formData, {
+                    headers: {
+                        Authorization: `Bearer ${cookie.token}`,
+                        "Content-Type": "multipart/form-data",
+                    }
+                })
+                setLoading(false)
+                setChangeFoto(false)
+                setCookie('foto', response.data.data, {path: '/'})
+                return response
+            } catch (error) {}
+        }
+    }
     return (
     <>
         <Sidebar/>
         <Display>
         <Headers label='Profile'/>
             <div className="flex flex-col bg-white h-fit rounded-xl p-10 space-y-2 mx-auto w-11/12 my-10">
+                <form  className='flex flex-col w-full' onSubmit={changeImage ? handleChangePicture :  withPassword ? handleSubmitWithPassword : handleSubmit}>
                 <div className="flex">
-                    <Avatar style={{ verticalAlign: 'middle' }} size={80} src={cookie.foto}/>
+                    {changeImage && (
+                    <Avatar style={{ verticalAlign: 'middle' }} size={80} src={URL.createObjectURL(changeImage)}/>
+                    )}
+                    <Avatar style={{ verticalAlign: 'middle' }} size={80} className={changeImage ? "hidden" : 'block'} src={cookie.foto ? cookie.foto : profilePict }/>
                     <div className="flex flex-col justify-center ml-8">
                         <Typography color='text01' variant='h2' type='medium'>
                             {cookie.name}
                         </Typography>
                         <div className="cursor-pointer">
+                        <label htmlFor="file_input">
                             <Typography color='btnColor' variant='body1' type='normal'>
                                 Ganti Foto Profile
                             </Typography>
+                            <input name='picture' onChange={(e)=> setChangeImage(e.target.files?.[0])} className="hidden w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50" aria-describedby="file_input_help" id="file_input" type="file"/>
+                        </label>
                         </div>
                     </div>
+                    {loading && changeFoto ?
+                        <div className="mt-5 ml-5">
+                        <SmallLoading/>
+                        </div>
+                        :
+                        <></>
+                    }
                 </div>
-                <form  className='flex flex-col w-full' onSubmit={withPassword ? handleSubmitWithPassword : handleSubmit}>
                     <div className="flex mt-6 w-[1000px]">
                         <Typography color='text01' variant='h5' type='medium' className='w-44 my-4'>
                             Nama
@@ -164,6 +222,13 @@ const Profile = () => {
                             onChange={handleInputChange}
                             />
                         </div>
+                        {loading ?
+                            <div className="mt-3 ml-3">
+                            <SmallLoading/>
+                            </div>
+                            :
+                            <></>
+                        }
                     </div>
                     <div className="flex mt-6 w-[1000px]">
                         <Typography color='text01' variant='h5' type='medium' className='w-44 my-4'>
@@ -176,6 +241,7 @@ const Profile = () => {
                             placeholder='Your Email'
                             value={value.email}
                             onChange={handleInputChange}
+                            disable
                             />
                         </div>
                     </div>
@@ -231,21 +297,23 @@ const Profile = () => {
                                 :
                                 <></>
                                 }
-                                <div className="">{withPassword}</div>
                             </div>
                             <div className="flex mt-6 w-[1000px]">
                                 <Typography color='text01' variant='h5' type='medium' className='w-44 my-4'>
                                     Password Baru
                                 </Typography>
-                                <div className="w-[523px]">
+                                <div className="w-[523px] flex flex-col">
                                     <CustomInput
                                     name='new_password'
                                     type='password'
                                     placeholder='Masukan Password Baru'
                                     value={value.new_password}
                                     onChange={handleInputChange}
-                                    error={errorPassword}
+                                    error={!isPasswordValid(value.password) && "*Minimal 6 karakter, dilengkapi minimal 1 huruf kapital, 1 simbol dan 1 angka."}
                                     />
+                                    <Typography variant='btnXS' color='text01' type='normal' className='ml-1'>
+                                    *Minimal 6 karakter, dilengkapi minimal 1 huruf kapital, 1 simbol dan 1 angka.
+                                    </Typography>
                                 </div>
                                 {loading ?
                                 <div className="mt-3 ml-3">
