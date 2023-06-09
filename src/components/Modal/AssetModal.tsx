@@ -14,10 +14,12 @@ const {TextArea} = Input
 interface FormProps {
     onSubmit: (formValues: AssetType) => void;
     editValues: AssetType;
-    editMode: boolean;
+    editMode?: boolean;
     open: boolean
     isArchive?: boolean
     isDraft?: boolean
+    search?:boolean
+    status?: any 
     handleCancel: React.MouseEventHandler
 }
 const initialFormValues: AssetType = {
@@ -26,7 +28,7 @@ const initialFormValues: AssetType = {
     picture: null
 };
 
-const AssetModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, handleCancel, isArchive, isDraft }) => {
+const AssetModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, handleCancel, isArchive, isDraft, search, status}) => {
     
     const [formValues, setFormValues] = useState<AssetType>(initialFormValues);
     const dispatch  = useDispatch()
@@ -98,12 +100,15 @@ const AssetModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
         <Modal
         open={open}
         onCancel={handleCancel} 
-        centered closeIcon
+        centered closeIcon={search ? false : true}
         style={{padding: 0}}
-        title={<Typography color='text01' variant='h1' type='semibold' className='ml-[32px]'>{editMode ? 'Edit Asset' : 'Tambah Asset'}</Typography>}
+        title={<Typography color='text01' variant='h1' type='semibold' className='ml-[32px]'>{editMode && !search ? 'Edit Asset' : editMode && search ? "Detail Asset" : 'Tambah Asset'}</Typography>}
         width={938}
         footer={<></>}>
                 <div className="relative mx-[32px] my-[36px]">
+                    <Typography variant='body1' color='text01' type='medium' className='mb-5'>
+                        Status: <span className={status === "online" ? 'text-green-500':'text-primary-100'}>{status}</span>
+                    </Typography>
                     <form className='flex flex-col space-y-5' onSubmit={handleSubmit}>
                     <div className="flex space-x-8">
                         <div className="">
@@ -119,6 +124,7 @@ const AssetModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                                 size='large'
                                 className={`mt-2 h-12 w-[430px] border-neutral-80`}
                                 value={formValues.name}
+                                disabled={search}
                                 onChange={handleInputChange}
                             />
                             <Typography variant='body3' color='error80' type='normal' className='my-2'>
@@ -144,7 +150,7 @@ const AssetModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                             Isi Detail
                         </Typography>
                         <textarea rows={4} x-model="maximum" maxLength={maxLength} x-ref="maximum" style={{ resize: 'none' }}
-                        className="block w-full mt-2 py-2 px-3 text-base text-text01 rounded-lg border-neutral-80 focus:outline-none focus:border-blue-500" placeholder='isi Detail' name='detail' value={formValues.detail} onChange={handleTextAreaChange}></textarea>
+                        disabled={search} className="block w-full mt-2 py-2 px-3 text-base text-text01 rounded-lg border-neutral-80 focus:outline-none focus:border-blue-500" placeholder='isi Detail' name='detail' value={formValues.detail} onChange={handleTextAreaChange}></textarea>
                         <span className="absolute px-2 py-1 text-xs text-neutral-90 right-2 bottom-2">{charCount} / {maxLength}</span>
                     </div>
                     <div className='flex mt-10 justify-end'>
@@ -154,11 +160,25 @@ const AssetModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                         id={`tidak`}
                         color={'orange'}
                         size='base'
-                        disabled={disabled}
+                        disabled={disabled || search}
                         onClick={()=> console.log(formValues)}
                     />
             </div>
             </form >
+                {search ?
+                <div className="w-[640px] absolute left-0 bottom-0">
+                    <div className="flex justify-start w-full">
+                        <Button
+                            label='Tutup'
+                            id={`tidak`}
+                            color={'whiteOrange'}
+                            size='base'
+                            onClick={handleCancel}
+                            className={ formValues.name !== '' ? 'ml-0' : 'ml-auto'}
+                        />
+                    </div>
+                </div>
+                : 
                 <div className="w-[640px] absolute left-0 bottom-0">
                     <div className="flex justify-between w-full">
                         <Button
@@ -180,6 +200,7 @@ const AssetModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                         />
                     </div>
                 </div>
+                }
             </div>
         </Modal>
     )

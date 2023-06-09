@@ -93,25 +93,19 @@ const News = () => {
         const validation = await ConfirmAlert('upload')
         if (validation.isConfirmed) {
             setLoading(true)
-            try {
             const result = await createNews({
                 title: formValues.title, 
                 body:formValues.body, 
                 picture:formValues.picture,
                 token: cookie.token
             })
-            setLoading(false);
-            setisModalNews(false)
-            setEditNews({
-                title: '',
-                body: '',
-                picture: null
-            })
-            getNews({status: 'online', page: page})
-            Alert('upload')
-            return result
-            } catch (error) {}
+            if (result) {
+                setLoading(false);
+                setisModalNews(false)
+                setEditNews(initialEditNewsValue)
+            }
             setLoading(false)
+            getNews({status: 'online', page: page})
         }          
     } 
     
@@ -140,20 +134,12 @@ const News = () => {
         const validation = await ConfirmAlert('edit')
         if (validation.isConfirmed) {
             setLoading(true);
-            try {
-            const result = await editedNews({
-            title: formValues.title,
-            body: formValues.body,
-            picture: formValues.picture,
-            id: selectedId,
-            token: cookie.token
-            })
-            setisModalNews(false)
-            setLoading(false)
-            getNews({status: 'online', page: page})
-            return result
-            } catch (error) {}
-            setLoading(false)
+            const result = await editedNews({ title: formValues.title, body: formValues.body, picture: formValues.picture, id: selectedId, token: cookie.token})
+            if (result) {
+                getNews({status: 'online', page: page})
+                setLoading(false)
+                setisModalNews(false)
+            }
         }
     }
     console.log(selectedId);

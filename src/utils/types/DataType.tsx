@@ -35,7 +35,7 @@ export interface NewsType {
     id?: number
     title: string;
     body: string;
-    picture: File | null | any
+    picture?: File | null | any
 }
 export interface AssetType {
     id?: number
@@ -61,11 +61,17 @@ export interface DashboardType {
 }
 
 export interface AllDataType{
-    id: number
-    id_news: number
-    id_wakaf: number
+    id?: number
+    id_news?: number
+    id_wakaf?: number
     title: string
-    name: string
+    name?: string
+    body?: string
+    detail?: string
+    due_date?: any
+    collected?: number
+    fund_target?: number
+    status?: string
 }
 export interface DataDashboard{
     data: DashboardType[]

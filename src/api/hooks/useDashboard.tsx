@@ -37,7 +37,6 @@ export default function useDashboard() {
                 header: 'Jumlah Asset',
                 count: totalAsset,
             },
-          // Add more objects as needed
         ];
     
         setDashboardData({ data: initialData });

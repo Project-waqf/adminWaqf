@@ -15,10 +15,12 @@ import Editor from '../CustomInput/Editor';
     interface FormProps {
         onSubmit: (formValues: WakafType) => void;
         editValues: WakafType;
-        editMode: boolean;
+        editMode?: boolean;
         open: boolean
         isArchive?: boolean
         isDraft?: boolean
+        search?: boolean
+        status?: any
         handleCancel: React.MouseEventHandler
     }
 
@@ -27,7 +29,7 @@ import Editor from '../CustomInput/Editor';
         category: "umum",
         picture: null,
         detail: '',
-        due_date: '',
+        due_date: null,
         fund_target: 0,
         collected: 0
     };
@@ -66,7 +68,7 @@ import Editor from '../CustomInput/Editor';
             label: 'Kemanusiaan dan Lingkungan',
         },
     ] 
-const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, isArchive, isDraft, handleCancel}) => {
+const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, isArchive, isDraft, handleCancel, search, status}) => {
 
     const [formValues, setFormValues] = useState<WakafType>(initialFormValues);
     const [loading , setLoading] = useState(false)
@@ -222,12 +224,15 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
         <Modal
         open={open}
         onCancel={handleCancel} 
-        centered closeIcon
+        centered closeIcon={search ? false : true}
         style={{padding: 5}}
-        title={<Typography color='text01' variant='h2' type='semibold'>{editMode ? 'Edit Wakaf' : 'Tambah Wakaf'}</Typography>}
+        title={<Typography color='text01' variant='h2' type='semibold'>{editMode && !search ? 'Edit Wakaf' : editMode && search ? 'Detail Wakaf' : 'Tambah Wakaf'}</Typography>}
         width={1120}
         footer={<></>}>
                 <div className="relative mx-5 my-8">
+                    <Typography variant='body1' color='text01' type='medium' className={search ? 'block mb-5' : 'hidden' }>
+                        Status: <span className={status === "online" ? 'text-green-500':'text-primary-100'}>{status}</span>
+                    </Typography>
                     <form className='flex flex-col space-y-5' onSubmit={handleSubmit}>
                     <div className="flex space-x-8">
                         <div className="">
@@ -244,6 +249,7 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                                 className={`mt-1 w-[430px]`}
                                 value={formValues.title}
                                 onChange={handleInputChange}
+                                disabled={search}
                                 />
                             <Typography variant='body3' color='error80' type='normal' className='my-2'>
 
@@ -280,6 +286,7 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                                 style={{ width: 238}}
                                 options={options}
                                 className='mt-1'
+                                disabled={search}
                                 />
                             <Typography variant='body3' color='error80' type='normal' className='my-2'>
 
@@ -322,6 +329,7 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                                 value={formValues.fund_target}
                                 decimalsLimit={2}
                                 onValueChange={(value, name) => setFormValues({ ...formValues, fund_target: value ? parseInt(value) : 0 })}
+                                disabled={search}
                                 />
                             <Typography variant='body3' color='error80' type='normal' className='my-2'>
 
@@ -333,7 +341,7 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                                         Hari
                                     </Typography>
                                 </label>
-                                <DatePicker name='due_date' onChange={dateChange} placeholder='/Hari' style={{width: 200}} size='large' className='mt-1'/>
+                                <DatePicker name='due_date' onChange={dateChange} placeholder='/Hari' style={{width: 200}} size='large' className='mt-1' disabled={search}/>
                             <Typography variant='body3' color='error80' type='normal' className='my-2'>
 
                             </Typography>
@@ -382,8 +390,22 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                     />
             </div>
             </form >
+            {search ?
                 <div className="w-[845px] absolute left-0 bottom-0">
-                <div className="flex justify-between w-full">
+                    <div className="flex justify-start w-full">
+                        <Button
+                            label='Tutup'
+                            id={`tidak`}
+                            color={'whiteOrange'}
+                            size='base'
+                            onClick={handleCancel}
+                            className={ formValues.title !== '' ? 'ml-0' : 'ml-auto'}
+                        />
+                    </div>
+                </div>
+                : 
+                <div className="w-[845px] absolute left-0 bottom-0">
+                    <div className="flex justify-between w-full">
                         <Button
                             label={isArchive ? " Simpan & Perbarui Archive" : isDraft ? "Simpan & Perbarui Draft" : editMode ? 'Simpan Ke Archive' : 'Simpan Ke Draft'}
                             id={`draft`}
@@ -394,7 +416,7 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                             className={ formValues.title !== '' ? 'block' : 'hidden'}
                         />
                         <Button
-                            label='Cancel'
+                            label='Tutup'
                             id={`tidak`}
                             color={'whiteOrange'}
                             size='base'
@@ -403,6 +425,7 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                         />
                     </div>
                 </div>
+            }
             </div>
         </Modal>
     )

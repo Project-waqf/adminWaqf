@@ -7,17 +7,48 @@ import useNews from '../api/hooks/useNews'
 import CustomCollapse from '../components/Collapse'
 import useAsset from '../api/hooks/useAsset'
 import useWakaf from '../api/hooks/useWakaf'
-import { AllDataType } from '../utils/types/DataType'
+import { AllDataType, AssetType, NewsType, WakafType } from '../utils/types/DataType'
 import { Collapse, Input, theme } from 'antd'
 import { FiSearch } from 'react-icons/fi'
 import { useLocation } from 'react-router-dom'
+import NewsModal from '../components/Modal/NewsModal'
+import AssetModal from '../components/Modal/AssetModal'
+import WakafModal from '../components/Modal/WakafModal'
 const { Panel } = Collapse;
+const initialEditNewsValue = {
+    title: "",
+    body: "",
+    picture: null,
+    status: ''
+}
+const initialEditAssetValue = {
+    name: '',
+    detail: '',
+    picture: null,
+    status: ""
+}
+const initialEditWakafValue = {
+    title: "",
+    category: "",
+    picture: null,
+    detail: '',
+    due_date: '',
+    fund_target: 0,
+    collected: 0,
+    status: ''
+}
 const Search = () => {
 
     const {allNews} = useNews()
     const {allAsset}= useAsset()
     const {allWakaf} = useWakaf()
     const location = useLocation()
+    const [news, setNews] = useState<any>(initialEditNewsValue)
+    const [asset, setAsset] = useState<any>(initialEditAssetValue)
+    const [wakaf, setWakaf] = useState<any>(initialEditWakafValue)
+    const [isModalNews, setIsModalNews] = useState(false)
+    const [isModalAsset, setIsModalAsset] = useState(false)
+    const [isModalWakaf, setIsModalWakaf] = useState(false) 
     const [search, setSearch] = useState('')
     const [allData, setAllData] = useState<AllDataType[]>([])
     const [query, setQuery] = useState(location?.state?.query)
@@ -25,18 +56,20 @@ const Search = () => {
     useEffect(() => {
         if (allNews) {
         const newsData: any[] = [] 
-            for (let i = 0; i < allNews.length; i++) {
-            newsData.push(allNews[i]);
+        const modifNews = allNews.map((item:any)=> {return {...item, type: 'news'}})
+            for (let i = 0; i < modifNews.length; i++) {
+            newsData.push(modifNews[i]);
             } 
             if (newsData.length === allNews.length && allAsset) {
-            const modifAsset = allAsset.map((item:any)=>{return{...item, title: item.name, name:undefined}})
-            const assetData: any[]= []
+                const assetData: any[]= []
+                const modifAsset = allAsset.map((item:any)=>{return{...item, title: item.name, type: 'asset', name:undefined}})
             for (let i = 0; i < modifAsset.length; i++) {
                 assetData.push(modifAsset[i]);
             } if (assetData.length === allAsset.length && allWakaf) {
                 const wakafData: any[] = []
-                for (let i = 0; i < allWakaf.length; i++) {
-                    wakafData.push(allWakaf[i])
+                const modifWakaf = allWakaf.map((item:any)=> {return {...item, type: 'wakaf'}})
+                for (let i = 0; i < modifWakaf.length; i++) {
+                    wakafData.push(modifWakaf[i])
                 }
                 setAllData([...newsData, ...assetData, ...wakafData])
             }
@@ -44,6 +77,8 @@ const Search = () => {
         }
     }, [allNews, allWakaf, allAsset])
 
+    console.log(allData);
+    
     useEffect(() => {
         if (search === "" && query!== '') {
             setSearch(query)
@@ -57,6 +92,56 @@ const Search = () => {
         border: 'none',
         borderRadius: token.borderRadiusLG,
     };
+    console.log('news', news);
+    console.log('asset', asset);
+    console.log('wakaf', wakaf);
+    const handleCancle = () => {
+        setIsModalAsset(false)
+        setIsModalNews(false)
+        setIsModalWakaf(false)
+    }
+    const handleDetail = async (id:number, type:string) => {
+        if (type === 'news'){
+            const selectedNews = allData.find((item:any)=> item.id_news === id)
+            if (!selectedNews) {
+                return;
+            }
+            setNews({
+                title: selectedNews.title,
+                body: selectedNews.body,
+                status: selectedNews.status
+            })
+            setIsModalNews(true)
+        }if (type === 'asset'){
+            const selectedAsset = allData.find((item:any)=> item.id_asset === id)
+            if (!selectedAsset) {
+                return;
+            }
+            setAsset({
+                name: selectedAsset.title,
+                detail: selectedAsset.detail,
+                status: selectedAsset.status
+            })
+            setIsModalAsset(true)
+        }if (type === 'wakaf'){
+            const selectedWakaf = allData.find((item:any)=> item.id === id)
+            if (!selectedWakaf) {
+                return;
+            }
+            setWakaf({
+                title: selectedWakaf.title,
+                detail: selectedWakaf.detail,
+                fund_target: selectedWakaf.fund_target,
+                collected: selectedWakaf.collected,
+                due_date: selectedWakaf.due_date,
+                status: selectedWakaf.status
+            })
+            setIsModalWakaf(true)
+        }
+    }
+    const handleSubmit = () => {
+
+    }
     return (
         <>
         <Sidebar/>
@@ -85,10 +170,39 @@ const Search = () => {
                     className='w-full text-base  text-neutral-80 mb-10'
                 />
                 <SearchTable data={allData?.filter((item)=> {
-                    return search.toLocaleLowerCase() === "" ? item : item.title.toLocaleLowerCase().includes(search.toLocaleLowerCase())
-                })}/>
+                    return search.toLocaleLowerCase() === "" ? item : item?.title.toLocaleLowerCase().includes(search.toLocaleLowerCase())
+                })}
+                handleDetail={handleDetail}
+                />
             </Panel>
         </Collapse>
+        <NewsModal
+        open={isModalNews}
+        editValues={news}
+        handleCancel={handleCancle}
+        onSubmit={handleSubmit}
+        editMode={true}
+        search={true}
+        status={news.status}
+        />
+        <AssetModal
+        open={isModalAsset}
+        editValues={asset}
+        handleCancel={handleCancle}
+        onSubmit={handleSubmit}
+        editMode={true}
+        search={true}
+        status={asset.status}
+        />
+        <WakafModal
+        open={isModalWakaf}
+        editValues={wakaf}
+        handleCancel={handleCancle}
+        onSubmit={handleSubmit}
+        editMode={true}
+        search={true}
+        status={wakaf.status}
+        />
         </div>
         </Display>
         </>

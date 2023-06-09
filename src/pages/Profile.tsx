@@ -45,20 +45,19 @@ const Profile = () => {
 
     
     useEffect(() => {
-        if(value.old_password !== ''){
+        if(value.old_password !== '' && value.re_password !== ''){
             setWithPassword(true)
-        } else if(value.old_password === ''){
+        } else if(value.old_password === '' && value.re_password === ''){
             setWithPassword(false)
         }
-    }, [value.old_password])
+    }, [value.old_password, value.re_password])
     
     useEffect(() => {
         if (changeImage) {
             setChangeFoto(true)
         }
     }, [changeImage])
-    console.log(changeFoto);
-    
+    console.log(withPassword);
     
     
     const handleInputChange = (e:React.ChangeEvent<HTMLInputElement>) => {
@@ -181,7 +180,7 @@ const Profile = () => {
         <Sidebar/>
         <Display>
         <Headers label='Profile'/>
-            <div className="flex flex-col bg-white h-fit rounded-xl p-10 space-y-2 mx-auto w-11/12 my-10">
+            <div className="flex flex-col bg-white h-fit rounded-xl p-10 space-y-2 mx-auto w-11/12 my-10 relative">
                 <form  className='flex flex-col w-full' onSubmit={changeImage ? handleChangePicture :  withPassword ? handleSubmitWithPassword : handleSubmit}>
                 <div className="flex">
                     {changeImage && (
@@ -220,6 +219,7 @@ const Profile = () => {
                             placeholder='Your Name'
                             value={value.name}
                             onChange={handleInputChange}
+                            disable={changeFoto ? true : false}
                             />
                         </div>
                         {loading ?
@@ -287,6 +287,7 @@ const Profile = () => {
                                     value={value.old_password}
                                     onChange={handleInputChange}
                                     placeholder='Masukan Password Lama'
+                                    disable={changeFoto ? true : false}
                                     error={errorOldPassword}
                                     />
                                 </div>
@@ -308,6 +309,7 @@ const Profile = () => {
                                     type='password'
                                     placeholder='Masukan Password Baru'
                                     value={value.new_password}
+                                    disable={changeFoto ? true : false}
                                     onChange={handleInputChange}
                                     error={!isPasswordValid(value.password) && "*Minimal 6 karakter, dilengkapi minimal 1 huruf kapital, 1 simbol dan 1 angka."}
                                     />
@@ -335,6 +337,7 @@ const Profile = () => {
                                     value={value.re_password}
                                     onChange={handleInputChange}
                                     error={errorPassword}
+                                    disable={changeFoto ? true : false}
                                     />
                                 </div>
                                 {loading ?
@@ -349,22 +352,23 @@ const Profile = () => {
                     </Collapse>
                     <div className="flex flex-row w-[720px] justify-end space-x-8">
                         <Button
-                        type={'button'}
-                        id='cancel'
-                        color='orangeBorder'
-                        size='base'
-                        label='Cancel'
-                        />
-                        <Button
                         type={'submit'}
                         id='simpan'
                         color='orange'
                         size='base'
                         label='Simpan'
-                        onClick={()=> console.log(value)}
+                        disabled={changeFoto ? false : withPassword ? false : value.name !== cookie.name ? false : true}
                         />
                     </div>
                 </form>
+                        <Button
+                        type={'button'}
+                        id='cancel'
+                        color='orangeBorder'
+                        size='base'
+                        label='Cancel'
+                        className={changeFoto ? 'absolute transition-all bottom-10 right-80 mt-0.5 mr-60' : withPassword ? 'absolute transition-all bottom-10 right-80 mt-0.5 mr-60' : value.name !== cookie.name ? 'absolute transition-all bottom-10 right-80 mt-0.5 mr-60' : 'hidden'}
+                        />
             </div>
         </Display>
     </>    

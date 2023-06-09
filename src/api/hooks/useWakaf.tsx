@@ -1,3 +1,4 @@
+import { WakafType } from "@/utils/types/DataType"
 import Alert from "../../components/Alert/Alert"
 import { APIUrl } from "../../string"
 
@@ -6,15 +7,14 @@ import { useCallback, useEffect, useState } from "react"
 
 export default function useWakaf(){
     const [wakaf, setWakaf] = useState<any>()
-    const [allWakaf, setAllWakaf] = useState<[]>()
+    const [allWakaf, setAllWakaf] = useState<WakafType[]>()
     const [totalOnlineWakaf, setTotalOnlineWakaf] = useState<number>(0)
     const [totalDraftWakaf, setTotalDraftWakaf] = useState<number>(0)
     const [totalArchiveWakaf, setTotalArchiveWakaf] = useState<number>(0)
     const [totalWakaf, setTotalWakaf] = useState<number>()
     const HOST = APIUrl
-    useEffect(() => {
-        setTotalWakaf(totalOnlineWakaf + totalArchiveWakaf + totalDraftWakaf)
-    }, [totalArchiveWakaf, totalDraftWakaf, totalOnlineWakaf])
+
+
     const getAllWakaf = useCallback(async () => {
         try {
             const response = await axios.get(`${HOST}wakaf?isUser=false`)

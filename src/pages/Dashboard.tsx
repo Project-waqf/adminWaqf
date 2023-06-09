@@ -5,7 +5,7 @@ import { Pagination, Space } from 'antd'
 import CustomCollapse from '../components/Collapse';
 import { useCookies } from 'react-cookie';
 import Display from '../components/DisplayContent/Display';
-import { WakafType } from '../utils/types/DataType';
+import { DashboardType, DataDashboard, WakafType } from '../utils/types/DataType';
 import ConfirmAlert from '../components/Alert/ConfirmAlert';
 import LoadingAlert from '../components/Modal/LoadingAlert';
 import Headers from '../components/Headers/Headers';
@@ -15,9 +15,14 @@ import useWakaf from '../api/hooks/useWakaf';
 import useDashboard from '../api/hooks/useDashboard';
 import Card from '../components/Card/Card';
 import Alert from '../components/Alert/Alert';
+import assetIcon from "../assets/Group 26958.svg";
+import aktifIcon from "../assets/Group 26957 (2).svg";
+import succesIcon from "../assets/Group 26957.svg";
 import { useDispatch, useSelector } from 'react-redux';
 import { ArchiveState, removeWakafFromArchive } from '../stores/archiveSlice';
 import Swal from 'sweetalert2';
+import axios from 'axios';
+import { APIUrl } from '../string';
 
 const initialEditValue: WakafType = {
     title: "",
@@ -33,16 +38,66 @@ const Dashboard = () => {
     const [cookie] = useCookies(['token', 'id', 'name', 'email', 'foto'])
     const [loading, setLoading] = useState(false)
     const [page, setPage] = useState<number>(1)
-    const { wakaf, getWakaf, totalOnlineWakaf , editedWakaf, archiveWakaf, deleteWakaf } = useWakaf()
+    const [dashboardData, setDashboardData] = useState<DataDashboard>({data: [],});
+    const { wakaf, getWakaf, totalOnlineWakaf , editedWakaf, archiveWakaf, deleteWakaf, allWakaf } = useWakaf()
     const dispatch = useDispatch()
     const archive = useSelector((state: {archive: ArchiveState}) => state.archive)
-    const {dashboardData} = useDashboard()
     const [editValue , setEditValue] = useState<WakafType>(initialEditValue)
     const [editMode, setEditMode] = useState(false)
     const [selectedId, setSelectedId] = useState<number>(0)
+    const [summary, setSummary] = useState<any>({})
+    const [wakafCompleted, setWakafCompleted] = useState<number>(0) 
 
-    console.log(wakaf);
+    console.log(wakafCompleted);
+    console.log(allWakaf)
+    useEffect(() => {
+        if(allWakaf){
+            let total: number = 0            
+            for (const wakaf of allWakaf) {
+                if (wakaf.collected === wakaf.fund_target) {
+                    total += 1
+                }
+            }
+            setWakafCompleted(total)
+        }
+    }, [allWakaf])
+    useEffect(() => {
+        if (summary && wakafCompleted) {
+            const initialData: DashboardType[] = [
+                {
+                    id: 1,
+                    icon: aktifIcon,
+                    header: 'Wakaf Aktif',
+                    count: summary.total_wakif,
+                },
+                {
+                    id: 2,
+                    icon: succesIcon,
+                    header: 'Wakaf Selesai',
+                    count: wakafCompleted,
+                },
+                {
+                    id: 2,
+                    icon: assetIcon,
+                    header: 'Jumlah Asset',
+                    count: summary.total_program,
+                },
+            ];
+            setDashboardData({data: initialData})
+        }
+    }, [summary, wakafCompleted])
     
+
+    const getSummary = async () => {
+        try {
+            const response = await axios.get(APIUrl + 'wakaf/summary')
+            setSummary(response.data.data) 
+            return response
+        } catch (error) {}
+    }
+    useEffect(() => {
+        getSummary()
+    }, [])
     
     useEffect(() => {
         getWakaf({status: 'online', page: page})

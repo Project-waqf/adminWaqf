@@ -10,14 +10,17 @@ import { DraftState, newsToDraft } from "../../stores/draftSilce";
 import { newsToArchive, ArchiveState } from '../../stores/archiveSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import Editor from '../CustomInput/Editor';
+import { search } from 'jodit/types/plugins/search/search';
 
 
     interface FormProps {
         onSubmit: (formValues: NewsType) => void;
         editValues: NewsType;
-        editMode: boolean;
+        editMode?: boolean;
         isArchive?: boolean
         isDraft?: boolean
+        search?: boolean
+        status?: any
         open: boolean
         handleCancel: React.MouseEventHandler
     }
@@ -27,7 +30,7 @@ import Editor from '../CustomInput/Editor';
         picture: null
     };
 
-const NewsModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, isArchive, isDraft, handleCancel}) => {
+const NewsModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, isArchive, isDraft, handleCancel, status, search}) => {
     
     const [formValues, setFormValues] = useState<NewsType>(initialFormValues);
     const [loading , setLoading] = useState(false)
@@ -111,10 +114,13 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, 
         onCancel={handleCancel} 
         centered closeIcon
         style={{padding: 5}}
-        title={<Typography color='text01' variant='h1' type='semibold'>{editMode ? 'Edit Berita' : 'Tambah Berita'}</Typography>}
+        title={<Typography color='text01' variant='h1' type='semibold'>{editMode && !search ? 'Edit Berita' : editMode && search ? 'Detail Berita' : 'Tambah Berita'}</Typography>}
         width={1120}
         footer={<></>}>
                 <div className="relative mx-5 my-8">
+                    <Typography variant='body1' color='text01' type='medium' className='mb-5'>
+                        Status: <span className={status === "online" ? 'text-green-500':'text-primary-100'}>{status}</span>
+                    </Typography>
                     <form className='flex flex-col space-y-5' onSubmit={handleSubmit}>
                     <div className="flex space-x-8">
                         <div className="">
@@ -131,6 +137,7 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, 
                                 className={`mt-2 h-12 w-[430px] border-neutral-80`}
                                 value={formValues.title}
                                 onChange={handleInputChange}
+                                disabled={search}
                             />
                             <Typography variant='body3' color='error80' type='normal' className='my-2'>
 
@@ -140,12 +147,12 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, 
                             <Typography variant='h4' color='text01' type='medium' className=''>
                                 Gambar
                             </Typography>
-                            <label className="block mt-2 bg-btnColor flex justify-center space-x-1 p-2 w-52 h-12 rounded-lg cursor-pointer" htmlFor="file_input">
+                            <label className={"block mt-2 bg-btnColor flex justify-center space-x-1 p-2 w-52 h-12 rounded-lg cursor-pointer"} htmlFor="file_input">
                                 <TbFileDescription className='text-[28px] text-whiteBg' />
                                 <Typography variant='h5' color='' type='normal' className='mt-0.5 text-whiteBg'>
                                     Upload Gambar
                                 </Typography>
-                            <input name='picture' onChange={handleImageChange} className="hidden w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50" aria-describedby="file_input_help" id="file_input" type="file"/>
+                            <input name='picture' onChange={handleImageChange} disabled={search} className="hidden w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50" aria-describedby="file_input_help" id="file_input" type="file"/>
                             </label>
                             <Typography variant='text' color={error ? 'error80' : 'neutral-90'} type='normal' className=''>
                                 {error ? error : 'Max 5 mb'}
@@ -170,11 +177,25 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, 
                         id={`tidak`}
                         color={'orange'}
                         size='base'
-                        disabled={disabled}
+                        disabled={disabled || search}
                         onClick={()=> console.log(formValues)}
                     />
                 </div>
             </form >
+            {search ?
+                <div className="w-[845px] absolute left-0 bottom-0">
+                    <div className="flex justify-start w-full">
+                        <Button
+                            label='Tutup'
+                            id={`tidak`}
+                            color={'whiteOrange'}
+                            size='base'
+                            onClick={handleCancel}
+                            className={ formValues.title !== '' ? 'ml-0' : 'ml-auto'}
+                        />
+                    </div>
+                </div>
+                : 
                 <div className="w-[845px] absolute left-0 bottom-0">
                     <div className="flex justify-between w-full">
                         <Button
@@ -196,6 +217,7 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, 
                         />
                     </div>
                 </div>
+                }
             </div>
         </Modal>
     )
