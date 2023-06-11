@@ -71,11 +71,7 @@ const Asset = () => {
             if (res.isConfirmed) {
                 setIsModal(false);
                 setEditMode(false)
-                setValue({
-                    name: '',
-                    detail: '',        
-                    picture: null,
-                });
+                setValue(initialFormValues);
             }
         })
     };
@@ -86,14 +82,14 @@ const Asset = () => {
             const validation = await ConfirmAlert('upload')
             if (validation.isConfirmed) {
                 setLoading(true)
-                try {
                     const result = await createAsset({name: formValues.name, detail: formValues.detail, picture: formValues.picture, token: cookie.token})
+                    if (result) {
+                        setLoading(false);
+                        setIsModal(false)
+                        getAsset({status: 'online', page: page})
+                    }
                     setLoading(false);
                     setIsModal(false)
-                    getAsset({status: 'online', page: page})
-                    return result
-                } catch (error) {}
-
             }
         setLoading(false)
     };
@@ -116,21 +112,16 @@ const Asset = () => {
         const validation = await ConfirmAlert('edit')
         if (validation.isConfirmed) {
             setLoading(true);
-            try {
-                const result = await editedAsset({
-                name: formValues.name,
-                detail: formValues.detail,
-                picture: formValues.picture,
-                id: selectedId,
-                token: cookie.token
-                })
+                const result = await editedAsset({name: formValues.name, detail: formValues.detail, picture: formValues.picture, id: selectedId, token: cookie.token})
+                if (result) {
+                    setIsModal(false)
+                    setLoading(false)
+                    setValue(initialFormValues)
+                    getAsset({status: 'online', page: page})
+                }
                 setIsModal(false)
                 setLoading(false)
-                getAsset({status: 'online', page: page})
-                setValue({name: '', detail: ''})
-                return result
-            } catch (error) {}
-            setLoading(false)
+                setValue(initialFormValues)
         }
     }
 
@@ -138,26 +129,28 @@ const Asset = () => {
         const validation = await ConfirmAlert('archive')
         if (validation.isConfirmed) {
             setLoading(true)
-            try {
                 const response = await archiveAsset({id: id, token: cookie.token})
+                if (response) {
+                    setLoading(false)
+                    getAsset({status: 'online', page: page})
+                }
                 setLoading(false)
-                getAsset({status: 'online', page: page})
-                return response
-            } catch (error) {}
         }
     }
     const handleArchive = async (formValues: AssetType) => {
         const validation = await ConfirmAlert('archive')
         if (validation.isConfirmed) {
             setLoading(true)
-            try {
                 const response = await editedAsset({id: selectedId, name: formValues.name, detail: formValues.detail, picture: formValues.picture, status: 'archive', token: cookie.token})
+                if (response) {
+                    getAsset({status: 'online', page: page})
+                    setLoading(false)
+                    setIsModal(false)
+                    dispatch(removeAssetFromArchive(formValues.name))
+                }
                 setLoading(false)
                 setIsModal(false)
-                getAsset({status: 'online', page: page})
                 dispatch(removeAssetFromArchive(formValues.name))
-                return response
-            } catch (error) {}
         } else if (validation.dismiss === Swal.DismissReason.cancel) {
             dispatch(removeAssetFromArchive(formValues.name))
         }
@@ -165,14 +158,17 @@ const Asset = () => {
     const handleDraft = async (formValues: AssetType) => {
         const validation = await ConfirmAlert('draft')
         if (validation.isConfirmed) {
-            try {
+            setLoading(true)
                 const response = await draftAsset({name: formValues.name, detail: formValues.detail, picture: formValues.picture, token: cookie.token})
-                setLoading(false)
-                setIsModal(false)
+                if (response) {
+                    setLoading(false)
+                    setIsModal(false)
+                    dispatch(removeAssetFromDraft(formValues.name))
+                    getAsset({status: 'online', page: page})
+                }
                 dispatch(removeAssetFromDraft(formValues.name))
-                return response
-            } catch (error) {}
-            setLoading(false)
+                setIsModal(false)
+                setLoading(false)
         } else if (validation.dismiss === Swal.DismissReason.cancel) {
             dispatch(removeAssetFromDraft(formValues.name))
         }
@@ -181,12 +177,12 @@ const Asset = () => {
         const validation = await ConfirmAlert('delete')
         if (validation.isConfirmed) {
             setLoading(true)
-            try {
                 const response = await deleteAsset({id: id, token: cookie.token})
-                getAsset({status: 'online', page: page})
+                if (response) {
+                    getAsset({status: 'online', page: page})
+                    setLoading(false)
+                }
                 setLoading(false)
-                return response
-            } catch (error) {}
         }
     }
 

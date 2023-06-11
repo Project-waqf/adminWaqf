@@ -69,8 +69,7 @@ const Wakaf = () => {
                 setEditMode(false)
                 setEditValue({
                     title: '',
-                    category: '',        
-                    picture: null,
+                    category: '',
                     detail: '',
                     due_date: '',
                     fund_target: 0,
@@ -85,7 +84,6 @@ const Wakaf = () => {
         const validation = await ConfirmAlert('upload')
         if (validation.isConfirmed) {
             setLoading(true)
-            try {
             const result = await createWakaf({
                 title: formValues.title,
                 category: formValues.category,
@@ -95,14 +93,14 @@ const Wakaf = () => {
                 fund_target: formValues.fund_target,
                 id: selectedId,
                 token: cookie.token
-            })
-            setEditValue({title: '', category: '', picture: null, detail: '', due_date: '', fund_target: 0, collected: 0});
-            setLoading(false);
+            }) 
+            if (result) {
+                setEditValue({title: '', category: '', detail: '', due_date: '', fund_target: 0, collected: 0});
+                setLoading(false);
+                setShowModal(false)
+                getWakaf({status: 'online', page: page})
+            }
             setShowModal(false)
-            Alert('upload')
-            getWakaf({status: 'online', page: page})
-            return result
-            } catch (error) {}
             setLoading(false)
         }          
     } 
@@ -133,7 +131,6 @@ const Wakaf = () => {
         const validation = await ConfirmAlert('edit')
         if (validation.isConfirmed) {
             setLoading(true);
-            try {
             const result = await editedWakaf({
                 title: formValues.title,
                 category: formValues.category,
@@ -144,12 +141,13 @@ const Wakaf = () => {
                 id: selectedId,
                 token: cookie.token
             })
+            if (result) {
+                setShowModal(false)
+                setLoading(false)
+                getWakaf({status: 'online', page: page})
+                Alert('edit')            
+            }
             setShowModal(false)
-            setLoading(false)
-            getWakaf({status: 'online', page: page})
-            Alert('edit')
-            return result
-            } catch (error) {}
             setLoading(false)
         }
     }
@@ -159,16 +157,17 @@ const Wakaf = () => {
         const validation = await ConfirmAlert('archive')
         if (validation.isConfirmed) {
             setLoading(true)
-            try {
                 const response = await editedWakaf({id: selectedId, status: 'archive', title: formValues.title, category: formValues.category, picture: formValues.picture, detail: formValues.detail, due_date: formValues.due_date, fund_target: formValues.fund_target, token: cookie.token})
-                getWakaf({status: 'online', page: page})
+                if (response) {
+                    getWakaf({status: 'online', page: page})
+                    setLoading(false)
+                    setShowModal(false)
+                    dispatch(removeWakafFromArchive(formValues.title))
+                }
                 setLoading(false)
                 setShowModal(false)
-                Alert('archive')
                 dispatch(removeWakafFromArchive(formValues.title))
-                return response
-            } catch (error) {}
-            setLoading(false)
+                setLoading(false)
         } else if (validation.dismiss === Swal.DismissReason.cancel) {
             dispatch(removeWakafFromArchive(formValues.title))
         }
@@ -178,30 +177,27 @@ const Wakaf = () => {
         const validation = await ConfirmAlert('archive')
         if (validation.isConfirmed) {
             setLoading(true)
-            try {
                 const response = await archiveWakaf({id: id, token: cookie.token})
-                getWakaf({status: 'online', page: page})
-                setLoading(false)
-                setShowModal(false)
-                Alert('archive')
-                return response
-            } catch (error) {}
+                if (response) {
+                    getWakaf({status: 'online', page: page})
+                    setLoading(false)
+                }            
             setLoading(false)
         }
     }
     const handleDraft = async (formValues: WakafType) => {
         const validation = await ConfirmAlert('draft')
         if (validation.isConfirmed) {
-            try {
                 const response = await draftWakaf({title: formValues.title, category: formValues.category, picture: formValues.picture, detail: formValues.detail, due_date: formValues.due_date, fund_target: formValues.fund_target, token: cookie.token})
-                getWakaf({status: 'online', page: page})
-                setLoading(false)
-                setShowModal(false)
-                Alert('draft')
+                if (response) {
+                    getWakaf({status: 'online', page: page})
+                    setLoading(false)
+                    setShowModal(false)
+                    dispatch(removeWakafFromDraft(formValues.title))
+                }
                 dispatch(removeWakafFromDraft(formValues.title))
-                return response
-            } catch (error) {}
-            setLoading(false)
+                setShowModal(false)
+                setLoading(false)
         } else if (validation.dismiss === Swal.DismissReason.cancel) {
             dispatch(removeWakafFromDraft(formValues.title))
         }
@@ -210,17 +206,12 @@ const Wakaf = () => {
     const handleDelete =async (id: number) => {
         const validation = await ConfirmAlert('delete')
         if (validation.isConfirmed) {
-        setLoading(true)
-            try {     
-                const result = await deleteWakaf({
-                id: id,
-                token: cookie.token
-                })
-                getWakaf({status: 'online', page: page})
-                setLoading(false)
-                Alert('delete')
-                return result
-            } catch (error) {}
+        setLoading(true)     
+                const result = await deleteWakaf({ id: id, token: cookie.token })
+                if (result) {   
+                    getWakaf({status: 'online', page: page})
+                    setLoading(false)
+                }
         setLoading(false)
         }
     }

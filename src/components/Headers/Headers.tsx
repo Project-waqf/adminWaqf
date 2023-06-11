@@ -14,6 +14,7 @@ import axios from 'axios'
 import { APIUrl } from '../../string'
 import useWakaf from '../../api/hooks/useWakaf'
 import { AllDataType } from '../../utils/types/DataType'
+import ConfirmAlert from '../Alert/ConfirmAlert'
 interface props{
     label: string
     isSearch?: boolean
@@ -98,14 +99,17 @@ const Headers: React.FC<props> = ({label, isSearch}) => {
             }
         })
     }
-    const handleLogout = () => {
-        dispatch(logout());
-        removeCookie('name');
-        removeCookie('token');
-        removeCookie('id');
-        removeCookie('foto');
-        removeCookie('email');
-        navigate("/");
+    const handleLogout = async () => {
+        const validation = await ConfirmAlert('logout')
+        if (validation.isConfirmed) {
+            dispatch(logout());
+            removeCookie('name');
+            removeCookie('token');
+            removeCookie('id');
+            removeCookie('foto');
+            removeCookie('email');
+            navigate("/");
+        }
     }
     
     return (

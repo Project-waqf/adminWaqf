@@ -31,7 +31,7 @@ const WakafTable: React.FC<TableProps> = ({ dashboard, archives, draft, data, ha
         <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
             <thead className="text-[14px] text-neutral-80 bg-white">
                 <tr>
-                    <th scope="col" className="px-6 py-3 w-40">
+                    <th scope="col" className="px-6 py-3 w-32">
                         Tanggal
                     </th>
                     <th scope="col" className={`px-6 py-3 ${draft || archive ? 'lg:w-[550px] xl:w-[780px]' : 'lg:w-[347px] xl:w-[600px]'}`}>
@@ -57,13 +57,13 @@ const WakafTable: React.FC<TableProps> = ({ dashboard, archives, draft, data, ha
                     data.map((item: any)=> {
                         return(
                         <tr key={item.id} className="bg-white">
-                            <td scope="row" className="px-6 py-4 w-40">
-                            <Typography color='text01' variant='body3' type='semibold'>
+                            <td scope="row" className="px-6 py-4 w-32">
+                            <Typography color='text01' variant='body3' type='semibold' className='w-32'>
                                 {item.created_at}
                             </Typography>
                             </td>
                             <td className="px-6 py-4 w-[347px]">
-                                <Typography color='text01' variant='body3' type='semibold' className=''>
+                                <Typography color='text01' variant='body3' type='semibold' className='w-[347px] truncate'>
                                 {item.title}
                                 </Typography>
                             </td>
@@ -133,13 +133,13 @@ const WakafTable: React.FC<TableProps> = ({ dashboard, archives, draft, data, ha
                 data?.map((item:any)=>{
                 return(
                     <tr key={item.id} className="bg-white">
-                        <td scope="row" className="px-6 py-4 w-40">
-                        <Typography color={item.collected >= item.fund_target ? 'green' : item.collected < item.fund_target && item.due_date == 0 ? 'error90' : 'text01'} variant='body3' type='semibold'>
+                        <td scope="row" className="px-6 py-4 w-44">
+                        <Typography color={item.collected >= item.fund_target ? 'green' : item.collected < item.fund_target && item.due_date == 0 ? 'error90' : 'text01'} variant='body3' type='semibold' className='w-32'>
                             {item.created_at}
                         </Typography>
                         </td>
                         <td className="px-6 py-4 w-[347px]">
-                            <Typography color={item.collected >= item.fund_target ? 'green' : item.collected < item.fund_target && item.due_date == 0 ? 'error90' : 'text01'} variant='body3' type='semibold' className=''>
+                            <Typography color={item.collected >= item.fund_target ? 'green' : item.collected < item.fund_target && item.due_date == 0 ? 'error90' : 'text01'} variant='body3' type='semibold' className='w-[347px] truncate'>
                             {item.title}
                             </Typography>
                         </td>

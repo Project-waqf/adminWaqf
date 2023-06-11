@@ -81,8 +81,7 @@ const News = () => {
                 setEditMode(false)
                 setEditNews({
                     title: '',
-                    body: '',        
-                    picture: null,
+                    body: ''
                 });
             }
         })
@@ -103,9 +102,10 @@ const News = () => {
                 setLoading(false);
                 setisModalNews(false)
                 setEditNews(initialEditNewsValue)
+                getNews({status: 'online', page: page})
             }
+            setisModalNews(false)
             setLoading(false)
-            getNews({status: 'online', page: page})
         }          
     } 
     
@@ -140,22 +140,24 @@ const News = () => {
                 setLoading(false)
                 setisModalNews(false)
             }
+            setLoading(false)
+            setisModalNews(false)
         }
     }
-    console.log(selectedId);
     
     const handleArchive = async (formValues: NewsType) => {
         const validation = await ConfirmAlert('archive')
         if (validation.isConfirmed) {
             setLoading(true)
-            try {
-                const response = await editedNews({id: selectedId, title: formValues.title, body: formValues.body, status: 'archive',  token: cookie.token})
+            const response = await editedNews({id: selectedId, title: formValues.title, body: formValues.body, status: 'archive',  token: cookie.token})
+            if (response) {
                 getNews({status: 'online', page: page})
                 setLoading(false)
                 dispatch(removeNewsFromArchive(formValues.title))
                 setisModalNews(false)
-                return response
-            } catch (error) {}
+            }
+            setisModalNews(false)
+            dispatch(removeNewsFromArchive(formValues.title))
             setLoading(false)
         } else if (validation.dismiss === Swal.DismissReason.cancel) {
             dispatch(removeNewsFromArchive(formValues.title))
@@ -165,28 +167,29 @@ const News = () => {
         const validation = await ConfirmAlert('archive')
         if (validation.isConfirmed) {
             setLoading(true)
-            try {
                 const response = await archiveNews({id: id, token: cookie.token})
+            if (response) {
                 getNews({status: 'online', page: page})
                 setLoading(false)
                 setisModalNews(false)
-                return response
-            } catch (error) {}
+            }
             setLoading(false)
+            setisModalNews(false)
         } 
     }
 
     const handleDraft = async (formValues: NewsType) => {
         const validation = await ConfirmAlert('draft')
         if (validation.isConfirmed) {
-            try {
-                const response = await draftNews({title: formValues.title, body: formValues.body, picture: formValues.picture, token: cookie.token})
+            const response = await draftNews({title: formValues.title, body: formValues.body, picture: formValues.picture, token: cookie.token})
+            if (response) {
                 getNews({status: 'online', page: page})
                 setLoading(false)
                 setisModalNews(false)
                 dispatch(removeNewsFromDraft(formValues.title))
-                return response
-            } catch (error) {}
+            }
+            setisModalNews(false)
+            dispatch(removeNewsFromDraft(formValues.title))
             setLoading(false)
         } else if (validation.dismiss === Swal.DismissReason.cancel) {
             dispatch(removeNewsFromDraft(formValues.title))
@@ -196,16 +199,12 @@ const News = () => {
     const handleDelete =async (id: number) => {
         const validation = await ConfirmAlert('delete')
         if (validation.isConfirmed) {
-        setLoading(true)
-            try {     
-                const result = await deleteNews({
-                id: id,
-                token: cookie.token
-                })
-                getNews({status: 'online', page: page})
-                setLoading(false)
-                return result
-            } catch (error) {}
+        setLoading(true)     
+            const result = await deleteNews({ id: id, token: cookie.token })
+            if (result) {
+            getNews({status: 'online', page: page})
+            setLoading(false)
+            }
         setLoading(false)
         }
     }
