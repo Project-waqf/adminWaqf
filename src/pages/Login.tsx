@@ -67,7 +67,7 @@ const Login = () => {
         setCookie("foto", response.data.data.image, { path: "/" });
         dispatch(loginSuccess(user));
         navigate("/dashboard");
-        Alert("archive");
+        Alert()
       })
       .catch((error) => {
         if(error.response.status === 404){

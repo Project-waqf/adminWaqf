@@ -31,19 +31,19 @@ const WakafTable: React.FC<TableProps> = ({ dashboard, archives, draft, data, ha
         <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
             <thead className="text-[14px] text-neutral-80 bg-white">
                 <tr>
-                    <th scope="col" className="px-6 py-3 w-32">
+                    <th scope="col" className="px-6 py-3 w-30">
                         Tanggal
                     </th>
-                    <th scope="col" className={`px-6 py-3 ${draft || archive ? 'lg:w-[550px] xl:w-[780px]' : 'lg:w-[347px] xl:w-[600px]'}`}>
+                    <th scope="col" className={`px-2 py-3 ${draft || archive ? 'lg:w-[550px] xl:w-[780px]' : 'lg:w-[347px] xl:w-[600px]'}`}>
                         Judul
                     </th>
-                    <th scope="col" className={draft || archives ? "hidden" : "px-6 py-3 w-[160px]"}>
+                    <th scope="col" className={draft || archives ? "hidden" : "px-2 py-3 w-[160px]"}>
                         Terkumpul
                     </th>
-                    <th scope="col" className="px-6 py-3 w-[120px]">
+                    <th scope="col" className="px-2 py-3 w-[120px]">
                         Target
                     </th>
-                    <th scope="col" className="px-6 py-3 w-[130px]">
+                    <th scope="col" className="px-2 py-3 w-[130px]">
                         Jumlah Hari
                     </th>
                     <th scope="col" className="py-3">
@@ -57,27 +57,27 @@ const WakafTable: React.FC<TableProps> = ({ dashboard, archives, draft, data, ha
                     data.map((item: any)=> {
                         return(
                         <tr key={item.id} className="bg-white">
-                            <td scope="row" className="px-6 py-4 w-32">
-                            <Typography color='text01' variant='body3' type='semibold' className='w-32'>
+                            <td scope="row" className="px-2 py-4 w-30">
+                            <Typography color='text01' variant='body3' type='semibold' className='w-30'>
                                 {item.created_at}
                             </Typography>
                             </td>
-                            <td className="px-6 py-4 w-[347px]">
+                            <td className="px-2 py-4 w-[347px]">
                                 <Typography color='text01' variant='body3' type='semibold' className='w-[347px] truncate'>
                                 {item.title}
                                 </Typography>
                             </td>
-                            <td className={draft || archives ? 'hidden' : "px-6 py-4 w-[140px]"}>
+                            <td className={draft || archives ? 'hidden' : "px-2 py-4 w-[140px]"}>
                                 <Typography color={'green'} variant='body3' type='semibold' >
                                 {convertToRupiah(item.collected)}
                                 </Typography>
                             </td>
-                            <td className="px-6 py-4 w-[120px]">
+                            <td className="px-2 py-4 w-[120px]">
                                 <Typography color='text01' variant='body3' type='semibold' >
                                 {convertToRupiah(item.fund_target)}
                                 </Typography>
                             </td>
-                            <td className="px-6 py-4 w-[80px]">
+                            <td className="px-10 py-4 w-[80px]">
                                 <Typography color={'text01'} variant='body3' type='semibold' className='mx-auto' >
                                 {item.due_date}
                                 </Typography>
@@ -133,27 +133,27 @@ const WakafTable: React.FC<TableProps> = ({ dashboard, archives, draft, data, ha
                 data?.map((item:any)=>{
                 return(
                     <tr key={item.id} className="bg-white">
-                        <td scope="row" className="px-6 py-4 w-44">
-                        <Typography color={item.collected >= item.fund_target ? 'green' : item.collected < item.fund_target && item.due_date == 0 ? 'error90' : 'text01'} variant='body3' type='semibold' className='w-32'>
+                        <td scope="row" className="px-2 py-4 w-30">
+                        <Typography color={item.collected >= item.fund_target ? 'green' : item.collected < item.fund_target && item.due_date == 0 ? 'error90' : 'text01'} variant='body3' type='semibold' className='w-30'>
                             {item.created_at}
                         </Typography>
                         </td>
-                        <td className="px-6 py-4 w-[347px]">
+                        <td className="px-2 py-4 w-[347px]">
                             <Typography color={item.collected >= item.fund_target ? 'green' : item.collected < item.fund_target && item.due_date == 0 ? 'error90' : 'text01'} variant='body3' type='semibold' className='w-[347px] truncate'>
                             {item.title}
                             </Typography>
                         </td>
-                        <td className="px-6 py-4 w-[120px]">
+                        <td className="px-2 py-4 w-[120px]">
                             <Typography color={item.collected < item.fund_target && item.due_date == 0 ? 'error90' : 'green'} variant='body3' type='semibold' >
                             {item.collected >= item.fund_target ? 'Completed' : item.collected < item.fund_target && item.due_date == 0 ? 'Not Completed' : convertToRupiah(item.collected)}
                             </Typography>
                         </td>
-                        <td className="px-6 py-4 w-[120px]">
+                        <td className="px-2 py-4 w-[120px]">
                             <Typography color={item.collected >= item.fund_target ? 'green' : item.collected < item.fund_target && item.due_date == 0 ? 'error90' : 'text01'} variant='body3' type='semibold' >
                             {item.collected >= item.fund_target ? 'Completed' : item.collected < item.fund_target && item.due_date == 0 ? 'Not Completed' : convertToRupiah(item.fund_target)}
                             </Typography>
                         </td>
-                        <td className="px-6 py-4 w-[80px]">
+                        <td className="px-10 py-4 w-[80px]">
                             <Typography color={item.due_date < 5 ? 'error90' : item.collected >= item.fund_target ? 'green' : item.collected < item.fund_target && item.due_date == 0 ? 'error90' : 'text01'} variant='body3' type='semibold' className='mx-auto' >
                             {item.due_date}
                             </Typography>

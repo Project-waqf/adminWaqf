@@ -84,24 +84,25 @@ const Wakaf = () => {
         const validation = await ConfirmAlert('upload')
         if (validation.isConfirmed) {
             setLoading(true)
-            const result = await createWakaf({
-                title: formValues.title,
-                category: formValues.category,
-                picture: formValues.picture,
-                detail: formValues.detail,
-                due_date: formValues.due_date,
-                fund_target: formValues.fund_target,
-                id: selectedId,
-                token: cookie.token
-            }) 
-            if (result) {
+            try {
+                const result = await createWakaf({
+                    title: formValues.title,
+                    category: formValues.category,
+                    picture: formValues.picture,
+                    detail: formValues.detail,
+                    due_date: formValues.due_date,
+                    fund_target: formValues.fund_target,
+                    id: selectedId,
+                    token: cookie.token
+                }) 
                 setEditValue({title: '', category: '', detail: '', due_date: '', fund_target: 0, collected: 0});
                 setLoading(false);
                 setShowModal(false)
                 getWakaf({status: 'online', page: page})
-            }
-            setShowModal(false)
-            setLoading(false)
+                
+                console.log(result);
+                    return result
+            } catch (error) {}
         }          
     } 
     
