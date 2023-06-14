@@ -15,8 +15,6 @@
     "axios": "^1.4.0",
     "clsx": "^1.2.1",
     "daisyui": "^2.52.0",
-    "jodit": "^4.0.0-beta.50",
-    "lodash": "^4.17.21",
     "react": "^18.2.0",
     "react-cookie": "^4.1.1",
     "react-currency-input-field": "^3.6.10",
@@ -29,9 +27,7 @@
     "sass": "^1.62.1",
     "styled-components": "^5.3.10",
     "sweetalert2": "^11.7.5",
-    "swr": "^2.1.5",
-    "use-query-params": "^2.2.1",
-    "yup": "^1.1.1"
+    "use-query-params": "^2.2.1"
   },
   "devDependencies": {
     "@types/draft-js": "^0.11.10",

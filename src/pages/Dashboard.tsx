@@ -233,7 +233,7 @@ const Dashboard = () => {
                 label={`Hello, ${cookie.name}!!!`}
                 />
                 <div className=" space-y-5 mx-auto w-11/12 my-10">
-                <Space direction="horizontal" className='my-auto w-full space-x-[90px]'>
+                <Space direction="horizontal" className='my-auto w-full space-x-[90px] 2xl:space-x-[280px]'>
                     {dashboardData.data.map((item)=> {
                         return(
                             <Card

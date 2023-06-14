@@ -9,7 +9,6 @@ import CustomTable from '../components/Table'
 import NewsModal from '../components/Modal/NewsModal'
 import ConfirmAlert from '../components/Alert/ConfirmAlert'
 import { useCookies } from 'react-cookie'
-import useAsset from '../api/Asset'
 import profilePict from '../assets/default.png'
 import { NewsType } from '../utils/types/DataType'
 import Alert from '../components/Alert/Alert'
@@ -35,8 +34,6 @@ const News = () => {
     const [isModalNews, setisModalNews] = useState(false);
     const [cookie] = useCookies(['token', 'id', 'name', 'email', 'foto'])
     const [loading, setLoading] = useState(false)
-    // const { data: news, newsErrorLoading: errorloading } = useNews('online', 1)
-    const { data: asset} = useAsset('online')
     const { createNews, editedNews, deleteNews, getNews, news, draftNews, archiveNews, totalOnlineNews, totalNews } = useNews()
     const [page, setPage] = useState<number>(1)
     const dispatch = useDispatch()

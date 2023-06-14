@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import ConfirmModal from '../components/Modal/ConfirmModal';
 import Display from '../components/DisplayContent/Display'
 import Headers from '../components/Headers/Headers';
 import Sidebar from '../components/Sidebar'

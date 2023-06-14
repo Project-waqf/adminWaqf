@@ -10,7 +10,6 @@ import { DraftState, newsToDraft } from "../../stores/draftSilce";
 import { newsToArchive, ArchiveState } from '../../stores/archiveSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import Editor from '../CustomInput/Editor';
-import { search } from 'jodit/types/plugins/search/search';
 
 
     interface FormProps {
@@ -118,7 +117,7 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, 
         width={1120}
         footer={<></>}>
                 <div className="relative mx-5 my-8">
-                    <Typography variant='body1' color='text01' type='medium' className='mb-5'>
+                    <Typography variant='body1' color='text01' type='medium' className={search ? 'block mb-5' : 'hidden' }>
                         Status: <span className={status === "online" ? 'text-green-500':'text-primary-100'}>{status}</span>
                     </Typography>
                     <form className='flex flex-col space-y-5' onSubmit={handleSubmit}>

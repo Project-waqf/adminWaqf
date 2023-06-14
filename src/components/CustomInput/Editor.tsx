@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import 'froala-editor/js/plugins.pkgd.min.js';
 import 'froala-editor/css/froala_editor.pkgd.min.css';
 import FroalaEditorComponent from 'react-froala-wysiwyg';
-import { Jodit } from 'jodit';
 interface EditorComponentProps {
     name: string
     onChange: any

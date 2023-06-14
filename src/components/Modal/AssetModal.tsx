@@ -106,7 +106,7 @@ const AssetModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
         width={938}
         footer={<></>}>
                 <div className="relative mx-[32px] my-[36px]">
-                    <Typography variant='body1' color='text01' type='medium' className='mb-5'>
+                    <Typography variant='body1' color='text01' type='medium' className={search ? 'block mb-5' : 'hidden' }>
                         Status: <span className={status === "online" ? 'text-green-500':'text-primary-100'}>{status}</span>
                     </Typography>
                     <form className='flex flex-col space-y-5' onSubmit={handleSubmit}>

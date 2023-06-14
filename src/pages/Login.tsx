@@ -22,7 +22,7 @@ import CustomInput from '../components/CustomInput/CustomInput';
 import Button from '../components/CustomButton/Button';
 import LoadingAlert from '../components/Modal/LoadingAlert';
 import Alert from '../components/Alert/Alert';
-import Loading from '../assets/svg/Loading';
+
 const Login = () => {
 
   const navigate = useNavigate()

@@ -17,11 +17,9 @@ import { useCookies } from 'react-cookie';
 import NewsModal from '../components/Modal/NewsModal';
 import WakafModal from '../components/Modal/WakafModal';
 import AssetModal from '../components/Modal/AssetModal';
-import ArchiveModal from '../components/Modal/ArchiveModal';
 import { useDispatch, useSelector } from 'react-redux';
 import { ArchiveState, removeNewsFromArchive, removeWakafFromArchive, removeAssetFromArchive } from '../stores/archiveSlice';
 import Swal from 'sweetalert2';
-import { array } from 'yup';
 
 const initialEditNewsValue: NewsType = {
   title: "",
