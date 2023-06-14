@@ -40,7 +40,7 @@ jobs:
             key: ${{ secrets.KEY }}
             port: ${{ secrets.PORT }}
             script: |
-                docker stop wakaf-fe
-                docker rm wakaf-fe
+                docker stop wakaf-fe-cms
+                docker rm wakaf-fe-cms
                 docker rmi faturfawkes/alhambara-fe-cms
                 docker run --name wakaf-fe-cms -p 5174:5173 -e VITE_REACT_APP_BASE_URL=${{ secrets.BASE_URL }} -d faturfawkes/alhambara-fe-cms:latest
