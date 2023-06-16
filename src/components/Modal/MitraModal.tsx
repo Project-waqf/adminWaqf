@@ -81,7 +81,7 @@ const MitraModal: React.FC<FormProps> = ({onSubmit, editMode, editValues, open, 
                         <div className="">
                             <label htmlFor='title'>
                                 <Typography variant='h4' color='text01' type='medium' className=''>
-                                    Nama Mitra
+                                    Nama Mitra <span className='text-error-90'>*</span>
                                 </Typography>
                             </label>
                             <Input
@@ -99,7 +99,7 @@ const MitraModal: React.FC<FormProps> = ({onSubmit, editMode, editValues, open, 
                         </div>
                         <div className="">
                             <Typography variant='h4' color='text01' type='medium' className=''>
-                                Gambar
+                                Gambar <span className='text-error-90'>*</span>
                             </Typography>
                             <label className="block mt-2 bg-btnColor flex justify-center space-x-1 p-2 w-52 h-12 rounded-lg cursor-pointer" htmlFor="file_input">
                                 <TbFileDescription className='text-[28px] text-whiteBg' />

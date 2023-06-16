@@ -39,6 +39,9 @@ const News = () => {
     const dispatch = useDispatch()
     const draft = useSelector((state: {draft: DraftState}) => state.draft)
     const archive = useSelector((state: {archive: ArchiveState}) => state.archive)
+    const [editNews , setEditNews] = useState<NewsType>(initialEditNewsValue)
+    const [editMode, setEditMode] = useState(false)
+    const [selectedId, setSelectedId] = useState<number>(0)
 
     console.log(totalNews);
     
@@ -89,28 +92,26 @@ const News = () => {
         const validation = await ConfirmAlert('upload')
         if (validation.isConfirmed) {
             setLoading(true)
-            const result = await createNews({
-                title: formValues.title, 
-                body:formValues.body, 
-                picture:formValues.picture,
-                token: cookie.token
-            })
-            if (result) {
+            try {
+                const result = await createNews({
+                    title: formValues.title, 
+                    body:formValues.body, 
+                    picture:formValues.picture,
+                    token: cookie.token
+                })
                 setLoading(false);
                 setisModalNews(false)
                 setEditNews(initialEditNewsValue)
                 getNews({status: 'online', page: page})
-            }
+                Alert('upload')
+                return result
+            } catch (error) {}
             setisModalNews(false)
             setLoading(false)
         }          
     } 
     
 
-        const [editNews , setEditNews] = useState<NewsType>(initialEditNewsValue)
-        const [editMode, setEditMode] = useState(false)
-        const [selectedId, setSelectedId] = useState<number>(0)
-        
     const handleEditModalNews = (id: number) => {
         setisModalNews(true)
         const selectedNews: any = news.find((item: any) => item.id_news === id);
@@ -131,14 +132,14 @@ const News = () => {
         const validation = await ConfirmAlert('edit')
         if (validation.isConfirmed) {
             setLoading(true);
-            const result = await editedNews({ title: formValues.title, body: formValues.body, picture: formValues.picture, id: selectedId, token: cookie.token})
-            if (result) {
+            try {
+                const result = await editedNews({ title: formValues.title, body: formValues.body, picture: formValues.picture, id: selectedId, token: cookie.token})
                 getNews({status: 'online', page: page})
                 setLoading(false)
                 setisModalNews(false)
-            }
-            setLoading(false)
-            setisModalNews(false)
+                Alert('edit')
+                return result
+            } catch (error) {}
         }
     }
     
@@ -146,16 +147,15 @@ const News = () => {
         const validation = await ConfirmAlert('archive')
         if (validation.isConfirmed) {
             setLoading(true)
-            const response = await editedNews({id: selectedId, title: formValues.title, body: formValues.body, status: 'archive',  token: cookie.token})
-            if (response) {
+            try {
+                const response = await editedNews({id: selectedId, title: formValues.title, body: formValues.body, status: 'archive',  token: cookie.token})
                 getNews({status: 'online', page: page})
                 setLoading(false)
                 dispatch(removeNewsFromArchive(formValues.title))
                 setisModalNews(false)
-            }
-            setisModalNews(false)
-            dispatch(removeNewsFromArchive(formValues.title))
-            setLoading(false)
+                Alert('archive')
+                return response
+            } catch (error) {}
         } else if (validation.dismiss === Swal.DismissReason.cancel) {
             dispatch(removeNewsFromArchive(formValues.title))
         } 
@@ -164,30 +164,30 @@ const News = () => {
         const validation = await ConfirmAlert('archive')
         if (validation.isConfirmed) {
             setLoading(true)
+            try {
                 const response = await archiveNews({id: id, token: cookie.token})
-            if (response) {
                 getNews({status: 'online', page: page})
                 setLoading(false)
                 setisModalNews(false)
-            }
-            setLoading(false)
-            setisModalNews(false)
+                Alert('archive')
+                return response
+            } catch (error) {}
         } 
     }
 
     const handleDraft = async (formValues: NewsType) => {
         const validation = await ConfirmAlert('draft')
         if (validation.isConfirmed) {
-            const response = await draftNews({title: formValues.title, body: formValues.body, picture: formValues.picture, token: cookie.token})
-            if (response) {
+            setLoading(true)
+            try {
+                const response = await draftNews({title: formValues.title, body: formValues.body, picture: formValues.picture, token: cookie.token})
                 getNews({status: 'online', page: page})
                 setLoading(false)
                 setisModalNews(false)
                 dispatch(removeNewsFromDraft(formValues.title))
-            }
-            setisModalNews(false)
-            dispatch(removeNewsFromDraft(formValues.title))
-            setLoading(false)
+                Alert('draft')
+                return response
+            } catch (error) {}
         } else if (validation.dismiss === Swal.DismissReason.cancel) {
             dispatch(removeNewsFromDraft(formValues.title))
         }
@@ -196,12 +196,14 @@ const News = () => {
     const handleDelete =async (id: number) => {
         const validation = await ConfirmAlert('delete')
         if (validation.isConfirmed) {
-        setLoading(true)     
+        setLoading(true)
+        try {
             const result = await deleteNews({ id: id, token: cookie.token })
-            if (result) {
             getNews({status: 'online', page: page})
             setLoading(false)
-            }
+            Alert('delete')
+            return result
+        } catch (error) {}
         setLoading(false)
         }
     }
@@ -215,25 +217,18 @@ const News = () => {
             />
             <div className="flex flex-row justify-between space-x-5 mx-auto w-11/12 my-10">
                 <Button
-                id='berita'
-                size=''
-                className='w-72'
+                id='asset'
+                size='normal'
                 onClick={showModalNews}
                 color='orange'
-                label="+ Buat Berita"
+                label="+ Buat Asset"
                 />
-                <Button
-                id='filter'
-                size='base'
-                onClick={showModalNews}
-                label="Filter"
-                color='orangeBorder'
-                />
-            </div>                   
+            </div>                
             <div className="flex flex-col justify-center space-y-5 mx-auto w-11/12 my-10">
                 <CustomCollapse 
                 header='Berita'
                 key={'1'}
+                autoOpen
                 > 
                 <CustomTable
                 data={news}

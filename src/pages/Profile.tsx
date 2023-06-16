@@ -94,26 +94,19 @@ const Profile = () => {
             name: value.name,
             email: value.email
         }
-        const validation =  await ConfirmAlert('edit')
-            if (validation.isConfirmed) {
-                setLoading(true)
-                try {
-                    const response = await axios.put(APIUrl + 'admin/profile', body, {
-                        headers: {
-                            Authorization: `Bearer ${cookie.token}`,
-                            "Content-Type": "application/json",
-                        }
-                    })
-                    setCookie("name", response.data.data.name, { path: "/" });
-                    setCookie("email", response.data.data.email, { path: "/" });
-                    Alert('edit')
-                    setLoading(false)
-                    return response 
-                } catch (error) {
-                    
-                }
+        try {
+            const response = await axios.put(APIUrl + 'admin/profile', body, {
+                headers: {
+                    Authorization: `Bearer ${cookie.token}`,
+                    "Content-Type": "application/json",
+                    }
+                })
+                setCookie("name", response.data.data.name, { path: "/" });
+                setCookie("email", response.data.data.email, { path: "/" });
+                Alert('edit')
                 setLoading(false)
-        }
+                return response 
+        } catch (error) {}
         setLoading(false)
     };
 
@@ -128,32 +121,28 @@ const Profile = () => {
             password: value.new_password
         }
         if (value.new_password === value.re_password) {
-            const validation =  await ConfirmAlert('edit')
-            if (validation.isConfirmed) {
-                setLoading(true)
-                try {
-                    const response = await axios.put(APIUrl + 'admin/profile', body, {
-                        headers: {
-                            Authorization: `Bearer ${cookie.token}`,
-                            "Content-Type": "application/json",
-                        }
-                    })
-                    Alert('edit')
-                    setLoading(false)
-                    return response 
-                } catch (error:any) {
-                    if (error.response.status === 401){
-                        setValue({name: value.name,email: value.email, old_password: value.old_password, new_password: value.new_password, re_password: value.re_password, password: value.password})
-                        setErrorOldPassword("Password yang anda masukan salah")
+            setLoading(true)
+            try {
+                const response = await axios.put(APIUrl + 'admin/profile', body, {
+                headers: {
+                    Authorization: `Bearer ${cookie.token}`,
+                    "Content-Type": "application/json",
                     }
-                }
+                })
+                Alert('edit')
                 setLoading(false)
+                return response 
+            } catch (error:any) {
+                if (error.response.status === 401){
+                    setValue({name: value.name,email: value.email, old_password: value.old_password, new_password: value.new_password, re_password: value.re_password, password: value.password})
+                    setErrorOldPassword("Password yang anda masukan salah")
+                }
             }
+            setLoading(false)
         } else {
             setValue({name: value.name,email: value.email, old_password: value.old_password, new_password: value.new_password, re_password: '', password: value.password})
             setErrorPassword("Password yang anda masukan tidak serasi ")
         }
-        setLoading(false)
     };
     const handleChangePicture = async (e: React.FormEvent<HTMLFormElement>) => {
         setLoading(true)
@@ -311,7 +300,6 @@ const Profile = () => {
                                     value={value.new_password}
                                     disable={changeFoto ? true : false}
                                     onChange={handleInputChange}
-                                    error={!isPasswordValid(value.password) && "*Minimal 6 karakter, dilengkapi minimal 1 huruf kapital, 1 simbol dan 1 angka."}
                                     />
                                     <Typography variant='btnXS' color='text01' type='normal' className='ml-1'>
                                     *Minimal 6 karakter, dilengkapi minimal 1 huruf kapital, 1 simbol dan 1 angka.

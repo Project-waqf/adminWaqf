@@ -24,6 +24,9 @@ const SearchTable: React.FC<TableProps> = ({ draft, archives, mitra, data, handl
                         <th scope="col" className="px-6 py-3 flex items-center w-44">
                             Tanggal
                         </th>
+                        <th scope="col" className="px-6 py-3 items-center w-44">
+                            Jenis
+                        </th>
                         <th scope="col" className="px-6 py-3 w-[1000px]">
                             Judul
                         </th>
@@ -40,6 +43,11 @@ const SearchTable: React.FC<TableProps> = ({ draft, archives, mitra, data, handl
                         <th scope="row" className="px-6 py-4 w-44">
                         <Typography color='text01' variant='body2' type='semibold'>
                             {item.created_at}
+                        </Typography>
+                        </th>
+                        <th scope="row" className="px-6 py-4 w-44">
+                        <Typography color='btnColor' variant='body2' type='semibold'>
+                            {item.type === "wakaf" ? "Produk Wakaf" : item.type === "news" ? "Berita" : item.type === "asset" ? "Aset" : ""}
                         </Typography>
                         </th>
                         <td className="px-6 py-4 w-[1000px]">

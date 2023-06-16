@@ -23,6 +23,7 @@ import { ArchiveState, removeWakafFromArchive } from '../stores/archiveSlice';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 import { APIUrl } from '../string';
+import { useNavigate } from 'react-router-dom';
 
 const initialEditValue: WakafType = {
     title: "",
@@ -41,15 +42,24 @@ const Dashboard = () => {
     const [dashboardData, setDashboardData] = useState<DataDashboard>({data: [],});
     const { wakaf, getWakaf, totalOnlineWakaf , editedWakaf, archiveWakaf, deleteWakaf, allWakaf } = useWakaf()
     const dispatch = useDispatch()
+    const navigate = useNavigate()
     const archive = useSelector((state: {archive: ArchiveState}) => state.archive)
     const [editValue , setEditValue] = useState<WakafType>(initialEditValue)
     const [editMode, setEditMode] = useState(false)
     const [selectedId, setSelectedId] = useState<number>(0)
     const [summary, setSummary] = useState<any>({})
     const [wakafCompleted, setWakafCompleted] = useState<number>(0) 
-
-    console.log(wakafCompleted);
-    console.log(allWakaf)
+    const [sort, setSort] = useState('')
+    const [toggle, setToggle] = useState(false)
+    
+    useEffect(() => {
+        if (toggle === true) {
+            setSort('asc')
+        } else if (toggle === false) {
+            setSort('desc')
+        }
+    }, [toggle])
+    
     useEffect(() => {
         if(allWakaf){
             let total: number = 0            
@@ -61,6 +71,7 @@ const Dashboard = () => {
             setWakafCompleted(total)
         }
     }, [allWakaf])
+
     useEffect(() => {
         if (summary && wakafCompleted) {
             const initialData: DashboardType[] = [
@@ -100,8 +111,8 @@ const Dashboard = () => {
     }, [])
     
     useEffect(() => {
-        getWakaf({status: 'online', page: page})
-    }, [page])
+        getWakaf({status: 'online', page: page, sort: sort, filter: ''})
+    }, [page, sort])
     
     useEffect(()=> {
         if (archive.wakaf[0] && editMode) {
@@ -169,7 +180,7 @@ const Dashboard = () => {
             })
             setShowModal(false)
             setLoading(false)
-            getWakaf({status: 'online', page: page})
+            getWakaf({status: 'online', page: page, sort: sort, filter: ''})
             return result
             } catch (error) {}
             setLoading(false)
@@ -181,7 +192,7 @@ const Dashboard = () => {
             setLoading(true)
             try {
                 const response = await editedWakaf({id: selectedId, status: 'archive', title: formValues.title, category: formValues.category, picture: formValues.picture, detail: formValues.detail, due_date: formValues.due_date, fund_target: formValues.fund_target, token: cookie.token})
-                getWakaf({status: 'online', page: page})
+                getWakaf({status: 'online', page: page, sort: sort, filter: ''})
                 setLoading(false)
                 setShowModal(false)
                 Alert('archive')
@@ -199,7 +210,7 @@ const Dashboard = () => {
             setLoading(true)
             try {
                 const response = await archiveWakaf({id: id, token: cookie.token})
-                getWakaf({status: 'online', page: page})
+                getWakaf({status: 'online', page: page, sort: sort, filter: ''})
                 setLoading(false)
                 setShowModal(false)
                 return response
@@ -217,12 +228,15 @@ const Dashboard = () => {
                 id: id,
                 token: cookie.token
                 })
-                getWakaf({status: 'online', page: page})
+                getWakaf({status: 'online', page: page, sort: sort, filter: ''})
                 setLoading(false)
                 return result
             } catch (error) {}
         setLoading(false)
         }
+    }
+    const handleSort = () => {
+        setToggle(!toggle)
     }
     return (
         <>
@@ -232,23 +246,23 @@ const Dashboard = () => {
                 <Headers
                 label={`Hello, ${cookie.name}!!!`}
                 />
-                <div className=" space-y-5 mx-auto w-11/12 my-10">
-                <Space direction="horizontal" className='my-auto w-full space-x-[90px] 2xl:space-x-[280px]'>
+                <div className="grid grid-cols-3 gap-20 mx-auto w-11/12 my-10">
                     {dashboardData.data.map((item)=> {
                         return(
                             <Card
                             icon={item.icon}
                             header={item.header}
                             count={item.count}
+                            onClick={()=> navigate('/wakaf')}
                             />
                         )
                     })}
-                </Space>
                 </div>
                 <div className="flex flex-col justify-center space-y-5 mx-auto w-11/12 my-10">
                 <CustomCollapse 
                 header='Produk Wakaf'
                 key={'1'}
+                autoOpen
                 >
                 <WakafTable 
                 data={wakaf}
@@ -256,6 +270,8 @@ const Dashboard = () => {
                 handleDelete={handleDelete}
                 dashboard={true}
                 handleEdit={handleEditModal}
+                handleSort={handleSort}
+                isSort={toggle}
                 />
                 <Pagination size='small' total={totalOnlineWakaf} onChange={handlePageChange} showSizeChanger={false} className='z-90 my-7 float-right'/>
                 </CustomCollapse>

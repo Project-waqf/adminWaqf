@@ -60,15 +60,44 @@ const Draft = () => {
   const [editNews , setEditNews] = useState<NewsType>(initialEditNewsValue)
   const [editAsset , setEditAsset] = useState<AssetType>(initialEditAssetValue)
   const [editWakaf , setEditWakaf] = useState<WakafType>(initialEditWakafValue)
+  const [sortNews, setSortNews] = useState('')
+  const [toggleNews, setToggleNews] = useState(false)
+  const [sortWakaf, setSortWakaf] = useState('')
+  const [toggleWakaf, setToggleWakaf] = useState(false)
+  const [sortAsset, setSortAsset] = useState('')
+  const [toggleAsset, setToggleAsset] = useState(false)
+
+  useEffect(() => {
+      if (toggleNews === true) {
+          setSortNews('asc')
+      } else if (toggleNews === false) {
+          setSortNews('desc')
+      }
+  }, [toggleNews])
+
+  useEffect(() => {
+    if (toggleWakaf === true) {
+        setSortWakaf('asc')
+    } else if (toggleWakaf === false) {
+        setSortWakaf('desc')
+    }
+  }, [toggleWakaf])
+
+  useEffect(() => {
+    if (toggleAsset === true) {
+        setSortAsset('asc')
+    } else if (toggleAsset === false) {
+        setSortAsset('desc')
+    }
+  }, [toggleAsset])
 
   useEffect(() => {
     getNews({status: 'draft', page: page})
   }, [page])
 
   useEffect(() => {
-    getWakaf({status: 'draft', page: pageWakaf})
-  }, [pageWakaf])
-  console.log(pageWakaf);
+    getWakaf({status: 'draft', page: pageWakaf, sort: sortWakaf, filter: ''})
+  }, [pageWakaf, sortWakaf])
   
   useEffect(() => {
     getAsset({status: 'draft', page: pageAsset})
@@ -120,7 +149,7 @@ console.log('draft', draft.news);
     });
     setEditMode(true);
     setSelectedId(id);
-}
+  }
 
   const handleEditNews = async (formValues: NewsType) => {
     setEditNews({ title: formValues.title, body: formValues.body, picture: formValues.picture })
@@ -202,9 +231,8 @@ console.log('draft', draft.news);
     });
     setEditMode(true);
     setSelectedId(id);
-}
+  }
 
-console.log(selectedId);
 
   const handleEditWakaf = async (formValues: WakafType) => {
       setEditWakaf({ title: formValues.title, category: formValues.category, picture: formValues.picture, detail: formValues.detail, due_date: formValues.due_date, fund_target: formValues.fund_target, collected: formValues.collected })
@@ -224,14 +252,13 @@ console.log(selectedId);
           })
           setIsModalWakaf(false)
           setLoading(false)
-          getWakaf({status: 'archive', page: page})
+          getWakaf({status: 'draft', page: pageWakaf, sort: sortWakaf, filter: ''})
           Alert('edit')
           return result
           } catch (error) {}
           setLoading(false)
       }
   }
-  console.log(wakaf);
 
   const handleDraftWakaf = async (formValues: WakafType) => {
       const validation = await ConfirmAlert('draft')
@@ -239,7 +266,7 @@ console.log(selectedId);
           setLoading(true)
           try {
               const response = await editedWakaf({id: selectedId, status: 'draft', title: formValues.title, category: formValues.category, picture: formValues.picture, detail: formValues.detail, due_date: formValues.due_date, fund_target: formValues.fund_target, token: cookie.token})
-              getWakaf({status: 'draft', page: page})
+              getWakaf({status: 'draft', page: pageWakaf, sort: sortWakaf, filter: ''})
               setLoading(false)
               setIsModalWakaf(false)
               Alert('draft')
@@ -261,7 +288,7 @@ console.log(selectedId);
               id: id,
               token: cookie.token
               })
-              getWakaf({status: 'draft', page: page})
+              getWakaf({status: 'draft', page: pageWakaf, sort: sortWakaf, filter: ''})
               setLoading(false)
               Alert('delete')
               return result
@@ -281,60 +308,63 @@ console.log(selectedId);
       detail: selecetedAsset.detail,
   });
   setSelectedId(id);
-}
-
-const handleEditAsset = async(formValues: AssetType) => {
-  setEditAsset({ name: formValues.name, detail: formValues.detail, picture: formValues.picture })
-  const validation = await ConfirmAlert('edit')
-  if (validation.isConfirmed) {
-      setLoading(true);
-      try {
-          const result = await editedAsset({
-          name: formValues.name,
-          detail: formValues.detail,
-          picture: formValues.picture,
-          id: selectedId,
-          token: cookie.token
-          })
-          setIsModalAsset(false)
-          setLoading(false)
-          getAsset({status: 'draft', page: page})
-          setEditAsset({name: '', detail: ''})
-          return result
-      } catch (error) {}
-      setLoading(false)
   }
-}
 
-const handleDraftAsset = async (formValues: AssetType) => {
-  const validation = await ConfirmAlert('draft')
-  if (validation.isConfirmed) {
-      setLoading(true)
-      try {
-          const response = await editedAsset({id: selectedId, name: formValues.name, detail: formValues.detail, picture: formValues.picture, status: 'draft', token: cookie.token})
-          setLoading(false)
-          setIsModalAsset(false)
-          getAsset({status: 'draft', page: page})
-          dispatch(removeAssetFromDraft(formValues.name))
-          return response
-      } catch (error) {}
-  } else if (validation.dismiss === Swal.DismissReason.cancel) {
-      dispatch(removeAssetFromDraft(formValues.name))
+  const handleEditAsset = async(formValues: AssetType) => {
+    setEditAsset({ name: formValues.name, detail: formValues.detail, picture: formValues.picture })
+    const validation = await ConfirmAlert('edit')
+    if (validation.isConfirmed) {
+        setLoading(true);
+        try {
+            const result = await editedAsset({
+            name: formValues.name,
+            detail: formValues.detail,
+            picture: formValues.picture,
+            id: selectedId,
+            token: cookie.token
+            })
+            setIsModalAsset(false)
+            setLoading(false)
+            getAsset({status: 'draft', page: page})
+            setEditAsset({name: '', detail: ''})
+            return result
+        } catch (error) {}
+        setLoading(false)
+    }
   }
-}
 
-const handleDeleteAsset =async (id: number) => {
-  const validation = await ConfirmAlert('delete')
-  if (validation.isConfirmed) {
-      setLoading(true)
-      try {
-          const response = await deleteAsset({id: id, token: cookie.token})
-          getAsset({status: 'draft', page: page})
-          setLoading(false)
-          return response
-      } catch (error) {}
+  const handleDraftAsset = async (formValues: AssetType) => {
+    const validation = await ConfirmAlert('draft')
+    if (validation.isConfirmed) {
+        setLoading(true)
+        try {
+            const response = await editedAsset({id: selectedId, name: formValues.name, detail: formValues.detail, picture: formValues.picture, status: 'draft', token: cookie.token})
+            setLoading(false)
+            setIsModalAsset(false)
+            getAsset({status: 'draft', page: page})
+            dispatch(removeAssetFromDraft(formValues.name))
+            return response
+        } catch (error) {}
+    } else if (validation.dismiss === Swal.DismissReason.cancel) {
+        dispatch(removeAssetFromDraft(formValues.name))
+    }
   }
-}
+
+  const handleDeleteAsset =async (id: number) => {
+    const validation = await ConfirmAlert('delete')
+    if (validation.isConfirmed) {
+        setLoading(true)
+        try {
+            const response = await deleteAsset({id: id, token: cookie.token})
+            getAsset({status: 'draft', page: page})
+            setLoading(false)
+            return response
+        } catch (error) {}
+    }
+  }
+  const handleSortWakaf = () => {
+    setToggleWakaf(!toggleWakaf)
+  }
   return (
     <>
       <Sidebar/>
@@ -342,15 +372,6 @@ const handleDeleteAsset =async (id: number) => {
         <Headers
         label='Draft'
         />
-        <div className="flex flex-row justify-between space-x-5 mx-auto w-11/12 my-10">
-          <Button
-          id='filter'
-          size='base'
-          // onClick={showModalNews}
-          label="Filter"
-          color='orangeBorder'
-          />
-        </div>
         <div className="flex flex-col justify-center space-y-5 mx-auto w-11/12 my-10">
           <CustomCollapse
           header='Produk Wakaf'
@@ -361,6 +382,8 @@ const handleDeleteAsset =async (id: number) => {
           handleDelete={handleDeleteWakaf}
           handleEdit={handleEditModalWakaf}
           dashboard={true}
+          handleSort={handleSortWakaf}
+          isSort={toggleWakaf}
           />
           <Pagination size='small' total={totalDraftWakaf} onChange={handlePageWakafChange} showSizeChanger={false} className='z-90 my-7 float-right'/>
           </CustomCollapse>

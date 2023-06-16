@@ -4,19 +4,21 @@ import edit from "../../assets/edit.svg";
 import delet from "../../assets/delete.svg";
 import send from "../../assets/send.svg";
 import archive from "../../assets/archive.svg";
+import { DownOutlined } from '@ant-design/icons';
 interface TableProps {
     data: ListType[]
     handleEdit?: (id: number) => void;
     handleDelete?: (id: number) => void;
     handleArchive?: (id: number) => void;
-    setId?: (id: number) => void;
+    handleSort?: React.MouseEventHandler
+    isSort?: boolean
     draft?: boolean
     archives?: boolean
     mitra?: boolean
 }
 
 
-const CustomTable: React.FC<TableProps> = ({ draft, archives, mitra, data, handleDelete, handleArchive, handleEdit, setId}) => {
+const CustomTable: React.FC<TableProps> = ({ draft, archives, mitra, data, handleDelete, handleArchive, handleEdit, handleSort, isSort}) => {
   
     return (
       <div className="relative overflow-x-auto sm:rounded-lg">
@@ -25,6 +27,9 @@ const CustomTable: React.FC<TableProps> = ({ draft, archives, mitra, data, handl
                 <tr>
                     <th scope="col" className="px-6 py-3 flex items-center w-44">
                         Tanggal
+                        <div onClick={handleSort} className='transition-all ml-2 cursor-pointer'>
+                            <DownOutlined rotate={isSort ? 180 : 0} className='mt-1 text-btnColor transition-all'/>
+                        </div>
                     </th>
                     <th scope="col" className="px-6 py-3 w-[1000px]">
                         Judul
@@ -90,11 +95,14 @@ const CustomTable: React.FC<TableProps> = ({ draft, archives, mitra, data, handl
                   )
                 })
               :
-              <div className="flex justify-center w-[1000px]">
-                <Typography color='text01' variant='h1' type='bold'>
+              <tr>
+                  <td className=""></td>
+                  <td className="flex justify-center">
+                  <Typography color='text03' variant='body3' type='bold'>
                   Data Kosong
-                </Typography>
-              </div>
+                  </Typography>
+                  </td>
+              </tr>
               }
             </tbody>
         </table>

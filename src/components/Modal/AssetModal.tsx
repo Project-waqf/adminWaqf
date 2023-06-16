@@ -114,7 +114,7 @@ const AssetModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                         <div className="">
                                 <label htmlFor='title'>
                                     <Typography variant='h4' color='text01' type='medium' className=''>
-                                        Judul
+                                        Judul Aset <span className='text-error-90'>*</span>
                                     </Typography>
                                 </label>
                                 <Input
@@ -133,7 +133,7 @@ const AssetModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                         </div>
                         <div className="">
                             <Typography variant='h4' color='text01' type='medium' className=''>
-                                Gambar
+                                Gambar <span className='text-error-90'>*</span>
                             </Typography>
                             <label className="block mt-2 bg-btnColor flex justify-center space-x-1 p-2 w-52 h-12 rounded-lg cursor-pointer" htmlFor="file_input">
                                 <TbFileDescription className='text-[28px] text-whiteBg' />
@@ -147,7 +147,7 @@ const AssetModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                     </div>
                     <div className='flex flex-col relative w-full rounded-lg overflow-hidden' x-data="{maximum: ''}">
                         <Typography variant='h4' color='text01' type='medium' className='mt-0.5'>
-                            Isi Detail
+                        Deskrip Aset
                         </Typography>
                         <textarea rows={4} x-model="maximum" maxLength={maxLength} x-ref="maximum" style={{ resize: 'none' }}
                         disabled={search} className="block w-full mt-2 py-2 px-3 text-base text-text01 rounded-lg border-neutral-80 focus:outline-none focus:border-blue-500" placeholder='isi Detail' name='detail' value={formValues.detail} onChange={handleTextAreaChange}></textarea>
@@ -161,7 +161,6 @@ const AssetModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                         color={'orange'}
                         size='base'
                         disabled={disabled || search}
-                        onClick={()=> console.log(formValues)}
                     />
             </div>
             </form >
@@ -191,7 +190,7 @@ const AssetModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                             className={ formValues.name !== '' ? 'block' : 'hidden'}
                         />
                         <Button
-                            label='Cancel'
+                            label='Tutup'
                             id={`tidak`}
                             color={'whiteOrange'}
                             size='base'

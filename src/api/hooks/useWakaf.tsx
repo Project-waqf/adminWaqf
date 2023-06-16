@@ -26,8 +26,13 @@ export default function useWakaf(){
         } 
     },[])
     const getWakaf = useCallback(async (payload?:any) => {
+        const withFilter = `wakaf?filter=${payload.filter}&sort=${payload.sort}`
+        const noneFilter = `wakaf?page=${payload.page}&isUser=false&sort=${payload.sort}&status=${payload.status}`
+        if (payload.filter === '') {
+            
+        }
         try {
-            const response = await axios.get(`${HOST}wakaf?page=${payload.page}&isUser=false&status=${payload.status}`)
+            const response = await axios.get(`${HOST}${payload.filter === "" ? noneFilter : withFilter}` )
             console.log(response.data);
             setWakaf(response.data.data)
             setTotalOnlineWakaf(response.data.total_online)

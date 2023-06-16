@@ -125,7 +125,7 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, 
                         <div className="">
                             <label htmlFor='title'>
                                 <Typography variant='h4' color='text01' type='medium' className=''>
-                                    Judul
+                                    Judul <span className='text-error-90'>*</span>
                                 </Typography>
                             </label>
                             <Input
@@ -144,7 +144,7 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, 
                         </div>
                         <div className="">
                             <Typography variant='h4' color='text01' type='medium' className=''>
-                                Gambar
+                                Gambar <span className='text-error-90'>*</span>
                             </Typography>
                             <label className={"block mt-2 bg-btnColor flex justify-center space-x-1 p-2 w-52 h-12 rounded-lg cursor-pointer"} htmlFor="file_input">
                                 <TbFileDescription className='text-[28px] text-whiteBg' />
@@ -177,7 +177,6 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, 
                         color={'orange'}
                         size='base'
                         disabled={disabled || search}
-                        onClick={()=> console.log(formValues)}
                     />
                 </div>
             </form >
@@ -207,7 +206,7 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, 
                             className={ formValues.title !== '' ? 'block' : 'hidden'}
                         />
                         <Button
-                            label='Cancel'
+                            label='Tutup'
                             id={`tidak`}
                             color={'whiteOrange'}
                             size='base'

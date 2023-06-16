@@ -1,10 +1,9 @@
-import { ListType, WakafType } from '../../utils/types/DataType';
+import { WakafType } from '../../utils/types/DataType';
 import Typography from '../Typography';
 import edit from "../../assets/edit.svg";
 import delet from "../../assets/delete.svg";
 import archive from "../../assets/archive.svg";
-import archiveDis from "../../assets/archivedsiable.svg";
-import editdisa from "../../assets/editdsaible.svg";
+import { DownOutlined } from '@ant-design/icons';
 import send from "../../assets/send.svg";
 
 interface TableProps {
@@ -12,13 +11,15 @@ interface TableProps {
     handleEdit?: (id: number) => void;
     handleDelete?: (id: number) => void;
     handleArchive?: (id: number) => void;
+    handleSort?: React.MouseEventHandler
     draft?: boolean
     archives?: boolean
     dashboard?: boolean
+    isSort?: boolean
 }
 
 
-const WakafTable: React.FC<TableProps> = ({ dashboard, archives, draft, data, handleDelete, handleArchive, handleEdit}) => {
+const WakafTable: React.FC<TableProps> = ({ dashboard, archives, draft, data, handleDelete, handleArchive, handleEdit, handleSort, isSort}) => {
     function convertToRupiah(amount: number): string {
         const formatter = new Intl.NumberFormat('id-ID', {
             style: 'currency',
@@ -30,9 +31,12 @@ const WakafTable: React.FC<TableProps> = ({ dashboard, archives, draft, data, ha
         <div className="relative overflow-x-auto sm:rounded-lg">
         <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
             <thead className="text-[14px] text-neutral-80 bg-white">
-                <tr>
-                    <th scope="col" className="px-6 py-3 w-30">
+                <tr className=' border border-b-2'>
+                    <th scope="col" className="px-6 py-3 w-30 flex justify-between">
                         Tanggal
+                        <div onClick={handleSort} className='transition-all ml-2 cursor-pointer'>
+                            <DownOutlined rotate={isSort ? 180 : 0} className='mt-1 text-btnColor transition-all'/>
+                        </div>
                     </th>
                     <th scope="col" className={`px-2 py-3 ${draft || archive ? 'lg:w-[550px] xl:w-[780px]' : 'lg:w-[347px] xl:w-[600px]'}`}>
                         Judul
@@ -68,12 +72,12 @@ const WakafTable: React.FC<TableProps> = ({ dashboard, archives, draft, data, ha
                                 </Typography>
                             </td>
                             <td className={draft || archives ? 'hidden' : "px-2 py-4 w-[140px]"}>
-                                <Typography color={'green'} variant='body3' type='semibold' >
+                                <Typography color={'text01'} variant='body3' type='semibold' >
                                 {convertToRupiah(item.collected)}
                                 </Typography>
                             </td>
                             <td className="px-2 py-4 w-[120px]">
-                                <Typography color='text01' variant='body3' type='semibold' >
+                                <Typography color='text03' variant='body3' type='semibold' >
                                 {convertToRupiah(item.fund_target)}
                                 </Typography>
                             </td>
@@ -123,11 +127,14 @@ const WakafTable: React.FC<TableProps> = ({ dashboard, archives, draft, data, ha
                         )
                     })
                     :
-                    <div className="flex justify-center w-[1000px]">
-                    <Typography color='text01' variant='h1' type='bold'>
-                    Data Kosong
-                    </Typography>
-                    </div>
+                    <tr>
+                        <td className=""></td>
+                        <td className="flex justify-center">
+                        <Typography color='text03' variant='body3' type='bold'>
+                        Data Kosong
+                        </Typography>
+                        </td>
+                    </tr>
                 :
                 data ?
                 data?.map((item:any)=>{
@@ -144,17 +151,17 @@ const WakafTable: React.FC<TableProps> = ({ dashboard, archives, draft, data, ha
                             </Typography>
                         </td>
                         <td className="px-2 py-4 w-[120px]">
-                            <Typography color={item.collected < item.fund_target && item.due_date == 0 ? 'error90' : 'green'} variant='body3' type='semibold' >
+                            <Typography color={item.collected >= item.fund_target ? 'green' : item.collected < item.fund_target && item.due_date == 0 ? 'error90' : 'text01'} variant='body3' type='semibold' >
                             {item.collected >= item.fund_target ? 'Completed' : item.collected < item.fund_target && item.due_date == 0 ? 'Not Completed' : convertToRupiah(item.collected)}
                             </Typography>
                         </td>
                         <td className="px-2 py-4 w-[120px]">
-                            <Typography color={item.collected >= item.fund_target ? 'green' : item.collected < item.fund_target && item.due_date == 0 ? 'error90' : 'text01'} variant='body3' type='semibold' >
+                            <Typography color={item.collected >= item.fund_target ? 'green' : item.collected < item.fund_target && item.due_date == 0 ? 'error90' : 'text03'} variant='body3' type='semibold' >
                             {item.collected >= item.fund_target ? 'Completed' : item.collected < item.fund_target && item.due_date == 0 ? 'Not Completed' : convertToRupiah(item.fund_target)}
                             </Typography>
                         </td>
                         <td className="px-10 py-4 w-[80px]">
-                            <Typography color={item.due_date < 5 ? 'error90' : item.collected >= item.fund_target ? 'green' : item.collected < item.fund_target && item.due_date == 0 ? 'error90' : 'text01'} variant='body3' type='semibold' className='mx-auto' >
+                            <Typography color={item.collected >= item.fund_target ? 'green' : item.collected < item.fund_target && item.due_date == 0 ? 'error90' : 'text01'} variant='body3' type='semibold' className='mx-auto' >
                             {item.due_date}
                             </Typography>
                         </td>
@@ -170,29 +177,12 @@ const WakafTable: React.FC<TableProps> = ({ dashboard, archives, draft, data, ha
                             </>
                             :
                             <>
-                            {item.collected === item.fund_target && item.due_date > 1 ?
-                            <div className="cursor-not-allowed">
-                                <img src={editdisa} alt=""/>
-                            </div>
-                            :
                             <div className="cursor-pointer"  onClick={() => handleEdit && handleEdit(item.id)}>
                                 <img src={edit} alt=""/>
                             </div>
-                            }
-                            { item.collected === item.fund_target && item.due_date > 1 ?
-                            <div className="cursor-not-allowed">
-                                <img src={archiveDis} alt=""/>
-                            </div>
-                            :
-                            item.collected < item.fund_target && item.due_date === 0 ?
-                            <div className="cursor-not-allowed">
-                                <img src={archiveDis} alt=""/>
-                            </div>
-                            :
-                            <div className={ item.collected === item.fund_target && item.due_date > 1 ?"cursor-not-allowed" : "cursor-pointer"} onClick={() => handleArchive && handleArchive(item.id)}>
+                            <div className="cursor-pointer" onClick={() => handleArchive && handleArchive(item.id)}>
                                 <img src={archive} alt="" />
                             </div>
-                            }
                             <div className="cursor-pointer" onClick={() => handleDelete && handleDelete(item.id)}>
                                 <img src={delet} alt="" />
                             </div>
@@ -203,11 +193,14 @@ const WakafTable: React.FC<TableProps> = ({ dashboard, archives, draft, data, ha
                 )
                 })
             :
-                <div className="flex justify-center w-[1000px]">
-                <Typography color='text01' variant='h1' type='bold'>
+            <tr>
+                <td className=""></td>
+                <td className="flex justify-center">
+                <Typography color='text03' variant='body3' type='bold'>
                 Data Kosong
                 </Typography>
-                </div>
+                </td>
+            </tr>
             }
             </tbody>
         </table>

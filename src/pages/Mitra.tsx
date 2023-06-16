@@ -143,25 +143,18 @@ const handleEdit = async (formValues: MitraType) => {
         />
         <div className="flex flex-row justify-between space-x-5 mx-auto w-11/12 my-10">
           <Button
-          id='mitra'
-          size=''
-          className='w-72'
+          id='asset'
+          size='normal'
           onClick={showModalMitra}
           color='orange'
-          label="+ Buat Mitra"
+          label="+ Buat Asset"
           />
-          <Button
-          id='filter'
-          size='base'
-          // onClick={showModalNews}
-          label="Filter"
-          color='orangeBorder'
-          />
-        </div>
+        </div> 
         <div className="flex flex-col justify-center space-y-5 mx-auto w-11/12 my-10">
           <CustomCollapse 
           header='Mitra'
           key={'1'}
+          autoOpen
           > 
           <CustomTable
           data={mitra}

@@ -3,7 +3,7 @@ import Display from '../components/DisplayContent/Display'
 import Headers from '../components/Headers/Headers';
 import Sidebar from '../components/Sidebar';
 import Button from '../components/CustomButton/Button';
-import { Pagination } from 'antd';
+import { Dropdown, MenuProps, Pagination } from 'antd';
 import WakafModal from '../components/Modal/WakafModal';
 import CustomCollapse from '../components/Collapse';
 import ConfirmAlert from '../components/Alert/ConfirmAlert';
@@ -15,6 +15,7 @@ import LoadingAlert from '../components/Modal/LoadingAlert';
 import { useCookies } from 'react-cookie';
 import { useDispatch, useSelector } from 'react-redux';
 import { DraftState, removeWakafFromDraft } from '../stores/draftSilce';
+import { DownOutlined } from '@ant-design/icons';
 import Swal from 'sweetalert2';
 import { ArchiveState, removeWakafFromArchive } from '../stores/archiveSlice';
 
@@ -41,10 +42,22 @@ const Wakaf = () => {
     const [editValue , setEditValue] = useState<WakafType>(initialEditValue)
     const [editMode, setEditMode] = useState(false)
     const [selectedId, setSelectedId] = useState<number>(0)
+    const [filter, setFilter] = useState('')
+    const [filterParams, setFilterParams] = useState('')
+    const [sort, setSort] = useState('')
+    const [toggle, setToggle] = useState(false)
 
     useEffect(() => {
-        getWakaf({page: page, status: 'online'})
-    }, [page])
+        if (toggle === true) {
+            setSort('asc')
+        } else if (toggle === false) {
+            setSort('desc')
+        }
+    }, [toggle])
+    
+    useEffect(() => {
+        getWakaf({page: page, status: 'online', sort: sort, filter: filterParams})
+    }, [page, sort, filterParams])
 
     useEffect(()=> {
         if (draft.wakaf[0] && !editMode) {
@@ -98,10 +111,8 @@ const Wakaf = () => {
                 setEditValue({title: '', category: '', detail: '', due_date: '', fund_target: 0, collected: 0});
                 setLoading(false);
                 setShowModal(false)
-                getWakaf({status: 'online', page: page})
-                
-                console.log(result);
-                    return result
+                getWakaf({page: page, status: 'online', sort: sort, filter: filterParams})
+                return result
             } catch (error) {}
         }          
     } 
@@ -132,43 +143,29 @@ const Wakaf = () => {
         const validation = await ConfirmAlert('edit')
         if (validation.isConfirmed) {
             setLoading(true);
-            const result = await editedWakaf({
-                title: formValues.title,
-                category: formValues.category,
-                picture: formValues.picture,
-                detail: formValues.detail,
-                due_date: formValues.due_date,
-                fund_target: formValues.fund_target,
-                id: selectedId,
-                token: cookie.token
-            })
-            if (result) {
+            try {
+                const result = await editedWakaf({ title: formValues.title, category: formValues.category, picture: formValues.picture, detail: formValues.detail, due_date: formValues.due_date, fund_target: formValues.fund_target, id: selectedId, token: cookie.token})
                 setShowModal(false)
                 setLoading(false)
-                getWakaf({status: 'online', page: page})
+                getWakaf({page: page, status: 'online', sort: sort, filter: filterParams})
                 Alert('edit')            
-            }
-            setShowModal(false)
-            setLoading(false)
+            } catch (error) {}
         }
     }
-    console.log(wakaf);
     
     const handleArchive = async (formValues: WakafType) => {
         const validation = await ConfirmAlert('archive')
         if (validation.isConfirmed) {
             setLoading(true)
+            try {
                 const response = await editedWakaf({id: selectedId, status: 'archive', title: formValues.title, category: formValues.category, picture: formValues.picture, detail: formValues.detail, due_date: formValues.due_date, fund_target: formValues.fund_target, token: cookie.token})
-                if (response) {
-                    getWakaf({status: 'online', page: page})
-                    setLoading(false)
-                    setShowModal(false)
-                    dispatch(removeWakafFromArchive(formValues.title))
-                }
+                getWakaf({page: page, status: 'online', sort: sort, filter: filterParams})
                 setLoading(false)
                 setShowModal(false)
                 dispatch(removeWakafFromArchive(formValues.title))
-                setLoading(false)
+                Alert('archive')
+                return response
+            } catch (error) {}
         } else if (validation.dismiss === Swal.DismissReason.cancel) {
             dispatch(removeWakafFromArchive(formValues.title))
         }
@@ -178,27 +175,27 @@ const Wakaf = () => {
         const validation = await ConfirmAlert('archive')
         if (validation.isConfirmed) {
             setLoading(true)
+            try {
                 const response = await archiveWakaf({id: id, token: cookie.token})
-                if (response) {
-                    getWakaf({status: 'online', page: page})
-                    setLoading(false)
-                }            
+                getWakaf({page: page, status: 'online', sort: sort, filter: filterParams})
+                setLoading(false)
+                Alert('archive')
+                return response
+            } catch (error) {}
             setLoading(false)
         }
     }
     const handleDraft = async (formValues: WakafType) => {
         const validation = await ConfirmAlert('draft')
         if (validation.isConfirmed) {
+            try {
                 const response = await draftWakaf({title: formValues.title, category: formValues.category, picture: formValues.picture, detail: formValues.detail, due_date: formValues.due_date, fund_target: formValues.fund_target, token: cookie.token})
-                if (response) {
-                    getWakaf({status: 'online', page: page})
-                    setLoading(false)
-                    setShowModal(false)
-                    dispatch(removeWakafFromDraft(formValues.title))
-                }
+                getWakaf({page: page, status: 'online', sort: sort, filter: filterParams})
                 dispatch(removeWakafFromDraft(formValues.title))
                 setShowModal(false)
                 setLoading(false)
+                return response
+            } catch (error) {}
         } else if (validation.dismiss === Swal.DismissReason.cancel) {
             dispatch(removeWakafFromDraft(formValues.title))
         }
@@ -207,18 +204,73 @@ const Wakaf = () => {
     const handleDelete =async (id: number) => {
         const validation = await ConfirmAlert('delete')
         if (validation.isConfirmed) {
-        setLoading(true)     
-                const result = await deleteWakaf({ id: id, token: cookie.token })
-                if (result) {   
-                    getWakaf({status: 'online', page: page})
-                    setLoading(false)
-                }
-        setLoading(false)
+        setLoading(true)   
+        try {
+            const result = await deleteWakaf({ id: id, token: cookie.token })
+            getWakaf({page: page, status: 'online', sort: sort, filter: filterParams})
+            setLoading(false)
+        } catch (error) {}
         }
     }
-    const testAlert = () => {
-        Alert()
+    const items: MenuProps['items'] = [
+        {
+            label: (
+                <div className={`font-normal text-sm ${filter === "Wakaf Aktif" ? "text-btnColor" : "text-text01"} hover:text-btnColor h-30`}>
+                Wakaf Aktif
+                </div>
+            ),
+            key: 0,
+        },
+        {
+            type: "divider"
+        },
+        {
+            label: (
+                <div className={`font-normal text-sm ${filter === "Completed" ? "text-btnColor" : "text-text01"} hover:text-btnColor h-30`}>
+                Complete
+                </div>
+            ),
+            key: 1,
+        },
+        {
+            type: "divider"
+        },
+        {
+            label: (
+                <div className={`font-normal text-sm ${filter === "Not Completed" ? "text-btnColor" : "text-text01"} hover:text-btnColor h-30`}>
+                Not Complete
+                </div>
+            ),
+            key: 2,
+        },
+        {
+            type: "divider"
+        },
+    ];
+    const handleMenuClick: MenuProps['onClick'] = (e) => {
+        if (e.key === "0" && filter !== "Wakaf Aktif") {
+            setFilter("Wakaf Aktif")
+            setFilterParams('aktif')
+        } else if (e.key === "1" && filter !== "Completed") {
+            setFilter("Completed")
+            setFilterParams('complete')
+        } else if (e.key === "2" && filter !== "Not Completed") {
+            setFilter("Not Completed")
+            setFilterParams('non_completed')
+        } else{
+            setFilter('')
+            setFilterParams('')
+        }
+    };
+    const menuProps = {
+        items,
+        onClick: handleMenuClick,
+    };
+
+    const handleSort = () => {
+        setToggle(!toggle)
     }
+    
     return (
         <>
             <LoadingAlert open={loading} loading={loading}/>
@@ -236,26 +288,30 @@ const Wakaf = () => {
                     color='orange'
                     label="+ Buat Wakaf"
                     />
-                    <Button
-                    id='filter'
-                    size='base'
-                    onClick={testAlert}
-                    label="Filter"
-                    color='orangeBorder'
-                    />
+                    <Dropdown menu={menuProps} className='w-[156px]'>
+                        <a onClick={(e) => e.preventDefault()}>
+                            <button className={`w-[156px] h-[46px] flex justify-between rounded-[8px] px-2 py-3 font-normal text-sm cursor-pointer transition-all ${filter ? "bg-btnColor border-none text-white" : "border border-btnColor outline-none bg-white text-btnColor"}`}>
+                            {filter ? filter : "Filter"}
+                            <DownOutlined className='mt-1' />
+                            </button>
+                        </a>
+                    </Dropdown>
                 </div>
                 <div className="flex flex-col justify-center space-y-5 mx-auto w-11/12 my-10">
                 <CustomCollapse 
                 header='Produk Wakaf'
                 key={'1'}
+                autoOpen
                 >
                 <WakafTable 
                 data={wakaf}
                 handleArchive={handleArchiveTable}
                 handleDelete={handleDelete}
                 handleEdit={handleEditModal}
+                handleSort={handleSort}
+                isSort={toggle}
                 />
-                <Pagination size='small' total={totalOnlineWakaf} onChange={handlePageChange} showSizeChanger={false} className='z-90 my-7 float-right'/>
+                <Pagination size='small' total={totalOnlineWakaf} onChange={handlePageChange} showSizeChanger={false} className={filterParams ? 'hidden' : 'block z-90 my-7 float-right'}/>
                 </CustomCollapse>
                 <WakafModal
                 open={showModal}

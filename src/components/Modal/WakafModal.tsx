@@ -238,7 +238,7 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                         <div className="">
                                 <label htmlFor='title'>
                                     <Typography variant='h4' color='text01' type='medium' className=''>
-                                        Judul
+                                        Judul <span className='text-error-90'>*</span>
                                     </Typography>
                                 </label>
                                 <Input
@@ -276,7 +276,7 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                         <div className="">
                                 <label htmlFor='category'>
                                     <Typography variant='h4' color='text01' type='medium' className=''>
-                                        Kategori
+                                        Kategori <span className='text-error-90'>*</span>
                                     </Typography>
                                 </label>
                                 <Select
@@ -315,7 +315,7 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                         <div className="">
                                 <label htmlFor='fund_date'>
                                     <Typography variant='h4' color='text01' type='medium' className=''>
-                                        Target
+                                        Target <span className='text-error-90'>*</span>
                                     </Typography>
                                 </label>
                                 <CurrencyInput
@@ -338,7 +338,7 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                         <div className="">
                                 <label htmlFor='due_date'>
                                     <Typography variant='h4' color='text01' type='medium' className=''>
-                                        Hari
+                                        Hari <span className='text-error-90'>*</span>
                                     </Typography>
                                 </label>
                                 <DatePicker name='due_date' onChange={dateChange} placeholder='/Hari' style={{width: 200}} size='large' className='mt-1' disabled={search}/>
@@ -347,37 +347,10 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                             </Typography>
                         </div>
                     </div>
-                    {/* <TextArea
-                    label='Deskripsi Berita'
-                    name='detail'
-                    value={formValues.detail}
-                    onChange={handleTextAreaChange}
-                    /> */}
                     <Editor 
                     name={formValues.detail} 
                     onChange={handleChangeEditor}
                     />
-                    {/* <FroalaEditorComponent
-                    tag="textarea"
-                    config={{
-                        events: {
-                            initialized: function () {
-                              // Callback function to be executed when the editor is initialized
-                                console.log('Editor initialized');
-                              // Perform any additional actions or customization here
-                            },
-                        },
-                        reactIgnoreAttrs: ['class', 'id'],
-                        onChange: handleChangeEditor, 
-                        placeholderText: 'Type here...',
-                        toolbarButtons: ['bold', 'italic', 'underline', 'alignLeft', 'alignCenter', 'alignRight', 'alignJustify',],
-                        quickInsertButtons: ['image', 'table'],
-                        customColorButton: '#F98D3E',
-                        height: 300,
-                    }}
-                    model={formValues.detail}
-                    onModelChange={handleChangeEditor}
-                    /> */}
                     <div className='flex mt-10 justify-end'>
                     <Button
                         type={'submit'}
@@ -386,7 +359,6 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                         color={'orange'}
                         size='base'
                         disabled={disabled}
-                        onClick={()=> console.log(formValues)}
                     />
             </div>
             </form >
@@ -411,9 +383,9 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                             id={`draft`}
                             type={'submit'}
                             color={'orangeBorder'}
-                            size='base'
+                            size={isArchive || isDraft ? 'normal' : 'base'}
                             onClick={isArchive? ()=>handleTOArchive(formValues) : isDraft ? ()=>handleTODraft(formValues) : editMode ? ()=>handleTOArchive(formValues) : ()=>handleTODraft(formValues)}
-                            className={ formValues.title !== '' ? 'block' : 'hidden'}
+                            className={ formValues.title !== '' && formValues.category !== '' && formValues.fund_target !== 0 && formValues.due_date !== '' ? 'block' : 'hidden'}
                         />
                         <Button
                             label='Tutup'
@@ -421,7 +393,7 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                             color={'whiteOrange'}
                             size='base'
                             onClick={handleCancel}
-                            className={ formValues.title !== '' ? 'ml-0' : 'ml-auto'}
+                            className={ formValues.title !== '' && formValues.category !== '' && formValues.fund_target !== 0 && formValues.due_date !== '' ? 'ml-0' : 'ml-auto'}
                         />
                     </div>
                 </div>
