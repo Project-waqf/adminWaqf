@@ -18,12 +18,9 @@ export default function useWakaf(){
     const getAllWakaf = useCallback(async () => {
         try {
             const response = await axios.get(`${HOST}wakaf?isUser=false`)
-            console.log(response.data);
             setAllWakaf(response.data.data)
             return response
-        } catch (error) {
-            console.log(error);
-        } 
+        } catch (error) {} 
     },[])
     const getWakaf = useCallback(async (payload?:any) => {
         const withFilter = `wakaf?filter=${payload.filter}&sort=${payload.sort}`
@@ -33,15 +30,12 @@ export default function useWakaf(){
         }
         try {
             const response = await axios.get(`${HOST}${payload.filter === "" ? noneFilter : withFilter}` )
-            console.log(response.data);
             setWakaf(response.data.data)
             setTotalOnlineWakaf(response.data.total_online)
             setTotalDraftWakaf(response.data.total_draft)
             setTotalArchiveWakaf(response.data.total_archive)
             return response
-        } catch (error) {
-            console.log(error);
-        } 
+        } catch (error) {} 
     },[])
     const createWakaf = useCallback(async (payload: any) => {
         const formData = new FormData()
@@ -95,9 +89,7 @@ export default function useWakaf(){
             Alert('edit')
             return updatedValue                
         } catch (error) {
-            Alert("fail")
-            console.log(error);
-        }
+            Alert("fail")}
     },[])
 
     const draftWakaf = useCallback(async (payload: any) => {
@@ -121,9 +113,7 @@ export default function useWakaf(){
             setWakaf([...wakaf, newValue])
             return newValue
         } catch (error) {
-            Alert("fail")
-            console.log(error);
-        }
+            Alert("fail")}
     },[])
 
     const archiveWakaf = useCallback(async (payload: any) => {
@@ -145,8 +135,6 @@ export default function useWakaf(){
             return updatedValue                
         } catch (error) {
             Alert("fail")
-
-            console.log(error);
         }
     },[])
 
@@ -163,7 +151,6 @@ export default function useWakaf(){
             return deletedValue           
         } catch (error) {
             Alert("fail")
-            console.log(error);
         }
     },[])
 
@@ -173,5 +160,6 @@ export default function useWakaf(){
     useEffect(() => {
         getAllWakaf()
     },[])
+    
     return {allWakaf, wakaf, totalArchiveWakaf, totalDraftWakaf, totalOnlineWakaf, totalWakaf, getWakaf, createWakaf, editedWakaf, draftWakaf, archiveWakaf, deleteWakaf}
 }

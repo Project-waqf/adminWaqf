@@ -18,6 +18,7 @@ import { DraftState, removeWakafFromDraft } from '../stores/draftSilce';
 import { DownOutlined } from '@ant-design/icons';
 import Swal from 'sweetalert2';
 import { ArchiveState, removeWakafFromArchive } from '../stores/archiveSlice';
+import { useLocation } from 'react-router-dom';
 
 const initialEditValue: WakafType = {
     title: "",
@@ -35,6 +36,7 @@ const Wakaf = () => {
     const [loading , setLoading] = useState<boolean>(false)
     const [page, setPage] = useState<number>(1)    
     const dispatch = useDispatch()
+    const location = useLocation()
     const draft = useSelector((state: {draft: DraftState}) => state.draft)
     const archive = useSelector((state: {archive: ArchiveState}) => state.archive)
     const { wakaf, getWakaf, totalOnlineWakaf, createWakaf, editedWakaf, draftWakaf, archiveWakaf, deleteWakaf } = useWakaf()
@@ -44,17 +46,25 @@ const Wakaf = () => {
     const [selectedId, setSelectedId] = useState<number>(0)
     const [filter, setFilter] = useState('')
     const [filterParams, setFilterParams] = useState('')
+    const [filterLocation, setFilterLocation] = useState(location?.state?.forFilter)
     const [sort, setSort] = useState('')
     const [toggle, setToggle] = useState(false)
-
+    
     useEffect(() => {
         if (toggle === true) {
-            setSort('asc')
-        } else if (toggle === false) {
             setSort('desc')
+        } else if (toggle === false) {
+            setSort('asc')
         }
     }, [toggle])
     
+    useEffect(() => {
+        if (filterLocation && filterParams === '') {
+            setFilterParams('aktif')
+            setFilter("Wakaf Aktif")
+        }
+    }, [filterLocation, filterParams])
+
     useEffect(() => {
         getWakaf({page: page, status: 'online', sort: sort, filter: filterParams})
     }, [page, sort, filterParams])
@@ -251,14 +261,18 @@ const Wakaf = () => {
         if (e.key === "0" && filter !== "Wakaf Aktif") {
             setFilter("Wakaf Aktif")
             setFilterParams('aktif')
+            setFilterLocation('')
         } else if (e.key === "1" && filter !== "Completed") {
             setFilter("Completed")
             setFilterParams('complete')
+            setFilterLocation('')
         } else if (e.key === "2" && filter !== "Not Completed") {
             setFilter("Not Completed")
             setFilterParams('non_completed')
+            setFilterLocation('')
         } else{
             setFilter('')
+            setFilterLocation('')
             setFilterParams('')
         }
     };

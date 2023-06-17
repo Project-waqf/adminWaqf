@@ -12,6 +12,7 @@ import ConfirmAlert from '../components/Alert/ConfirmAlert';
 import Alert from '../components/Alert/Alert';
 import { MitraType } from '../utils/types/DataType';
 import { useCookies } from 'react-cookie';
+import LoadingAlert from '../components/Modal/LoadingAlert';
 
 const initialEditValues: MitraType = {
   name: "",
@@ -29,92 +30,99 @@ const Mitra = () => {
   const [editMode, setEditMode] = useState(false)
   const [loading, setLoading] = useState(false)
   const [selectedId, setSelectedId] = useState<number>(0)
-  useEffect(() => {
-    getMitra({offset: page})
-  }, [page])
+  const [sort, setSort] = useState('')
+  const [toggle, setToggle] = useState(false)
 
-  const handlePageChange = (page: number) => {
-      setPage(page)// data for the specified page
-  };
+  useEffect(() => {
+    if (toggle === true) {
+      setSort('asc')
+    } else if (toggle === false) {
+      setSort('desc')
+    }
+  }, [toggle])
+
+  useEffect(() => {
+    getMitra({offset: page, sort: sort})
+  }, [page, sort])
+
   const showModalMitra = () => {
     setShowModal(true);
-};
+  };
 
-const handleCancel = () => {
-  ConfirmAlert( editMode ? 'cancelEdit' : 'cancel').then((res) => {
-        if (res.isConfirmed) {
-            setShowModal(false);
-            setEditMode(false)
-            setEditMitra({
-                name: '',
-                link: '',        
-                picture: null,
-            });
-        }
-    })
-};
-
-const handleAdd = async (formValues: MitraType) => {
-  setEditMitra({ name: formValues.name, link: formValues.link, picture: formValues.picture })
-  const validation = await ConfirmAlert('upload')
-  if (validation.isConfirmed) {
-      setLoading(true)
-      try {
-      const result = await createMitra({
-          name: formValues.name, 
-          link:formValues.link, 
-          picture:formValues.picture,
-          token: cookie.token
+  const handleCancel = () => {
+    ConfirmAlert( editMode ? 'cancelEdit' : 'cancel').then((res) => {
+          if (res.isConfirmed) {
+              setShowModal(false);
+              setEditMode(false)
+              setEditMitra({
+                  name: '',
+                  link: '',        
+                  picture: null,
+              });
+          }
       })
-      setLoading(false);
-      setShowModal(false)
-      setEditMitra({
-        name: '',
-        link: '',        
-        picture: null,
-      });
-      getMitra({offset: page})
-      return result
-      } catch (error) {}
-      setLoading(false)
-  }          
-}
-console.log(selectedId);
+  };
 
-const handleEditModal = (id: number) => {
-  setShowModal(true)
-  const selectedMitra: any = mitra.find((item: any) => item.id === id);
-  if (!selectedMitra) {
-      return;
+  const handleAdd = async (formValues: MitraType) => {
+    setEditMitra({ name: formValues.name, link: formValues.link, picture: formValues.picture })
+    const validation = await ConfirmAlert('upload')
+    if (validation.isConfirmed) {
+        setLoading(true)
+        try {
+        const result = await createMitra({
+            name: formValues.name, 
+            link:formValues.link, 
+            picture:formValues.picture,
+            token: cookie.token
+        })
+        setLoading(false);
+        setShowModal(false)
+        setEditMitra({
+          name: '',
+          link: '',        
+          picture: null,
+        });
+        getMitra({offset: page})
+        return result
+        } catch (error) {}
+        setLoading(false)
+    }          
   }
-  setEditMitra({
-      name: selectedMitra.name,
-      link: selectedMitra.link,        
-      picture: selectedMitra.picture,
-  });
-  setEditMode(true);
-  setSelectedId(id);
-}
 
-const handleEdit = async (formValues: MitraType) => {
-  setEditMitra({ name: formValues.name, link: formValues.link, picture: formValues.picture })
-  const validation = await ConfirmAlert('edit')
-  if (validation.isConfirmed) {
-      setLoading(true);
-      try {
-      const result = await editedMitra({
-      name: formValues.name,
-      link: formValues.link,
-      picture: formValues.picture,
-      id: selectedId,
-      token: cookie.token
-      })
-      setShowModal(false)
-      setLoading(false)
-      getMitra({offset: page})
-      return result
-      } catch (error) {}
-      setLoading(false)
+  const handleEditModal = (id: number) => {
+    setShowModal(true)
+    const selectedMitra: any = mitra.find((item: any) => item.id === id);
+    if (!selectedMitra) {
+        return;
+    }
+    setEditMitra({
+        name: selectedMitra.name,
+        link: selectedMitra.link,        
+        picture: selectedMitra.picture,
+    });
+    setEditMode(true);
+    setSelectedId(id);
+  }
+
+  const handleEdit = async (formValues: MitraType) => {
+    setEditMitra({ name: formValues.name, link: formValues.link, picture: formValues.picture })
+    const validation = await ConfirmAlert('edit')
+    if (validation.isConfirmed) {
+        setLoading(true);
+        try {
+        const result = await editedMitra({
+        name: formValues.name,
+        link: formValues.link,
+        picture: formValues.picture,
+        id: selectedId,
+        token: cookie.token
+        })
+        setShowModal(false)
+        setLoading(false)
+        getMitra({offset: page})
+        return result
+        } catch (error) {}
+        setLoading(false)
     }
   }
   const handleDelete =async (id: number) => {
@@ -133,11 +141,14 @@ const handleEdit = async (formValues: MitraType) => {
     setLoading(false)
     }
   }
+  const handleSort = () => {
+    setToggle(!toggle)
+  }
   return (
     <>
       <Sidebar/>
       <Display>
-      
+        <LoadingAlert open={loading} loading={loading}/>
         <Headers
         label='Mitra'
         />
@@ -161,8 +172,9 @@ const handleEdit = async (formValues: MitraType) => {
           mitra={true}
           handleEdit={handleEditModal}
           handleDelete={handleDelete}
+          handleSort={handleSort}
+          isSort={toggle}
           />
-          <Pagination size='small' total={10} onChange={handlePageChange} showSizeChanger={false} className='z-90 my-7 float-right'/>
           </CustomCollapse>
         </div>
         <MitraModal

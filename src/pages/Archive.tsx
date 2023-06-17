@@ -69,38 +69,38 @@ const Archive = () => {
 
   useEffect(() => {
       if (toggleNews === true) {
-          setSortNews('asc')
-      } else if (toggleNews === false) {
           setSortNews('desc')
+      } else if (toggleNews === false) {
+          setSortNews('asc')
       }
   }, [toggleNews])
 
   useEffect(() => {
     if (toggleWakaf === true) {
-        setSortWakaf('asc')
-    } else if (toggleWakaf === false) {
         setSortWakaf('desc')
+    } else if (toggleWakaf === false) {
+        setSortWakaf('asc')
     }
   }, [toggleWakaf])
 
   useEffect(() => {
     if (toggleAsset === true) {
-        setSortAsset('asc')
-    } else if (toggleAsset === false) {
         setSortAsset('desc')
+    } else if (toggleAsset === false) {
+        setSortAsset('asc')
     }
   }, [toggleAsset])
 
   useEffect(() => {
-    getNews({status: 'archive', page: page})
-  }, [page, sortNews])
+    getNews({status: 'archive', page: page, sort: sortNews})
+  }, [page, sortNews, sortNews])
 
   useEffect(() => {
     getWakaf({status: 'archive', page: pageWakaf, sort: sortWakaf, filter: ''})
   }, [pageWakaf, sortWakaf])
 
   useEffect(() => {
-    getAsset({status: 'archive', page: pageAsset})
+    getAsset({status: 'archive', page: pageAsset, sort: sortAsset})
   }, [pageAsset, sortAsset])
 
   useEffect(()=> {
@@ -114,7 +114,6 @@ const Archive = () => {
         handleArchiveWakaf(archive.wakaf[0])
     }
   },[archive.wakaf])
-console.log('archive', archive.news);
 
   useEffect(()=> {
     if (archive.asset[0] && editMode) {
@@ -171,7 +170,7 @@ console.log('archive', archive.news);
         Alert('edit')
         setIsModalNews(false)
         setLoading(false)
-        getNews({status: 'archive', page: page})
+        getNews({status: 'archive', page: page, sort: sortNews})
         return result
         } catch (error) {}
         setLoading(false)
@@ -188,7 +187,7 @@ console.log('archive', archive.news);
       try {
         const result = await editedNews({id: id, token: cookie.token, status: "online", title: selectedNews.title, body: selectedNews.body, picture: selectedNews.picture,})
         Alert('upload')
-        getNews({status: 'archive', page: page})
+        getNews({status: 'archive', page: page, sort: sortNews})
         return result
       } catch (error) {}
     }
@@ -199,7 +198,7 @@ console.log('archive', archive.news);
         setLoading(true)
         try {
             const response = await editedNews({ title: formValues.title, body: formValues.body, picture: formValues.picture, id: selectedId, status: 'archive', token: cookie.token})
-            getNews({status: 'archive', page: page})
+            getNews({status: 'archive', page: page, sort: sortNews})
             setLoading(false)
             setIsModalNews(false)
             dispatch(removeNewsFromArchive(formValues.title))
@@ -220,7 +219,7 @@ console.log('archive', archive.news);
             token: cookie.token
             })
             Alert('delete')    
-            getNews({status: 'archive', page: page})
+            getNews({status: 'archive', page: page, sort: sortNews})
             setLoading(false)
             return result
         } catch (error) {}
@@ -359,7 +358,7 @@ console.log('archive', archive.news);
             })
             setIsModalAsset(false)
             setLoading(false)
-            getAsset({status: 'archive', page: page})
+            getAsset({status: 'archive', page: pageAsset, sort: sortAsset})
             setEditAsset({name: '', detail: ''})
             return result
         } catch (error) {}
@@ -379,7 +378,7 @@ console.log('archive', archive.news);
             const response = await editedAsset({id: id, token: cookie.token, status: "online", name: selecetedAsset.name, detail: selecetedAsset.detail})
             Alert('upload')
             setLoading(false)
-            getAsset({status: 'archive', page: page})
+            getAsset({status: 'archive', page: pageAsset, sort: sortAsset})
             return response
         } catch (error) {}
     }
@@ -392,7 +391,7 @@ console.log('archive', archive.news);
             const response = await editedAsset({id: selectedId, name: formValues.name, detail: formValues.detail, picture: formValues.picture, status: 'archive', token: cookie.token})
             setLoading(false)
             setIsModalAsset(false)
-            getAsset({status: 'archive', page: page})
+            getAsset({status: 'archive', page: pageAsset, sort: sortAsset})
             dispatch(removeAssetFromArchive(formValues.name))
             return response
         } catch (error) {}
@@ -407,7 +406,7 @@ console.log('archive', archive.news);
         setLoading(true)
         try {
             const response = await deleteAsset({id: id, token: cookie.token})
-            getAsset({status: 'archive', page: page})
+            getAsset({status: 'archive', page: pageAsset, sort: sortAsset})
             setLoading(false)
             return response
         } catch (error) {}
@@ -415,6 +414,12 @@ console.log('archive', archive.news);
   }
   const handleSortWakaf = () => {
     setToggleWakaf(!toggleWakaf)
+  }
+  const handleSortNews = () => {
+    setToggleNews(!toggleNews)
+  }
+  const handleSortAsset = () => {
+    setToggleAsset(!toggleAsset)
   }
   return (
     <>
@@ -449,6 +454,8 @@ console.log('archive', archive.news);
           handleEdit={handleEditModalNews}
           handleDelete={handleDeleteNews}
           archives={true}
+          handleSort={handleSortNews}
+          isSort={toggleNews}
           />
           <Pagination size='small' total={totalArchiveNews} onChange={handlePageChange} showSizeChanger={false} className='z-90 my-7 float-right'/>
           </CustomCollapse>
@@ -462,6 +469,8 @@ console.log('archive', archive.news);
           handleArchive={handleOnlineAsset}
           handleDelete={handleDeleteAsset}
           archives={true}
+          handleSort={handleSortAsset}
+          isSort={toggleAsset}
           />
           <Pagination size='small' total={totalArchiveAsset} defaultPageSize={8} onChange={handlePageAssetChange} showSizeChanger={false} className='z-90 my-7 float-right'/>
           </CustomCollapse>

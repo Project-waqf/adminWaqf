@@ -12,7 +12,6 @@ import Headers from '../components/Headers/Headers';
 import WakafTable from '../components/Table/WakafTable';
 import WakafModal from '../components/Modal/WakafModal';
 import useWakaf from '../api/hooks/useWakaf';
-import useDashboard from '../api/hooks/useDashboard';
 import Card from '../components/Card/Card';
 import Alert from '../components/Alert/Alert';
 import assetIcon from "../assets/Group 26958.svg";
@@ -54,9 +53,9 @@ const Dashboard = () => {
     
     useEffect(() => {
         if (toggle === true) {
-            setSort('asc')
-        } else if (toggle === false) {
             setSort('desc')
+        } else if (toggle === false) {
+            setSort('asc')
         }
     }, [toggle])
     
@@ -253,7 +252,7 @@ const Dashboard = () => {
                             icon={item.icon}
                             header={item.header}
                             count={item.count}
-                            onClick={()=> navigate('/wakaf')}
+                            onClick={()=> {item.header === "Wakaf Aktif" ?  navigate('/wakaf') : item.header === "Wakaf Selesai" ? navigate('/wakaf', {state: {forFilter: 'aktif'}}) : navigate('/asset')}}
                             />
                         )
                     })}

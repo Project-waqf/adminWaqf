@@ -37,11 +37,20 @@ const Asset = () => {
     const dispatch = useDispatch()
     const {asset,totalOnlineAsset, getAsset,createAsset, editedAsset, deleteAsset, draftAsset, archiveAsset} = useAsset()
     const [cookie] = useCookies(['token', 'id', 'name', 'email', 'foto'])
+    const [sort, setSort] = useState('')
+    const [toggle, setToggle] = useState(false)
 
     useEffect(() => {
-        getAsset({status: "online", page: page})
-    }, [])
+        if (toggle === true) {
+            setSort('desc')
+        } else if (toggle === false) {
+            setSort('asc')
+        }
+    }, [toggle])
 
+    useEffect(() => {
+        getAsset({status: "online", page: page, sort: sort})
+    }, [page, sort])
 
     useEffect(()=> {
         if (draft.asset[0] && !editMode) {
@@ -55,13 +64,10 @@ const Asset = () => {
             handleArchive(archive.asset[0])
         }
     },[archive.asset])
-    console.log("archive",archive.asset);
 
     const handlePageChange = (page: number) => {
         setPage(page)// data for the specified page
     };
-
-    console.log("ini draft",draft.asset);
     
     const showModal = () => {
         setIsModal(true)
@@ -84,7 +90,7 @@ const Asset = () => {
             setLoading(true)
             try {
                 const result = await createAsset({name: formValues.name, detail: formValues.detail, picture: formValues.picture, token: cookie.token})
-                getAsset({status: 'online', page: page})
+                getAsset({status: "online", page: page, sort: sort})
                 setLoading(false);
                 setIsModal(false)
                 Alert('upload')
@@ -116,7 +122,7 @@ const Asset = () => {
                 setIsModal(false)
                 setLoading(false)
                 setValue(initialFormValues)
-                getAsset({status: 'online', page: page})
+                getAsset({status: "online", page: page, sort: sort})
                 Alert("edit")
                 return result
             } catch (error) {}
@@ -130,7 +136,7 @@ const Asset = () => {
             try {
                 const response = await archiveAsset({id: id, token: cookie.token})
                 setLoading(false)
-                getAsset({status: 'online', page: page})
+                getAsset({status: "online", page: page, sort: sort})
                 Alert("archive")
                 return response
             } catch (error) {}
@@ -142,7 +148,7 @@ const Asset = () => {
             setLoading(true)
             try {
                 const response = await editedAsset({id: selectedId, name: formValues.name, detail: formValues.detail, picture: formValues.picture, status: 'archive', token: cookie.token})
-                getAsset({status: 'online', page: page})
+                getAsset({status: "online", page: page, sort: sort})
                 setLoading(false)
                 setIsModal(false)
                 dispatch(removeAssetFromArchive(formValues.name))
@@ -159,7 +165,7 @@ const Asset = () => {
             setLoading(true)
             try {
                 const response = await draftAsset({name: formValues.name, detail: formValues.detail, picture: formValues.picture, token: cookie.token})
-                getAsset({status: 'online', page: page})
+                getAsset({status: "online", page: page, sort: sort})
                 setLoading(false)
                 setIsModal(false)
                 dispatch(removeAssetFromDraft(formValues.name))
@@ -176,12 +182,16 @@ const Asset = () => {
             setLoading(true)
             try {
                 const response = await deleteAsset({id: id, token: cookie.token})
-                getAsset({status: 'online', page: page})
+                getAsset({status: "online", page: page, sort: sort})
                 setLoading(false)
                 Alert("delete")
                 return response
             } catch (error) {}
         }
+    }
+
+    const handleSort = () => {
+        setToggle(!toggle)
     }
 
     return (
@@ -212,6 +222,8 @@ const Asset = () => {
                 handleEdit={handleEditModal}
                 handleDelete={handleDelete}
                 handleArchive={handleArchiveTable}
+                handleSort={handleSort}
+                isSort={toggle}
                 />
                 <Pagination size='small' total={totalOnlineAsset} defaultPageSize={8} onChange={handlePageChange} showSizeChanger={false} className='z-90 my-7 float-right'/>
                 </CustomCollapse>

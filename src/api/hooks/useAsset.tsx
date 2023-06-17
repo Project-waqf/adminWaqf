@@ -15,27 +15,22 @@ export default function useAsset() {
     useEffect(() => {
         setTotalAsset(totalOnlineAsset + totalArchiveAsset + totalDraftAsset)
     }, [totalArchiveAsset, totalDraftAsset, totalOnlineAsset])
+
     const getAllAsset = useCallback(async () => {
         try {
             const response = await axios.get(`${HOST}asset`)
-            console.log(response.data)
             setAllAsset(response.data.data)
             setTotalAllAsset(response.data.data.length - 1)
-        } catch (error) {
-            console.log(error)
-        }
+        } catch (error) {}
     },[])
     const getAsset = useCallback(async (payload?: any) => {
         try {
-            const response = await axios.get(`${HOST}asset?status=${payload.status}&page=${payload.page}`)
-            console.log(response.data)
+            const response = await axios.get(`${HOST}asset?status=${payload.status}&page=${payload.page}&sort=${payload.sort}`)
             setAsset(response.data.data)
             setTotalOnlineAsset(response.data.total_online)
             setTotalDraftAsset(response.data.total_draft)
             setTotalArchiveAsset(response.data.total_archive)
-        } catch (error) {
-            console.log(error)
-        }
+        } catch (error) {}
     },[])
     const createAsset = useCallback(async (payload: any) => {
         const formData = new FormData()
@@ -57,7 +52,6 @@ export default function useAsset() {
             return newValue
         } catch (error) {
             Alert('fail')
-            console.log(error);
         }
     },[])
 
@@ -84,7 +78,6 @@ export default function useAsset() {
             return updatedValue                
         } catch (error) {
             Alert('fail')
-            console.log(error);
         }
     },[])
 
@@ -108,7 +101,6 @@ export default function useAsset() {
             return newValue
         } catch (error) {
             Alert('fail')
-            console.log(error);
         }
     },[])
 
@@ -131,7 +123,6 @@ export default function useAsset() {
             return updatedValue                
         } catch (error) {
             Alert('fail')
-            console.log(error);
         }
     },[])
 
@@ -148,7 +139,6 @@ export default function useAsset() {
             return deletedValue           
         } catch (error) {
             Alert('fail')
-            console.log(error);
         }
     },[])
     

@@ -69,39 +69,39 @@ const Draft = () => {
 
   useEffect(() => {
       if (toggleNews === true) {
-          setSortNews('asc')
-      } else if (toggleNews === false) {
           setSortNews('desc')
+      } else if (toggleNews === false) {
+          setSortNews('asc')
       }
   }, [toggleNews])
 
   useEffect(() => {
     if (toggleWakaf === true) {
-        setSortWakaf('asc')
-    } else if (toggleWakaf === false) {
         setSortWakaf('desc')
+    } else if (toggleWakaf === false) {
+        setSortWakaf('asc')
     }
   }, [toggleWakaf])
 
   useEffect(() => {
     if (toggleAsset === true) {
-        setSortAsset('asc')
-    } else if (toggleAsset === false) {
         setSortAsset('desc')
+    } else if (toggleAsset === false) {
+        setSortAsset('asc')
     }
   }, [toggleAsset])
 
   useEffect(() => {
-    getNews({status: 'draft', page: page})
-  }, [page])
+    getNews({status: 'draft', page: page, sort: sortNews})
+  }, [page, sortNews])
 
   useEffect(() => {
     getWakaf({status: 'draft', page: pageWakaf, sort: sortWakaf, filter: ''})
   }, [pageWakaf, sortWakaf])
   
   useEffect(() => {
-    getAsset({status: 'draft', page: pageAsset})
-  }, [pageAsset])
+    getAsset({status: 'draft', page: pageAsset, sort: sortAsset})
+  }, [pageAsset, sortAsset])
 
   useEffect(()=> {
     if (draft.news[0]) {
@@ -166,7 +166,7 @@ console.log('draft', draft.news);
         })
         setIsModalNews(false)
         setLoading(false)
-        getNews({status: 'draft', page: page})
+        getNews({status: 'draft', page: page, sort: sortNews})
         return result
         } catch (error) {}
         setLoading(false)
@@ -188,7 +188,7 @@ console.log('draft', draft.news);
         })
         setIsModalNews(false)
         setLoading(false)
-        getNews({status: 'draft', page: page})
+        getNews({status: 'draft', page: page, sort: sortNews})
         dispatch(removeNewsFromDraft(formValues.title))
         return result
         } catch (error) {}
@@ -207,7 +207,7 @@ console.log('draft', draft.news);
             id: id,
             token: cookie.token
             })
-            getNews({status: 'draft', page: page})
+            getNews({status: 'draft', page: page, sort: sortNews})
             setLoading(false)
             return result
         } catch (error) {}
@@ -325,7 +325,7 @@ console.log('draft', draft.news);
             })
             setIsModalAsset(false)
             setLoading(false)
-            getAsset({status: 'draft', page: page})
+            getAsset({status: 'draft', page: pageAsset, sort: sortAsset})
             setEditAsset({name: '', detail: ''})
             return result
         } catch (error) {}
@@ -341,7 +341,7 @@ console.log('draft', draft.news);
             const response = await editedAsset({id: selectedId, name: formValues.name, detail: formValues.detail, picture: formValues.picture, status: 'draft', token: cookie.token})
             setLoading(false)
             setIsModalAsset(false)
-            getAsset({status: 'draft', page: page})
+            getAsset({status: 'draft', page: pageAsset, sort: sortAsset})
             dispatch(removeAssetFromDraft(formValues.name))
             return response
         } catch (error) {}
@@ -356,7 +356,7 @@ console.log('draft', draft.news);
         setLoading(true)
         try {
             const response = await deleteAsset({id: id, token: cookie.token})
-            getAsset({status: 'draft', page: page})
+            getAsset({status: 'draft', page: pageAsset, sort: sortAsset})
             setLoading(false)
             return response
         } catch (error) {}
@@ -364,6 +364,12 @@ console.log('draft', draft.news);
   }
   const handleSortWakaf = () => {
     setToggleWakaf(!toggleWakaf)
+  }
+  const handleSortNews = () => {
+    setToggleNews(!toggleNews)
+  }
+  const handleSortAsset = () => {
+    setToggleAsset(!toggleAsset)
   }
   return (
     <>
@@ -396,6 +402,8 @@ console.log('draft', draft.news);
           handleEdit={handleEditModalNews}
           handleDelete={handleDeleteNews}
           draft={true}
+          handleSort={handleSortNews}
+          isSort={toggleNews}
           />
           <Pagination size='small' total={totalDraftNews} onChange={handlePageChange} showSizeChanger={false} className='z-90 my-7 float-right'/>
           </CustomCollapse>
@@ -408,6 +416,8 @@ console.log('draft', draft.news);
           handleEdit={handleEditModalAsset}
           handleDelete={handleDeleteAsset}
           draft={true}
+          handleSort={handleSortAsset}
+          isSort={toggleAsset}
           />
           <Pagination size='small' total={totalDraftAsset} defaultPageSize={8} onChange={handlePageAssetChange} showSizeChanger={false} className='z-90 my-7 float-right'/>
           </CustomCollapse>

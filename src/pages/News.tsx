@@ -42,13 +42,20 @@ const News = () => {
     const [editNews , setEditNews] = useState<NewsType>(initialEditNewsValue)
     const [editMode, setEditMode] = useState(false)
     const [selectedId, setSelectedId] = useState<number>(0)
+    const [sort, setSort] = useState('')
+    const [toggle, setToggle] = useState(false)
 
-    console.log(totalNews);
-    
-    
     useEffect(() => {
-        getNews({status: 'online', page: page})
-    }, [page])
+        if (toggle === true) {
+            setSort('desc')
+        } else if (toggle === false) {
+            setSort('asc')
+        }
+    }, [toggle])
+
+    useEffect(() => {
+        getNews({status: 'online', page: page, sort: sort})
+    }, [page, sort])
     
     const handlePageChange = (page: number) => {
         setPage(page)// data for the specified page
@@ -67,12 +74,9 @@ const News = () => {
     },[archive.news])
     
 
-    console.log("archive",archive.news);
-    
     const showModalNews = () => {
         setisModalNews(true);
     };
-    console.log("ini draft",draft.news);
 
     const handleCancel = () => {
         ConfirmAlert( editMode ? 'cancelEdit' : 'cancel').then((res) => {
@@ -102,7 +106,7 @@ const News = () => {
                 setLoading(false);
                 setisModalNews(false)
                 setEditNews(initialEditNewsValue)
-                getNews({status: 'online', page: page})
+                getNews({status: 'online', page: page, sort: sort})
                 Alert('upload')
                 return result
             } catch (error) {}
@@ -134,7 +138,7 @@ const News = () => {
             setLoading(true);
             try {
                 const result = await editedNews({ title: formValues.title, body: formValues.body, picture: formValues.picture, id: selectedId, token: cookie.token})
-                getNews({status: 'online', page: page})
+                getNews({status: 'online', page: page, sort: sort})
                 setLoading(false)
                 setisModalNews(false)
                 Alert('edit')
@@ -149,7 +153,7 @@ const News = () => {
             setLoading(true)
             try {
                 const response = await editedNews({id: selectedId, title: formValues.title, body: formValues.body, status: 'archive',  token: cookie.token})
-                getNews({status: 'online', page: page})
+                getNews({status: 'online', page: page, sort: sort})
                 setLoading(false)
                 dispatch(removeNewsFromArchive(formValues.title))
                 setisModalNews(false)
@@ -166,7 +170,7 @@ const News = () => {
             setLoading(true)
             try {
                 const response = await archiveNews({id: id, token: cookie.token})
-                getNews({status: 'online', page: page})
+                getNews({status: 'online', page: page, sort: sort})
                 setLoading(false)
                 setisModalNews(false)
                 Alert('archive')
@@ -181,7 +185,7 @@ const News = () => {
             setLoading(true)
             try {
                 const response = await draftNews({title: formValues.title, body: formValues.body, picture: formValues.picture, token: cookie.token})
-                getNews({status: 'online', page: page})
+                getNews({status: 'online', page: page, sort: sort})
                 setLoading(false)
                 setisModalNews(false)
                 dispatch(removeNewsFromDraft(formValues.title))
@@ -199,7 +203,7 @@ const News = () => {
         setLoading(true)
         try {
             const result = await deleteNews({ id: id, token: cookie.token })
-            getNews({status: 'online', page: page})
+            getNews({status: 'online', page: page, sort: sort})
             setLoading(false)
             Alert('delete')
             return result
@@ -207,6 +211,11 @@ const News = () => {
         setLoading(false)
         }
     }
+
+    const handleSort = () => {
+        setToggle(!toggle)
+    }
+
     return (
         <>
         <Sidebar/>
@@ -235,6 +244,8 @@ const News = () => {
                 handleEdit={handleEditModalNews}
                 handleDelete={handleDelete}
                 handleArchive={handleArchiveTable}
+                handleSort={handleSort}
+                isSort={toggle}
                 />
                 <Pagination size='small' total={totalOnlineNews} onChange={handlePageChange} showSizeChanger={false} className='z-90 my-7 float-right'/>
                 </CustomCollapse>

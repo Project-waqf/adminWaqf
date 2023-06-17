@@ -10,13 +10,10 @@ export default function useMitra() {
 
     const getMitra = useCallback(async (payload?: any) => {
         try {
-            const response = await axios.get(`${HOST}partners?limit=10&offset=${payload.offset}`)
-            console.log(response.data)
+            const response = await axios.get(`${HOST}partners?limit=10&offset=${payload.offset}&status=${payload.status}`)
             setMitra(response.data.data)
             return response
-        } catch (error) {
-            console.log(error)
-        }
+        } catch (error) {}
     },[])
     const createMitra = useCallback(async (payload: any) => {
         const formData = new FormData()
@@ -38,7 +35,6 @@ export default function useMitra() {
             return newValue
         } catch (error) {
             Alert('fail')
-            console.log(error);
         }
     },[])
 
@@ -65,7 +61,6 @@ export default function useMitra() {
             return updatedValue                
         } catch (error) {
             Alert('fail')
-            console.log(error);
         }
     },[])
     const deleteMitra = useCallback(async (payload: any) => {
@@ -83,7 +78,6 @@ export default function useMitra() {
             return deletedValue           
         } catch (error) {
             Alert('fail')
-            console.log(error);
         }
 
     },[])

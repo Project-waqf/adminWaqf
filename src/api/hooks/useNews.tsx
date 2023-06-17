@@ -20,27 +20,21 @@ export default function useNews() {
     const getAllNews = useCallback(async () => {
         try {
             const response = await axios.get(`${HOST}news?status=&page=`)
-            console.log(response.data)
             setAllNews(response.data.data)
             setTotalAllNews(response.data.data.length - 1)
             return response
-        } catch (error) {
-            console.log(error)
-        }
+        } catch (error) {}
     },[])
 
     const getNews = useCallback(async (payload?: any) => {
         try {
-            const response = await axios.get(`${HOST}news?status=${payload.status}&page=${payload.page}`)
-            console.log(response.data)
+            const response = await axios.get(`${HOST}news?status=${payload.status}&page=${payload.page}&sort=${payload.sort}`)
             setNews(response.data.data)
             setTotalOnlineNews(response.data.total_online)
             setTotalDraftNews(response.data.total_draft)
             setTotalArchiveNews(response.data.total_archive)
             return response
-        } catch (error) {
-            console.log(error)
-        }
+        } catch (error) {}
     },[])
 
     const createNews = useCallback(async (payload: any) => {
@@ -64,7 +58,6 @@ export default function useNews() {
             return newValue
         } catch (error) {
             Alert('fail')
-            console.log(error);
         }
     },[])
 
@@ -92,7 +85,6 @@ export default function useNews() {
             return updatedValue                
         } catch (error) {
             Alert('fail')
-            console.log(error);
         }
     },[])
 
@@ -117,7 +109,6 @@ export default function useNews() {
             return newValue
         } catch (error) {
             Alert('fail')
-            console.log(error);
         }
     },[])
 
@@ -138,7 +129,6 @@ export default function useNews() {
             return newValue
         } catch (error) {
             Alert('fail')
-            console.log(error);
         }
     },[])
 
@@ -156,7 +146,6 @@ export default function useNews() {
             Alert('delete')
             return deletedValue           
         } catch (error) {
-            console.log(error);
             Alert('fail')
         }
 
