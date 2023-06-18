@@ -2,14 +2,11 @@ import Typography from '../components/Typography'
 import Display from '../components/DisplayContent/Display'
 import Sidebar from '../components/Sidebar'
 import React, { useEffect, useState } from 'react'
-import { Avatar, Input } from 'antd'
-import { FiSearch } from 'react-icons/fi'
 import CustomCollapse from '../components/Collapse'
 import CustomTable from '../components/Table'
 import NewsModal from '../components/Modal/NewsModal'
 import ConfirmAlert from '../components/Alert/ConfirmAlert'
 import { useCookies } from 'react-cookie'
-import profilePict from '../assets/default.png'
 import { NewsType } from '../utils/types/DataType'
 import Alert from '../components/Alert/Alert'
 import Button from '../components/CustomButton/Button'
@@ -77,6 +74,8 @@ const News = () => {
     const showModalNews = () => {
         setisModalNews(true);
     };
+    console.log("eddasdashd", editNews);
+    
 
     const handleCancel = () => {
         ConfirmAlert( editMode ? 'cancelEdit' : 'cancel').then((res) => {
@@ -85,7 +84,8 @@ const News = () => {
                 setEditMode(false)
                 setEditNews({
                     title: '',
-                    body: ''
+                    body: '',
+                    picture: null
                 });
             }
         })
@@ -126,6 +126,7 @@ const News = () => {
             title: selectedNews.title,
             body: selectedNews.body,        
             picture: selectedNews.picture,
+            status: selectedNews.status
         });
         setEditMode(true);
         setSelectedId(id);
@@ -230,7 +231,7 @@ const News = () => {
                 size='normal'
                 onClick={showModalNews}
                 color='orange'
-                label="+ Buat Asset"
+                label="+ Buat Berita"
                 />
             </div>                
             <div className="flex flex-col justify-center space-y-5 mx-auto w-11/12 my-10">

@@ -4,13 +4,13 @@ import Typography from '../Typography';
 import Button from '../CustomButton/Button';
 import { SmallLoading } from '../../assets/svg/SmallLoading';
 import { WakafType } from '../../utils/types/DataType';
-import TextArea from '../CustomInput/TextArea';
 import { TbFileDescription } from "react-icons/tb";
 import { wakafToDraft } from "../../stores/draftSilce";
 import { wakafToArchive } from '../../stores/archiveSlice';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import CurrencyInput from 'react-currency-input-field';
-import Editor from '../CustomInput/Editor';
+import ReactQuill from 'react-quill'
+import 'react-quill/dist/quill.snow.css'
 
     interface FormProps {
         onSubmit: (formValues: WakafType) => void;
@@ -80,7 +80,7 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
     const dispatch = useDispatch()
 
     useEffect(() => {
-        if (editMode || !editMode) {
+        if (editMode) {
             setFormValues(editValues);
         }
     }, [editValues, editMode]);
@@ -145,7 +145,8 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
             detail: formValues.detail,
             picture: formValues.picture,
             due_date: formValues.due_date,
-            fund_target: formValues.fund_target
+            fund_target: formValues.fund_target,
+            collected: formValues.collected
         }
         dispatch(wakafToDraft(newItem))
     }
@@ -156,7 +157,8 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
             detail: formValues.detail,
             picture: formValues.picture,
             due_date: formValues.due_date,
-            fund_target: formValues.fund_target
+            fund_target: formValues.fund_target,
+            collected: formValues.collected
         }
         dispatch(wakafToArchive(newItem))
     }
@@ -219,7 +221,10 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
         setFormValues({...formValues, detail: newContent});
     };
     console.log(formValues);
-    
+    var toolbarOptions = [['bold', 'italic', 'underline'], [{'align': []}]];
+    const module = {
+        toolbar: toolbarOptions
+    }
     return (
         <Modal
         open={open}
@@ -233,7 +238,7 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                     <Typography variant='body1' color='text01' type='medium' className={search ? 'block mb-5' : 'hidden' }>
                         Status: <span className={status === "online" ? 'text-green-500':'text-primary-100'}>{status}</span>
                     </Typography>
-                    <form className='flex flex-col space-y-5' onSubmit={handleSubmit}>
+                    <form className='flex flex-col space-y-5 mb-10' onSubmit={handleSubmit}>
                     <div className="flex space-x-8">
                         <div className="">
                                 <label htmlFor='title'>
@@ -347,10 +352,18 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                             </Typography>
                         </div>
                     </div>
-                    <Editor 
+                    {/* <Editor 
                     name={formValues.detail} 
                     onChange={handleChangeEditor}
-                    />
+                    /> */}
+                    <div className="h-[280px]">
+                        <label htmlFor='due_date'>
+                            <Typography variant='h4' color='text01' type='medium' className='mb-1'>
+                                Deskripsi Produk
+                            </Typography>
+                        </label>
+                        <ReactQuill modules={module} theme='snow' className='h-[200px]' value={formValues.detail} onChange={(value) => setFormValues({ ...formValues, detail: value})}/>
+                    </div>
                     <div className='flex mt-10 justify-end'>
                     <Button
                         type={'submit'}

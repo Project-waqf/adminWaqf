@@ -35,13 +35,14 @@ export interface NewsType {
     id?: number
     title: string;
     body: string;
-    picture?: File | null | any
+    status?: string
+    picture: File | null
 }
 export interface AssetType {
     id?: number
     name: string
     detail: string
-    picture?: File | null
+    picture: File | null
 }
 export interface WakafType {
     id?: number
@@ -51,7 +52,7 @@ export interface WakafType {
     detail: string
     due_date: any
     fund_target: any
-    collected?: any
+    collected: any
 }
 export interface DashboardType {
     id: number

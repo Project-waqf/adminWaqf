@@ -9,7 +9,8 @@ import { TbFileDescription } from "react-icons/tb";
 import { DraftState, newsToDraft } from "../../stores/draftSilce";
 import { newsToArchive, ArchiveState } from '../../stores/archiveSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import Editor from '../CustomInput/Editor';
+import ReactQuill from 'react-quill'
+import 'react-quill/dist/quill.snow.css'
 
 
     interface FormProps {
@@ -26,7 +27,8 @@ import Editor from '../CustomInput/Editor';
     const initialFormValues: NewsType = {
         title: "",
         body: "",
-        picture: null
+        picture: null,
+        status: ''
     };
 
 const NewsModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, isArchive, isDraft, handleCancel, status, search}) => {
@@ -36,10 +38,11 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, 
     const [error, setError] = useState<string>()
     const dispatch = useDispatch()
     const draft = useSelector((state: {draft: DraftState}) => state.draft)
+    console.log(formValues);
     
     useEffect(() => {
-        if (editMode || !editMode) {
-            setFormValues(editValues);
+        if (editMode) {
+            setFormValues({title: editValues.title, body:editValues.body, picture: editValues.picture});
         }
     }, [editValues, editMode]);
 
@@ -56,10 +59,6 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormValues({ ...formValues, [e.target.name]: e.target.value });
     }
-    
-    const handleTextAreaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setFormValues({ ...formValues, [e.target.name]: e.target.value });
-    };
     
     const handleTODraft = async (formValues: NewsType) => {
         const newItem: NewsType = {
@@ -107,6 +106,10 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, 
         
     };
 
+    var toolbarOptions = [['bold', 'italic', 'underline'], [{'align': []}]];
+    const module = {
+        toolbar: toolbarOptions
+    }
     return (
         <Modal
         open={open}
@@ -165,10 +168,14 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, 
                     value={formValues.body}
                     onChange={handleTextAreaChange}
                     /> */}
-                    <Editor
-                    name={formValues.body}
-                    onChange={handleChangeEditor}
-                    />
+                    <div className="h-[280px]">
+                        <label htmlFor='due_date'>
+                            <Typography variant='h4' color='text01' type='medium' className='mb-1'>
+                                Deskripsi Berita
+                            </Typography>
+                        </label>
+                        <ReactQuill modules={module} theme='snow' className='h-[200px]' value={formValues.body} onChange={(value) => setFormValues({ ...formValues, body: value})}/>
+                    </div>
                 <div className='flex mt-10 justify-end'>
                     <Button
                         type={'submit'}

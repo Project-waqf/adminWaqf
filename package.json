@@ -19,9 +19,9 @@
     "react-cookie": "^4.1.1",
     "react-currency-input-field": "^3.6.10",
     "react-dom": "^18.2.0",
-    "react-froala-wysiwyg": "^4.0.19",
     "react-hook-form": "^7.44.3",
     "react-icons": "^4.8.0",
+    "react-quill": "^2.0.0",
     "react-redux": "^8.0.5",
     "react-router-dom": "^6.11.0",
     "sass": "^1.62.1",
@@ -30,7 +30,6 @@
     "use-query-params": "^2.2.1"
   },
   "devDependencies": {
-    "@types/draft-js": "^0.11.10",
     "@types/estree": "^1.0.1",
     "@types/lodash": "^4.14.195",
     "@types/node": "^18.16.3",
