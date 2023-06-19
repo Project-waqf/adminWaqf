@@ -339,6 +339,7 @@ const Archive = () => {
     setEditAsset({
         name: selecetedAsset.name,
         detail: selecetedAsset.detail,
+        picture: selecetedAsset.picture
     });
     setSelectedId(id);
   }
@@ -359,7 +360,7 @@ const Archive = () => {
             setIsModalAsset(false)
             setLoading(false)
             getAsset({status: 'archive', page: pageAsset, sort: sortAsset})
-            setEditAsset({name: '', detail: ''})
+            setEditAsset({name: '', detail: '', picture: null})
             return result
         } catch (error) {}
         setLoading(false)

@@ -306,6 +306,7 @@ console.log('draft', draft.news);
   setEditAsset({
       name: selecetedAsset.name,
       detail: selecetedAsset.detail,
+      picture: selecetedAsset.picture
   });
   setSelectedId(id);
   }
@@ -326,7 +327,7 @@ console.log('draft', draft.news);
             setIsModalAsset(false)
             setLoading(false)
             getAsset({status: 'draft', page: pageAsset, sort: sortAsset})
-            setEditAsset({name: '', detail: ''})
+            setEditAsset({name: '', detail: '', picture: null})
             return result
         } catch (error) {}
         setLoading(false)

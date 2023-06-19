@@ -108,6 +108,7 @@ const Asset = () => {
         setValue({
             name: selecetedAsset.name,
             detail: selecetedAsset.detail,
+            picture: selecetedAsset.picture
         });
         setSelectedId(id);
     }
