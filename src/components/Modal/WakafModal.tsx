@@ -4,6 +4,7 @@ import Typography from '../Typography';
 import Button from '../CustomButton/Button';
 import { SmallLoading } from '../../assets/svg/SmallLoading';
 import { WakafType } from '../../utils/types/DataType';
+import { FaRegTrashAlt } from 'react-icons/fa'
 import { TbFileDescription } from "react-icons/tb";
 import { wakafToDraft } from "../../stores/draftSilce";
 import { wakafToArchive } from '../../stores/archiveSlice';
@@ -14,6 +15,7 @@ import 'react-quill/dist/quill.snow.css'
 
     interface FormProps {
         onSubmit: (formValues: WakafType) => void;
+        handleDelete?: (id: any) => void
         editValues: WakafType;
         editMode?: boolean;
         open: boolean
@@ -25,13 +27,16 @@ import 'react-quill/dist/quill.snow.css'
     }
 
     const initialFormValues: WakafType = {
+        id: 0,
         title: "",
-        category: "umum",
+        category: "",
         picture: null,
         detail: '',
-        due_date: null,
+        due_date: 0,
         fund_target: 0,
-        collected: 0
+        collected: 0, 
+        due_date_string: '',
+        is_completed: false
     };
 
     const options = [
@@ -68,7 +73,7 @@ import 'react-quill/dist/quill.snow.css'
             label: 'Kemanusiaan dan Lingkungan',
         },
     ] 
-const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, isArchive, isDraft, handleCancel, search, status}) => {
+const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, isArchive, isDraft, handleCancel, search, status, handleDelete}) => {
 
     const [formValues, setFormValues] = useState<WakafType>(initialFormValues);
     const [loading , setLoading] = useState(false)
@@ -80,7 +85,7 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
     const dispatch = useDispatch()
 
     useEffect(() => {
-        if (editMode) {
+        if (editMode || !editMode) {
             setFormValues(editValues);
         }
     }, [editValues, editMode]);
@@ -109,17 +114,14 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
         setFormValues({ ...formValues, [e.target.name]: e.target.value });
     }
     
-    const handleTextAreaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setFormValues({ ...formValues, [e.target.name]: e.target.value });
-    };
     const handleChange = (value: string) => {
-        console.log(`Selected: ${value}`);
         setFormValues({...formValues, category: value})
-    };
-    const dateChange: DatePickerProps['onChange'] = (date, dateString) => {
-        console.log(date, dateString);
-        setFormValues({...formValues, due_date: dateString})
     }
+
+    const dateChange: DatePickerProps['onChange'] = (date, dateString) => {
+        setFormValues({...formValues, due_date_string: dateString})
+    }
+
     const calculateDays = (startDate: any, endDate: any) => {
         const start = new Date(startDate);
         const end = new Date(endDate);
@@ -127,7 +129,6 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
         const days = Math.ceil(timeDiff / (1000 * 3600 * 24));
         setTotalDays(days);
     };
-    console.log(startDate);
     
     const parser = (displayValue: string | undefined): number | undefined => {
         if (!displayValue) {
@@ -145,6 +146,7 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
             detail: formValues.detail,
             picture: formValues.picture,
             due_date: formValues.due_date,
+            due_date_string: formValues.due_date_string,
             fund_target: formValues.fund_target,
             collected: formValues.collected
         }
@@ -158,7 +160,8 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
             picture: formValues.picture,
             due_date: formValues.due_date,
             fund_target: formValues.fund_target,
-            collected: formValues.collected
+            collected: formValues.collected, 
+            due_date_string: formValues.due_date_string
         }
         dispatch(wakafToArchive(newItem))
     }
@@ -189,7 +192,6 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
         onSubmit(formValues);
         setFormValues(initialFormValues);
     };
-    console.log(formValues);
 
     useEffect(() => {
         const numberInput = document.getElementById('number-input') as HTMLInputElement | null;
@@ -217,9 +219,6 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
         }
     }
 
-    const handleChangeEditor = (newContent: string) => {
-        setFormValues({...formValues, detail: newContent});
-    };
     console.log(formValues);
     var toolbarOptions = [['bold', 'italic', 'underline'], [{'align': []}]];
     const module = {
@@ -236,7 +235,8 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
         footer={<></>}>
                 <div className="relative mx-5 my-8">
                     <Typography variant='body1' color='text01' type='medium' className={search ? 'block mb-5' : 'hidden' }>
-                        Status: <span className={status === "online" ? 'text-green-500':'text-primary-100'}>{status}</span>
+                        Status: <span className={status === "online" ? 'text-green-500':'text-primary-100'}>{status}</span> - 
+                        <span className={formValues.is_completed ? 'text-green-500' : !formValues.is_completed && formValues.due_date > 0 ? 'text-green-500' : 'text-error-90'}>{formValues.is_completed ? ' Completed' : !formValues.is_completed && formValues.due_date > 0 ? ' Aktif' : ' Not Completed'}</span>
                     </Typography>
                     <form className='flex flex-col space-y-5 mb-10' onSubmit={handleSubmit}>
                     <div className="flex space-x-8">
@@ -254,7 +254,7 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                                 className={`mt-1 w-[430px]`}
                                 value={formValues.title}
                                 onChange={handleInputChange}
-                                disabled={search}
+                                disabled={formValues.is_completed || formValues.due_date === 0 && !isArchive && !isDraft}
                                 />
                             <Typography variant='body3' color='error80' type='normal' className='my-2'>
 
@@ -269,7 +269,7 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                                 <Typography variant='body1' color='' type='normal' className='text-whiteBg'>
                                     Upload Gambar
                                 </Typography>
-                            <input name='picture' onChange={handleImageChange} className="hidden w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50" aria-describedby="file_input_help" id="file_input" type="file"/>
+                            <input disabled={formValues.is_completed ||formValues.due_date === 0 && !isArchive && !isDraft} name='picture' onChange={handleImageChange} className="hidden w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50" aria-describedby="file_input_help" id="file_input" type="file"/>
                             </label>
                             <Typography variant='text' color={error ? 'error80' : 'neutral-90'} type='normal' className=''>
                                 {error ? error : 'Max 5 mb'}
@@ -291,7 +291,7 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                                 style={{ width: 238}}
                                 options={options}
                                 className='mt-1'
-                                disabled={search}
+                                disabled={formValues.is_completed || formValues.due_date === 0 && !isArchive && !isDraft}
                                 />
                             <Typography variant='body3' color='error80' type='normal' className='my-2'>
 
@@ -334,7 +334,7 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                                 value={formValues.fund_target}
                                 decimalsLimit={2}
                                 onValueChange={(value, name) => setFormValues({ ...formValues, fund_target: value ? parseInt(value) : 0 })}
-                                disabled={search}
+                                disabled={formValues.is_completed || formValues.due_date === 0 && !isArchive && !isDraft}
                                 />
                             <Typography variant='body3' color='error80' type='normal' className='my-2'>
 
@@ -346,9 +346,9 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                                         Hari <span className='text-error-90'>*</span>
                                     </Typography>
                                 </label>
-                                <DatePicker name='due_date' onChange={dateChange} placeholder='/Hari' style={{width: 200}} size='large' className='mt-1' disabled={search}/>
-                            <Typography variant='body3' color='error80' type='normal' className='my-2'>
-
+                                <DatePicker name='due_date_string' defaultValue={formValues.due_date_string} onChange={dateChange} placeholder={`${formValues.due_date_string ? formValues.due_date_string : 'hari' }`} style={{width: 200}} size='large' className='mt-1' disabled={formValues.is_completed} />
+                            <Typography variant='body3' color={formValues.due_date < 5 ? 'error90' : 'text01'} type='normal' className={editMode ? 'block my-1' : 'hidden'}>
+                                sisa {formValues.due_date} hari
                             </Typography>
                         </div>
                     </div>
@@ -356,7 +356,7 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                     name={formValues.detail} 
                     onChange={handleChangeEditor}
                     /> */}
-                    <div className="h-[280px]">
+                    <div className={formValues.is_completed ? "h-[310px]" : "h-[280px]"}>
                         <label htmlFor='due_date'>
                             <Typography variant='h4' color='text01' type='medium' className='mb-1'>
                                 Deskripsi Produk
@@ -367,29 +367,69 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                     <div className='flex mt-10 justify-end'>
                     <Button
                         type={'submit'}
-                        label='Upload'
+                        label={editMode ? "Simpan & dan Perbarui" : 'Upload'}
                         id={`tidak`}
                         color={'orange'}
-                        size='base'
+                        size='normal'
+                        className={formValues.is_completed ? "hidden" : "block"}
                         disabled={disabled}
                     />
             </div>
             </form >
             {search ?
-                <div className="w-[845px] absolute left-0 bottom-0">
-                    <div className="flex justify-start w-full">
+                formValues.is_completed ?
+                <div className="w-full absolute left-0 bottom-0">
+                    <div className="flex justify-between w-full">
                         <Button
                             label='Tutup'
                             id={`tidak`}
-                            color={'whiteOrange'}
+                            color={'orangeBorder'}
                             size='base'
                             onClick={handleCancel}
                             className={ formValues.title !== '' ? 'ml-0' : 'ml-auto'}
                         />
+                        <button onClick={()=> handleDelete && handleDelete(formValues.id)} className={`w-[156px] h-[46px] flex justify-center rounded-[8px] px-2 py-3 font-normal text-sm cursor-pointer transition-all border-none outline-none bg-white text-btnColor hover:bg-btnColor hover:text-white`}>
+                            <FaRegTrashAlt className='mt-1 mr-2' />
+                            Hapus
+                        </button>
                     </div>
                 </div>
-                : 
-                <div className="w-[845px] absolute left-0 bottom-0">
+                : !formValues.is_completed && formValues.due_date === 0 && !isArchive && !isDraft ?
+                <div className="w-[765px] absolute left-0 bottom-0">
+                    <div className="flex justify-between w-full">
+                        <Button
+                            label='Tutup'
+                            id={`tidak`}
+                            color={'orangeBorder'}
+                            size='base'
+                            onClick={handleCancel}
+                            className={ formValues.title !== '' ? 'ml-0' : 'ml-auto'}
+                        />
+                        <button onClick={()=> handleDelete && handleDelete(formValues.id)} className={`w-[156px] h-[46px] flex justify-center rounded-[8px] px-2 py-3 font-normal text-sm cursor-pointer transition-all border-none outline-none bg-white text-btnColor hover:bg-btnColor hover:text-white`}>
+                            <FaRegTrashAlt className='mt-1 mr-2' />
+                            Hapus
+                        </button>
+                    </div>
+                </div>
+                :
+                <div className="w-[765px] absolute left-0 bottom-0">
+                    <div className="flex justify-between w-full">
+                        <Button
+                            label='Tutup'
+                            id={`tidak`}
+                            color={'orangeBorder'}
+                            size='base'
+                            onClick={handleCancel}
+                            className={ formValues.title !== '' ? 'ml-0' : 'ml-auto'}
+                        />
+                        <button onClick={()=> handleDelete && handleDelete(formValues.id)} className={`w-[156px] h-[46px] flex justify-center rounded-[8px] px-2 py-3 font-normal text-sm cursor-pointer transition-all border-none outline-none bg-white text-btnColor hover:bg-btnColor hover:text-white`}>
+                            <FaRegTrashAlt className='mt-1 mr-2' />
+                            Hapus
+                        </button>
+                    </div>
+                </div>
+                : formValues.is_completed ?
+                <div className="w-full absolute left-0 bottom-0">
                     <div className="flex justify-between w-full">
                         <Button
                             label={isArchive ? " Simpan & Perbarui Archive" : isDraft ? "Simpan & Perbarui Draft" : editMode ? 'Simpan Ke Archive' : 'Simpan Ke Draft'}
@@ -400,13 +440,58 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                             onClick={isArchive? ()=>handleTOArchive(formValues) : isDraft ? ()=>handleTODraft(formValues) : editMode ? ()=>handleTOArchive(formValues) : ()=>handleTODraft(formValues)}
                             className={ formValues.title !== '' && formValues.category !== '' && formValues.fund_target !== 0 && formValues.due_date !== '' ? 'block' : 'hidden'}
                         />
+                        <div className={`flex flex-row space-x-5 justify-end ${ formValues.title !== '' && formValues.category !== '' && formValues.fund_target !== 0 && formValues.due_date !== '' ? 'ml-0' : 'ml-auto'}`}>
+                        <button onClick={()=> handleDelete && handleDelete(formValues.id)} className={`w-[156px] h-[46px] flex justify-center rounded-[8px] px-2 py-3 font-normal text-sm cursor-pointer transition-all border-none outline-none bg-white text-btnColor hover:bg-btnColor hover:text-white`}>
+                            <FaRegTrashAlt className='mt-1 mr-2' />
+                            Hapus
+                        </button>
+                        <Button
+                        label='Tutup'
+                        id={`tidak`}
+                        color={'orange'}
+                        size='base'
+                        onClick={handleCancel}
+                        />
+                        </div>
+                    </div>
+                </div>
+                : !formValues.is_completed && formValues.due_date === 0 && !isArchive && !isDraft ?
+                <div className="w-[765px] absolute left-0 bottom-0">
+                    <div className="flex justify-between w-full">
+                        <Button
+                            label={'Tutup'}
+                            id={`draft`}
+                            type={'submit'}
+                            color={'orangeBorder'}
+                            size={isArchive || isDraft ? 'normal' : 'base'}
+                            onClick={handleCancel}
+                            className={ formValues.title !== '' && formValues.category !== '' && formValues.fund_target !== 0 && formValues.due_date_string !== '' ? 'block' : 'hidden'}
+                        />
+                        <button onClick={()=> handleDelete && handleDelete(formValues.id)} className={`w-[156px] h-[46px] flex justify-center rounded-[8px] px-2 py-3 font-normal text-sm cursor-pointer transition-all border-none outline-none bg-white text-btnColor hover:bg-btnColor hover:text-white`}>
+                            <FaRegTrashAlt className='mt-1 mr-2' />
+                            Hapus
+                        </button>
+                    </div>
+                </div>
+                : 
+                <div className="w-[765px] absolute left-0 bottom-0">
+                    <div className="flex justify-between w-full">
+                        <Button
+                            label={isArchive ? " Simpan & Perbarui Archive" : isDraft ? "Simpan & Perbarui Draft" : editMode ? 'Simpan Ke Archive' : 'Simpan Ke Draft'}
+                            id={`draft`}
+                            type={'submit'}
+                            color={'orangeBorder'}
+                            size={isArchive || isDraft ? 'normal' : 'base'}
+                            onClick={isArchive? ()=>handleTOArchive(formValues) : isDraft ? ()=>handleTODraft(formValues) : editMode ? ()=>handleTOArchive(formValues) : ()=>handleTODraft(formValues)}
+                            className={ formValues.title !== '' && formValues.category !== '' && formValues.fund_target !== 0 && formValues.due_date_string !== '' ? 'block' : 'hidden'}
+                        />
                         <Button
                             label='Tutup'
                             id={`tidak`}
                             color={'whiteOrange'}
                             size='base'
                             onClick={handleCancel}
-                            className={ formValues.title !== '' && formValues.category !== '' && formValues.fund_target !== 0 && formValues.due_date !== '' ? 'ml-0' : 'ml-auto'}
+                            className={ formValues.title !== '' && formValues.category !== '' && formValues.fund_target !== 0 && formValues.due_date_string !== '' ? 'ml-0' : 'ml-auto'}
                         />
                     </div>
                 </div>

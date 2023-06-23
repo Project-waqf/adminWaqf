@@ -27,7 +27,9 @@ const initialEditValue: WakafType = {
     detail: '',
     due_date: '',
     fund_target: 0,
-    collected: 0
+    collected: 0,
+    due_date_string: '',
+    is_completed: false
 }
 
 const Wakaf = () => {
@@ -40,10 +42,10 @@ const Wakaf = () => {
     const draft = useSelector((state: {draft: DraftState}) => state.draft)
     const archive = useSelector((state: {archive: ArchiveState}) => state.archive)
     const { wakaf, getWakaf, totalOnlineWakaf, createWakaf, editedWakaf, draftWakaf, archiveWakaf, deleteWakaf } = useWakaf()
+    const [selectedId, setSelectedId] = useState<number>(0)
     const [cookie] = useCookies(['token'])
     const [editValue , setEditValue] = useState<WakafType>(initialEditValue)
     const [editMode, setEditMode] = useState(false)
-    const [selectedId, setSelectedId] = useState<number>(0)
     const [filter, setFilter] = useState('')
     const [filterParams, setFilterParams] = useState('')
     const [filterLocation, setFilterLocation] = useState(location?.state?.forFilter)
@@ -51,9 +53,9 @@ const Wakaf = () => {
     const [toggle, setToggle] = useState(false)
     
     useEffect(() => {
-        if (toggle === true) {
+        if (toggle === false) {
             setSort('desc')
-        } else if (toggle === false) {
+        } else if (toggle === true) {
             setSort('asc')
         }
     }, [toggle])
@@ -94,16 +96,18 @@ const Wakaf = () => {
                     title: '',
                     category: '',
                     detail: '',
-                    due_date: '',
+                    due_date: null,
                     fund_target: 0,
-                    collected: 0
+                    collected: 0,
+                    due_date_string: '',
+                    is_completed: false
                 });
             }
         })
     };
     
     const handleAdd = async (formValues: WakafType) => {
-        setEditValue({ title: formValues.title, category: formValues.category, picture: formValues.picture, detail: formValues.detail, due_date: formValues.due_date, fund_target: formValues.fund_target, collected: formValues.collected })
+        setEditValue({ title: formValues.title, category: formValues.category, picture: formValues.picture, detail: formValues.detail, due_date: formValues.due_date, fund_target: formValues.fund_target, collected: formValues.collected, due_date_string: formValues.due_date_string })
         const validation = await ConfirmAlert('upload')
         if (validation.isConfirmed) {
             setLoading(true)
@@ -113,14 +117,15 @@ const Wakaf = () => {
                     category: formValues.category,
                     picture: formValues.picture,
                     detail: formValues.detail,
-                    due_date: formValues.due_date,
+                    due_date: formValues.due_date_string,
                     fund_target: formValues.fund_target,
                     id: selectedId,
                     token: cookie.token
                 }) 
-                setEditValue({title: '', category: '', detail: '', due_date: '', fund_target: 0, collected: 0});
+                setEditValue({title: '', category: '', detail: '', due_date: '', fund_target: 0, collected: 0, due_date_string: ''});
                 setLoading(false);
                 setShowModal(false)
+                Alert('upload')
                 getWakaf({page: page, status: 'online', sort: sort, filter: filterParams})
                 return result
             } catch (error) {}
@@ -136,29 +141,33 @@ const Wakaf = () => {
             return;
         }
         setEditValue({
+            id: id,
             title: selectedWakaf.title,
             category: selectedWakaf.category,        
             picture: selectedWakaf.picture,
             detail: selectedWakaf.detail,
             due_date: selectedWakaf.due_date,
+            due_date_string: selectedWakaf.due_date_string,
             fund_target: selectedWakaf.fund_target,
-            collected: selectedWakaf.collected
+            collected: selectedWakaf.collected,
+            is_completed: selectedWakaf.is_complete
         });
         setEditMode(true);
         setSelectedId(id);
     }
 
     const handleEdit = async (formValues: WakafType) => {
-        setEditValue({ title: formValues.title, category: formValues.category, picture: formValues.picture, detail: formValues.detail, due_date: formValues.due_date, fund_target: formValues.fund_target, collected: formValues.collected })
+        setEditValue({ title: formValues.title, category: formValues.category, picture: formValues.picture, detail: formValues.detail, due_date: formValues.due_date, fund_target: formValues.fund_target, collected: formValues.collected, due_date_string: formValues.due_date_string })
         const validation = await ConfirmAlert('edit')
         if (validation.isConfirmed) {
             setLoading(true);
             try {
-                const result = await editedWakaf({ title: formValues.title, category: formValues.category, picture: formValues.picture, detail: formValues.detail, due_date: formValues.due_date, fund_target: formValues.fund_target, id: selectedId, token: cookie.token})
+                const result = await editedWakaf({ title: formValues.title, category: formValues.category, picture: formValues.picture, detail: formValues.detail, due_date: formValues.due_date_string, fund_target: formValues.fund_target, id: selectedId, token: cookie.token})
                 setShowModal(false)
                 setLoading(false)
                 getWakaf({page: page, status: 'online', sort: sort, filter: filterParams})
-                Alert('edit')            
+                Alert('edit')   
+                return result         
             } catch (error) {}
         }
     }
@@ -168,7 +177,7 @@ const Wakaf = () => {
         if (validation.isConfirmed) {
             setLoading(true)
             try {
-                const response = await editedWakaf({id: selectedId, status: 'archive', title: formValues.title, category: formValues.category, picture: formValues.picture, detail: formValues.detail, due_date: formValues.due_date, fund_target: formValues.fund_target, token: cookie.token})
+                const response = await editedWakaf({id: selectedId, status: 'archive', title: formValues.title, category: formValues.category, picture: formValues.picture, detail: formValues.detail, due_date: formValues.due_date_string, fund_target: formValues.fund_target, token: cookie.token})
                 getWakaf({page: page, status: 'online', sort: sort, filter: filterParams})
                 setLoading(false)
                 setShowModal(false)
@@ -199,11 +208,12 @@ const Wakaf = () => {
         const validation = await ConfirmAlert('draft')
         if (validation.isConfirmed) {
             try {
-                const response = await draftWakaf({title: formValues.title, category: formValues.category, picture: formValues.picture, detail: formValues.detail, due_date: formValues.due_date, fund_target: formValues.fund_target, token: cookie.token})
+                const response = await draftWakaf({title: formValues.title, category: formValues.category, picture: formValues.picture, detail: formValues.detail, due_date: formValues.due_date_string, fund_target: formValues.fund_target, token: cookie.token})
                 getWakaf({page: page, status: 'online', sort: sort, filter: filterParams})
                 dispatch(removeWakafFromDraft(formValues.title))
                 setShowModal(false)
                 setLoading(false)
+                Alert('draft')
                 return response
             } catch (error) {}
         } else if (validation.dismiss === Swal.DismissReason.cancel) {
@@ -219,6 +229,8 @@ const Wakaf = () => {
             const result = await deleteWakaf({ id: id, token: cookie.token })
             getWakaf({page: page, status: 'online', sort: sort, filter: filterParams})
             setLoading(false)
+            setShowModal(false)
+            return result
         } catch (error) {}
         }
     }
@@ -331,6 +343,7 @@ const Wakaf = () => {
                 open={showModal}
                 handleCancel={handleCancel}
                 editMode={editMode}
+                handleDelete={handleDelete}
                 onSubmit={editMode ? handleEdit : handleAdd}
                 editValues={editValue}
                 /> 

@@ -41,9 +41,9 @@ const Asset = () => {
     const [toggle, setToggle] = useState(false)
 
     useEffect(() => {
-        if (toggle === true) {
+        if (toggle === false) {
             setSort('desc')
-        } else if (toggle === false) {
+        } else if (toggle === true) {
             setSort('asc')
         }
     }, [toggle])
@@ -77,13 +77,12 @@ const Asset = () => {
             if (res.isConfirmed) {
                 setIsModal(false);
                 setEditMode(false)
-                setValue(initialFormValues);
+                setValue({name: '', detail: '', picture: null});
             }
         })
     };
 
     const handleAdd = async (formValues: AssetType) => {
-        setLoading(true)
         setValue({ name: formValues.name, detail: formValues.detail, picture: formValues.picture })
         const validation = await ConfirmAlert('upload')
         if (validation.isConfirmed) {
@@ -93,7 +92,9 @@ const Asset = () => {
                 getAsset({status: "online", page: page, sort: sort})
                 setLoading(false);
                 setIsModal(false)
+                setValue({name: '', detail: '', picture: null});
                 Alert('upload')
+                return result
             } catch (error) {}
             }
         setLoading(false)
@@ -124,6 +125,7 @@ const Asset = () => {
                 setLoading(false)
                 setValue(initialFormValues)
                 getAsset({status: "online", page: page, sort: sort})
+                setValue({name: '', detail: '', picture: null});
                 Alert("edit")
                 return result
             } catch (error) {}
@@ -143,6 +145,7 @@ const Asset = () => {
             } catch (error) {}
         }
     }
+    
     const handleArchive = async (formValues: AssetType) => {
         const validation = await ConfirmAlert('archive')
         if (validation.isConfirmed) {
@@ -154,12 +157,14 @@ const Asset = () => {
                 setIsModal(false)
                 dispatch(removeAssetFromArchive(formValues.name))
                 Alert("archive")
+                setValue({name: '', detail: '', picture: null});
                 return response
             } catch (error) {}
         } else if (validation.dismiss === Swal.DismissReason.cancel) {
             dispatch(removeAssetFromArchive(formValues.name))
         }
     }
+
     const handleDraft = async (formValues: AssetType) => {
         const validation = await ConfirmAlert('draft')
         if (validation.isConfirmed) {
@@ -170,6 +175,7 @@ const Asset = () => {
                 setLoading(false)
                 setIsModal(false)
                 dispatch(removeAssetFromDraft(formValues.name))
+                setValue({name: '', detail: '', picture: null});
                 Alert("draft")
                 return response
             } catch (error) {}

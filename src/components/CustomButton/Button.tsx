@@ -19,7 +19,7 @@ const Button: React.FC<ButtonProps> = ({id, label, onClick, color, size, disable
         type={type}
         disabled={disabled}
         className={clsx(
-            `rounded-[8px] font-normal text-sm cursor-pointer ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`,
+            `rounded-[8px] font-normal text-sm cursor-pointer transition-all ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`,
             {
             "bg-btnColor border-none text-white hover:bg-hoverBtn disabled:bg-disable ": color === "orange",
             "border border-btnColor outline-none bg-white text-btnColor": color === "orangeBorder",

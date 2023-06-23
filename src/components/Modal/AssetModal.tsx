@@ -8,11 +8,12 @@ import { DraftState, assetToDraft } from "../../stores/draftSilce";
 import { useDispatch, useSelector } from 'react-redux';
 import { AssetType } from '../../utils/types/DataType';
 import { assetToArchive } from '../../stores/archiveSlice';
+import { FaRegTrashAlt } from 'react-icons/fa';
 
-const {TextArea} = Input
 
 interface FormProps {
     onSubmit: (formValues: AssetType) => void;
+    handleDelete?: (id: any) => void
     editValues: AssetType;
     editMode?: boolean;
     open: boolean
@@ -23,12 +24,13 @@ interface FormProps {
     handleCancel: React.MouseEventHandler
 }
 const initialFormValues: AssetType = {
+    id_asset: 0,
     name: "",
     detail: "",
     picture: null
 };
 
-const AssetModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, handleCancel, isArchive, isDraft, search, status}) => {
+const AssetModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, editMode, open, handleCancel, isArchive, isDraft, search, status}) => {
     
     const [formValues, setFormValues] = useState<AssetType>(initialFormValues);
     const dispatch  = useDispatch()
@@ -95,6 +97,7 @@ const AssetModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
     
     const charCount = formValues.detail.length
     const maxLength = 160;
+    console.log(formValues);
     
     return (
         <Modal
@@ -124,7 +127,6 @@ const AssetModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                                 size='large'
                                 className={`mt-2 h-12 w-[430px] border-neutral-80`}
                                 value={formValues.name}
-                                disabled={search}
                                 onChange={handleInputChange}
                             />
                             <Typography variant='body3' color='error80' type='normal' className='my-2'>
@@ -150,7 +152,7 @@ const AssetModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                         Deskrip Aset
                         </Typography>
                         <textarea rows={4} x-model="maximum" maxLength={maxLength} x-ref="maximum" style={{ resize: 'none' }}
-                        disabled={search} className="block w-full mt-2 py-2 px-3 text-base text-text01 rounded-lg border-neutral-80 focus:outline-none focus:border-blue-500" placeholder='isi Detail' name='detail' value={formValues.detail} onChange={handleTextAreaChange}></textarea>
+                        disabled={search} className="block w-full mt-2 py-2 px-3 text-base text-text01 rounded-lg border-neutral-80 focus:outline-none focus:border-blue-500" name='detail' value={formValues.detail} onChange={handleTextAreaChange}></textarea>
                         <span className="absolute px-2 py-1 text-xs text-neutral-90 right-2 bottom-2">{charCount} / {maxLength}</span>
                     </div>
                     <div className='flex mt-10 justify-end'>
@@ -166,7 +168,7 @@ const AssetModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
             </form >
                 {search ?
                 <div className="w-[640px] absolute left-0 bottom-0">
-                    <div className="flex justify-start w-full">
+                    <div className="flex justify-between w-full">
                         <Button
                             label='Tutup'
                             id={`tidak`}
@@ -175,6 +177,10 @@ const AssetModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                             onClick={handleCancel}
                             className={ formValues.name !== '' ? 'ml-0' : 'ml-auto'}
                         />
+                        <button onClick={()=> handleDelete && handleDelete(formValues.id_asset)} className={`w-[156px] h-[46px] flex justify-center rounded-[8px] px-2 py-3 font-normal text-sm cursor-pointer transition-all border-none outline-none bg-white text-btnColor hover:bg-btnColor hover:text-white`}>
+                            <FaRegTrashAlt className='mt-1 mr-2' />
+                            Hapus
+                        </button>
                     </div>
                 </div>
                 : 
@@ -185,7 +191,7 @@ const AssetModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                             id={`draft`}
                             type={'submit'}
                             color={'orangeBorder'}
-                            size='base'
+                            size={isArchive || isDraft ? 'normal' : 'base'}
                             onClick={isArchive? ()=>handleTOArchive(formValues) : isDraft ? ()=>handleTODraft(formValues) : editMode ? ()=>handleTOArchive(formValues) : ()=>handleTODraft(formValues)}
                             className={ formValues.name !== '' ? 'block' : 'hidden'}
                         />

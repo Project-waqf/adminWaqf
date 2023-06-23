@@ -11,10 +11,12 @@ import { newsToArchive, ArchiveState } from '../../stores/archiveSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
+import { FaRegTrashAlt } from 'react-icons/fa';
 
 
     interface FormProps {
         onSubmit: (formValues: NewsType) => void;
+        handleDelete?: (id: any) => void
         editValues: NewsType;
         editMode?: boolean;
         isArchive?: boolean
@@ -25,13 +27,14 @@ import 'react-quill/dist/quill.snow.css'
         handleCancel: React.MouseEventHandler
     }
     const initialFormValues: NewsType = {
+        id_news: 0,
         title: "",
         body: "",
         picture: null,
         status: ''
     };
 
-const NewsModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, isArchive, isDraft, handleCancel, status, search}) => {
+const NewsModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, editMode, open, isArchive, isDraft, handleCancel, status, search}) => {
     
     const [formValues, setFormValues] = useState<NewsType>(initialFormValues);
     const [loading , setLoading] = useState(false)
@@ -41,12 +44,13 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, 
     console.log(formValues);
     
     useEffect(() => {
-        if (editMode) {
+        if (editMode || !editMode) {
             setFormValues({title: editValues.title, body:editValues.body, picture: editValues.picture});
         }
     }, [editValues, editMode]);
 
     const [disabled, setDisabled] = useState(true);
+console.log(formValues);
 
     useEffect(() => {
         if (formValues.title && formValues.body) {
@@ -183,13 +187,13 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, 
                         id={`tidak`}
                         color={'orange'}
                         size='base'
-                        disabled={disabled || search}
+                        disabled={editMode ? false : disabled}
                     />
                 </div>
             </form >
             {search ?
                 <div className="w-[845px] absolute left-0 bottom-0">
-                    <div className="flex justify-start w-full">
+                    <div className="flex justify-between w-full">
                         <Button
                             label='Tutup'
                             id={`tidak`}
@@ -198,6 +202,10 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, 
                             onClick={handleCancel}
                             className={ formValues.title !== '' ? 'ml-0' : 'ml-auto'}
                         />
+                        <button onClick={()=> handleDelete && handleDelete(formValues.id_news)} className={`w-[156px] h-[46px] flex justify-center rounded-[8px] px-2 py-3 font-normal text-sm cursor-pointer transition-all border-none outline-none bg-white text-btnColor hover:bg-btnColor hover:text-white`}>
+                            <FaRegTrashAlt className='mt-1 mr-2' />
+                            Hapus
+                        </button>
                     </div>
                 </div>
                 : 
@@ -208,7 +216,7 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, 
                             id={`draft`}
                             type={'submit'}
                             color={'orangeBorder'}
-                            size='base'
+                            size={isArchive || isDraft ? 'normal' : 'base'}
                             onClick={isArchive? ()=>handleTOArchive(formValues) : isDraft ? ()=>handleTODraft(formValues) : editMode ? ()=>handleTOArchive(formValues) : ()=>handleTODraft(formValues)}
                             className={ formValues.title !== '' ? 'block' : 'hidden'}
                         />

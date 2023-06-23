@@ -10,6 +10,7 @@ import { APIUrl } from '../string';
 import axios from 'axios';
 import Alert from '../components/Alert/Alert';
 import logo from '../assets/logo.svg'
+import Swal from 'sweetalert2';
 
 const initalFormValues : LoginType = {
   email: ''
@@ -37,11 +38,19 @@ const ForgotPassword = () => {
     setValue(initalFormValues)
     axios.post(`${APIUrl}admin/forgot`, {email: value.email})
     .then((response) => {
-      console.log("Responese",response.data);
-      Alert('upload')
+      Swal.fire({
+        icon: "info",
+        title: "Silahkan Cek Email Anda",
+        confirmButtonText: "Cek Email",
+        confirmButtonColor: "#F98D3E",
+      }).then((cekEmail) => {
+        if (cekEmail.isConfirmed) {
+          window.open(`https://mail.google.com/mail/u/0/#inbox`)
+        }
+      })
     })
     .catch((error) => {
-      console.log(error);
+      Alert('fail')
       if(error.response.status === 404){
         setValue({email: value.email})
         setErrorEmail("Email tidak terdaftar atau salah")

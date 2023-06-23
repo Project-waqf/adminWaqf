@@ -157,5 +157,5 @@ export default function useNews() {
     useEffect(() => {
         getAllNews()
     }, [])
-    return{ news, allNews, totalAllNews, totalOnlineNews, totalArchiveNews, totalDraftNews, totalNews, createNews, getNews, editedNews, draftNews, archiveNews, deleteNews}
+    return{ news, allNews, totalAllNews, getAllNews, totalOnlineNews, totalArchiveNews, totalDraftNews, totalNews, createNews, getNews, editedNews, draftNews, archiveNews, deleteNews}
 }

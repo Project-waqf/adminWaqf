@@ -14,6 +14,10 @@ import { useLocation } from 'react-router-dom'
 import NewsModal from '../components/Modal/NewsModal'
 import AssetModal from '../components/Modal/AssetModal'
 import WakafModal from '../components/Modal/WakafModal'
+import ConfirmAlert from '../components/Alert/ConfirmAlert'
+import LoadingAlert from '../components/Modal/LoadingAlert'
+import Alert from '../components/Alert/Alert'
+import { useCookies } from 'react-cookie'
 const { Panel } = Collapse;
 const initialEditNewsValue = {
     title: "",
@@ -39,9 +43,9 @@ const initialEditWakafValue = {
 }
 const Search = () => {
 
-    const {allNews} = useNews()
-    const {allAsset}= useAsset()
-    const {allWakaf} = useWakaf()
+    const {allNews, getAllNews, editedNews, deleteNews} = useNews()
+    const {allAsset, getAllAsset, editedAsset, deleteAsset}= useAsset()
+    const {allWakaf, getAllWakaf, editedWakaf, deleteWakaf} = useWakaf()
     const location = useLocation()
     const [news, setNews] = useState<any>(initialEditNewsValue)
     const [asset, setAsset] = useState<any>(initialEditAssetValue)
@@ -49,6 +53,9 @@ const Search = () => {
     const [isModalNews, setIsModalNews] = useState(false)
     const [isModalAsset, setIsModalAsset] = useState(false)
     const [isModalWakaf, setIsModalWakaf] = useState(false) 
+    const [loading, setLoading] = useState(false)
+    const [selectedId, setSelectedId] = useState<number>(0)
+    const [cookie] = useCookies(['token'])
     const [search, setSearch] = useState('')
     const [allData, setAllData] = useState<AllDataType[]>([])
     const [query, setQuery] = useState(location?.state?.query)
@@ -91,10 +98,8 @@ const Search = () => {
     const panelStyle = {
         border: 'none',
         borderRadius: token.borderRadiusLG,
-    };
-    console.log('news', news);
-    console.log('asset', asset);
-    console.log('wakaf', wakaf);
+    }; 
+
     const handleCancle = () => {
         setIsModalAsset(false)
         setIsModalNews(false)
@@ -107,6 +112,7 @@ const Search = () => {
                 return;
             }
             setNews({
+                id_news: selectedNews.id_news,
                 title: selectedNews.title,
                 body: selectedNews.body,
                 status: selectedNews.status
@@ -118,6 +124,7 @@ const Search = () => {
                 return;
             }
             setAsset({
+                id_asset: id,
                 name: selectedAsset.title,
                 detail: selectedAsset.detail,
                 status: selectedAsset.status
@@ -129,23 +136,122 @@ const Search = () => {
                 return;
             }
             setWakaf({
+                id: id,
                 title: selectedWakaf.title,
+                category: selectedWakaf.category,
                 detail: selectedWakaf.detail,
+                due_date: selectedWakaf.due_date,
+                due_date_string: selectedWakaf.due_date_string,
                 fund_target: selectedWakaf.fund_target,
                 collected: selectedWakaf.collected,
-                due_date: selectedWakaf.due_date,
-                status: selectedWakaf.status
+                status: selectedWakaf.status,
+                is_completed: selectedWakaf.is_complete
             })
             setIsModalWakaf(true)
         }
+        setSelectedId(id)
     }
-    const handleSubmit = () => {
-
+    const handleSubmitNews = async (formValues: NewsType) => {
+        const validation = await ConfirmAlert('edit')
+        if (validation.isConfirmed) {
+            setLoading(true);
+            try {
+                const result = await editedNews({ title: formValues.title, body: formValues.body, picture: formValues.picture, id: selectedId, token: cookie.token})
+                getAllAsset()
+                getAllNews()
+                getAllWakaf()
+                setLoading(false)
+                setIsModalNews(false)
+                Alert('edit')
+                return result
+            } catch (error) {}
+        }
+    }
+    const handleSubmitWakaf = async (formValues: WakafType) => {
+        const validation = await ConfirmAlert('edit')
+        if (validation.isConfirmed) {
+            setLoading(true);
+            try {
+                const result = await editedWakaf({ title: formValues.title, category: formValues.category, picture: formValues.picture, detail: formValues.detail, due_date: formValues.due_date_string, fund_target: formValues.fund_target, id: selectedId, token: cookie.token})
+                setIsModalWakaf(false)
+                setLoading(false)
+                getAllAsset()
+                getAllNews()
+                getAllWakaf()
+                Alert('edit')   
+                return result         
+            } catch (error) {}
+        }
+    }
+    const handleSubmitAsset = async (formValues: AssetType) => {
+        const validation = await ConfirmAlert('edit')
+        if (validation.isConfirmed) {
+            setLoading(true);
+            try {
+                const result = await editedAsset({name: formValues.name, detail: formValues.detail, picture: formValues.picture, id: selectedId, token: cookie.token})
+                setIsModalAsset(false)
+                setLoading(false)
+                getAllAsset()
+                getAllNews()
+                getAllWakaf()
+                Alert("edit")
+                return result
+            } catch (error) {}
+        }
+    }
+    const handleDeleteAsset =async (id: number) => {
+        const validation = await ConfirmAlert('delete')
+        if (validation.isConfirmed) {
+            setLoading(true)
+            try {
+                const response = await deleteAsset({id: id, token: cookie.token})
+                getAllAsset()
+                getAllNews()
+                getAllWakaf()
+                setIsModalAsset(false)
+                setLoading(false)
+                Alert("delete")
+                return response
+            } catch (error) {}
+        }
+    }
+    const handleDeleteWakaf =async (id: number) => {
+        const validation = await ConfirmAlert('delete')
+        if (validation.isConfirmed) {
+        setLoading(true)   
+        try {
+            const result = await deleteWakaf({ id: id, token: cookie.token })
+            getAllAsset()
+            getAllNews()
+            getAllWakaf()
+            setLoading(false)
+            setIsModalWakaf(false)
+            return result
+        } catch (error) {}
+        }
+    }
+    const handleDeleteNews =async (id: number) => {
+        const validation = await ConfirmAlert('delete')
+        if (validation.isConfirmed) {
+        setLoading(true)
+        try {
+            const result = await deleteNews({ id: selectedId, token: cookie.token })
+            getAllAsset()
+            getAllNews()
+            getAllWakaf()
+            setIsModalNews(false)
+            setLoading(false)
+            Alert('delete')
+            return result
+        } catch (error) {}
+        setLoading(false)
+        }
     }
     return (
         <>
         <Sidebar/>
         <Display>
+        <LoadingAlert loading={loading} open={loading} />
         <Headers label='Search' isSearch={true}/>
         <div className="flex flex-col justify-center space-y-5 mx-auto w-11/12 my-10">
         <Collapse
@@ -180,8 +286,9 @@ const Search = () => {
         open={isModalNews}
         editValues={news}
         handleCancel={handleCancle}
-        onSubmit={handleSubmit}
+        onSubmit={handleSubmitNews}
         editMode={true}
+        handleDelete={handleDeleteNews}
         search={true}
         status={news.status}
         />
@@ -189,8 +296,9 @@ const Search = () => {
         open={isModalAsset}
         editValues={asset}
         handleCancel={handleCancle}
-        onSubmit={handleSubmit}
+        onSubmit={handleSubmitAsset}
         editMode={true}
+        handleDelete={handleDeleteAsset}
         search={true}
         status={asset.status}
         />
@@ -198,8 +306,9 @@ const Search = () => {
         open={isModalWakaf}
         editValues={wakaf}
         handleCancel={handleCancle}
-        onSubmit={handleSubmit}
+        onSubmit={handleSubmitWakaf}
         editMode={true}
+        handleDelete={handleDeleteWakaf}
         search={true}
         status={wakaf.status}
         />

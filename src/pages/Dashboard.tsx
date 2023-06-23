@@ -31,7 +31,8 @@ const initialEditValue: WakafType = {
     detail: '',
     due_date: '',
     fund_target: 0,
-    collected: 0
+    collected: 0, 
+    due_date_string: ''
 }
 const Dashboard = () => {
     const [showModal, setShowModal] = useState(false);
@@ -52,9 +53,9 @@ const Dashboard = () => {
     const [toggle, setToggle] = useState(false)
     
     useEffect(() => {
-        if (toggle === true) {
+        if (toggle === false) {
             setSort('desc')
-        } else if (toggle === false) {
+        } else if (toggle === true) {
             setSort('asc')
         }
     }, [toggle])
@@ -127,15 +128,6 @@ const Dashboard = () => {
             if (res.isConfirmed) {
                 setShowModal(false);
                 setEditMode(false)
-                setEditValue({
-                    title: '',
-                    category: '',        
-                    picture: null,
-                    detail: '',
-                    due_date: '',
-                    fund_target: 0,
-                    collected: 0
-                });
             }
         })
     };
@@ -155,32 +147,34 @@ const Dashboard = () => {
             detail: selectedWakaf.detail,
             due_date: selectedWakaf.due_date,
             fund_target: selectedWakaf.fund_target,
-            collected: selectedWakaf.collected
+            collected: selectedWakaf.collected,
+            due_date_string: selectedWakaf.due_date_string
         });
         setEditMode(true);
         setSelectedId(id);
     }
 
     const handleEdit = async (formValues: WakafType) => {
-        setEditValue({ title: formValues.title, category: formValues.category, picture: formValues.picture, detail: formValues.detail, due_date: formValues.due_date, fund_target: formValues.fund_target, collected: formValues.collected })
+        setEditValue({ title: formValues.title, category: formValues.category, picture: formValues.picture, detail: formValues.detail, due_date: formValues.due_date, fund_target: formValues.fund_target, collected: formValues.collected, due_date_string: formValues.due_date_string })
         const validation = await ConfirmAlert('edit')
         if (validation.isConfirmed) {
             setLoading(true);
             try {
-            const result = await editedWakaf({
-            title: formValues.title,
-            category: formValues.category,
-            picture: formValues.picture,
-            detail: formValues.detail,
-            due_date: formValues.due_date,
-            fund_target: formValues.fund_target,
-            id: selectedId,
-            token: cookie.token
-            })
-            setShowModal(false)
-            setLoading(false)
-            getWakaf({status: 'online', page: page, sort: sort, filter: ''})
-            return result
+                const result = await editedWakaf({
+                title: formValues.title,
+                category: formValues.category,
+                picture: formValues.picture,
+                detail: formValues.detail,
+                due_date: formValues.due_date_string,
+                fund_target: formValues.fund_target,
+                id: selectedId,
+                token: cookie.token
+                })
+                setShowModal(false)
+                setLoading(false)
+                Alert('edit')
+                getWakaf({status: 'online', page: page, sort: sort, filter: ''})
+                return result
             } catch (error) {}
             setLoading(false)
         }
@@ -212,6 +206,7 @@ const Dashboard = () => {
                 getWakaf({status: 'online', page: page, sort: sort, filter: ''})
                 setLoading(false)
                 setShowModal(false)
+                Alert('archive')
                 return response
             } catch (error) {}
             setLoading(false)

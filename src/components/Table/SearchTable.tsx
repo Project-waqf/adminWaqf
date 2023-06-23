@@ -36,7 +36,7 @@ const SearchTable: React.FC<TableProps> = ({ draft, archives, mitra, data, handl
                     </tr>
                 </thead>
                 <tbody>
-                { data ?
+                { data.length > 0 ?
                     data?.map((item:any)=>{
                     return(
                     <tr key={item.id} className="bg-white cursor-pointer" onClick={()=> handleDetail && handleDetail(item.id || item.id_news || item.id_asset, item.type)}>
@@ -47,7 +47,7 @@ const SearchTable: React.FC<TableProps> = ({ draft, archives, mitra, data, handl
                         </th>
                         <th scope="row" className="px-6 py-4 w-44">
                         <Typography color='btnColor' variant='body2' type='semibold'>
-                            {item.type === "wakaf" ? "Produk Wakaf" : item.type === "news" ? "Berita" : item.type === "asset" ? "Aset" : ""}
+                            {item.type === "wakaf" ? "Produk Wakaf" : item.type === "news" ? "Berita" : item.type === "asset" ? "Aset" : ""} / {item.status}
                         </Typography>
                         </th>
                         <td className="px-6 py-4 w-[1000px]">
@@ -59,11 +59,15 @@ const SearchTable: React.FC<TableProps> = ({ draft, archives, mitra, data, handl
                     )
                     })
                 :
-                <div className="flex justify-center w-[1000px]">
-                    <Typography color='text01' variant='h1' type='bold'>
-                    Data Kosong
-                    </Typography>
-                </div>
+                <tr>
+                <td className=""></td>
+                <td className=""></td>
+                <td className="flex justify-start">
+                <Typography color='text03' variant='body3' type='bold'>
+                Data Kosong
+                </Typography>
+                </td>
+                </tr>
                 }
             </tbody>
         </table>

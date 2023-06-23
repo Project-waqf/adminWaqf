@@ -43,9 +43,9 @@ const News = () => {
     const [toggle, setToggle] = useState(false)
 
     useEffect(() => {
-        if (toggle === true) {
+        if (toggle === false) {
             setSort('desc')
-        } else if (toggle === false) {
+        } else if (toggle === true) {
             setSort('asc')
         }
     }, [toggle])
@@ -82,11 +82,7 @@ const News = () => {
             if (res.isConfirmed) {
                 setisModalNews(false);
                 setEditMode(false)
-                setEditNews({
-                    title: '',
-                    body: '',
-                    picture: null
-                });
+                setEditNews({title: '', body: '', picture: null});
             }
         })
     };
@@ -105,8 +101,8 @@ const News = () => {
                 })
                 setLoading(false);
                 setisModalNews(false)
-                setEditNews(initialEditNewsValue)
                 getNews({status: 'online', page: page, sort: sort})
+                setEditNews({title: '', body: '', picture: null});
                 Alert('upload')
                 return result
             } catch (error) {}

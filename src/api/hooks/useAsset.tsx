@@ -148,5 +148,5 @@ export default function useAsset() {
     useEffect(() => {
         getAllAsset()
     }, [])
-    return {allAsset, totalAllAsset, asset, totalAsset, totalArchiveAsset, totalDraftAsset, totalOnlineAsset, getAsset, createAsset, editedAsset, draftAsset, archiveAsset, deleteAsset}
+    return {allAsset, totalAllAsset, getAllAsset, asset, totalAsset, totalArchiveAsset, totalDraftAsset, totalOnlineAsset, getAsset, createAsset, editedAsset, draftAsset, archiveAsset, deleteAsset}
 }

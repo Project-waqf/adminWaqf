@@ -32,14 +32,14 @@ export interface ListType {
     collected?: any
 }
 export interface NewsType {
-    id?: number
+    id_news?: number
     title: string;
     body: string;
     status?: string
-    picture: File | null
+    picture?: File | null
 }
 export interface AssetType {
-    id?: number
+    id_asset?: number
     name: string
     detail: string
     picture: File | null
@@ -50,9 +50,11 @@ export interface WakafType {
     category: string
     picture?: File | null
     detail: string
-    due_date: any
+    due_date?: any
+    due_date_string: any
     fund_target: any
     collected: any
+    is_completed?: boolean
 }
 export interface DashboardType {
     id: number
@@ -64,13 +66,16 @@ export interface DashboardType {
 export interface AllDataType{
     id?: number
     id_news?: number
-    id_wakaf?: number
+    id_asset?: number
     title: string
     name?: string
     body?: string
     detail?: string
     due_date?: any
     collected?: number
+    category?: any
+    due_date_string?: string
+    is_complete: boolean
     fund_target?: number
     status?: string
 }

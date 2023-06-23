@@ -22,6 +22,7 @@ export default function useWakaf(){
             return response
         } catch (error) {} 
     },[])
+    
     const getWakaf = useCallback(async (payload?:any) => {
         const withFilter = `wakaf?filter=${payload.filter}&sort=${payload.sort}`
         const noneFilter = `wakaf?page=${payload.page}&isUser=false&sort=${payload.sort}&status=${payload.status}`
@@ -161,5 +162,5 @@ export default function useWakaf(){
         getAllWakaf()
     },[])
     
-    return {allWakaf, wakaf, totalArchiveWakaf, totalDraftWakaf, totalOnlineWakaf, totalWakaf, getWakaf, createWakaf, editedWakaf, draftWakaf, archiveWakaf, deleteWakaf}
+    return {allWakaf, wakaf, getAllWakaf, totalArchiveWakaf, totalDraftWakaf, totalOnlineWakaf, totalWakaf, getWakaf, createWakaf, editedWakaf, draftWakaf, archiveWakaf, deleteWakaf}
 }
