@@ -31,9 +31,11 @@ const initialEditValue: WakafType = {
     detail: '',
     due_date: '',
     fund_target: 0,
-    collected: 0, 
-    due_date_string: ''
+    collected: 0,
+    due_date_string: '',
+    is_completed: false
 }
+
 const Dashboard = () => {
     const [showModal, setShowModal] = useState(false);
     const [cookie] = useCookies(['token', 'id', 'name', 'email', 'foto'])
@@ -141,14 +143,16 @@ const Dashboard = () => {
             return;
         }
         setEditValue({
+            id: id,
             title: selectedWakaf.title,
             category: selectedWakaf.category,        
             picture: selectedWakaf.picture,
             detail: selectedWakaf.detail,
             due_date: selectedWakaf.due_date,
+            due_date_string: selectedWakaf.due_date_string,
             fund_target: selectedWakaf.fund_target,
             collected: selectedWakaf.collected,
-            due_date_string: selectedWakaf.due_date_string
+            is_completed: selectedWakaf.is_complete
         });
         setEditMode(true);
         setSelectedId(id);
