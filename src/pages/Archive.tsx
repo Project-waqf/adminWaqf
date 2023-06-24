@@ -61,11 +61,11 @@ const Archive = () => {
   const [editAsset , setEditAsset] = useState<AssetType>(initialEditAssetValue)
   const [editWakaf , setEditWakaf] = useState<WakafType>(initialEditWakafValue)
   const [cookie] = useCookies(['token', 'id', 'name', 'email', 'foto'])  
-  const [sortNews, setSortNews] = useState('')
+  const [sortNews, setSortNews] = useState<string>('desc')
   const [toggleNews, setToggleNews] = useState(false)
-  const [sortWakaf, setSortWakaf] = useState('')
+  const [sortWakaf, setSortWakaf] = useState<string>('desc')
   const [toggleWakaf, setToggleWakaf] = useState(false)
-  const [sortAsset, setSortAsset] = useState('')
+  const [sortAsset, setSortAsset] = useState<string>('desc')
   const [toggleAsset, setToggleAsset] = useState(false)
 
   useEffect(() => {

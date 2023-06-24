@@ -51,7 +51,7 @@ const Dashboard = () => {
     const [selectedId, setSelectedId] = useState<number>(0)
     const [summary, setSummary] = useState<any>({})
     const [wakafCompleted, setWakafCompleted] = useState<number>(0) 
-    const [sort, setSort] = useState('')
+    const [sort, setSort] = useState<string>('desc')
     const [toggle, setToggle] = useState(false)
     
     useEffect(() => {

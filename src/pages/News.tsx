@@ -39,7 +39,7 @@ const News = () => {
     const [editNews , setEditNews] = useState<NewsType>(initialEditNewsValue)
     const [editMode, setEditMode] = useState(false)
     const [selectedId, setSelectedId] = useState<number>(0)
-    const [sort, setSort] = useState('')
+    const [sort, setSort] = useState<string>('desc')
     const [toggle, setToggle] = useState(false)
 
     useEffect(() => {

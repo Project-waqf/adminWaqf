@@ -50,7 +50,6 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, ed
     }, [editValues, editMode]);
 
     const [disabled, setDisabled] = useState(true);
-console.log(formValues);
 
     useEffect(() => {
         if (formValues.title && formValues.body) {
@@ -178,7 +177,7 @@ console.log(formValues);
                                 Deskripsi Berita
                             </Typography>
                         </label>
-                        <ReactQuill modules={module} theme='snow' className='h-[200px]' value={formValues.body} onChange={(value) => setFormValues({ ...formValues, body: value})}/>
+                        <ReactQuill modules={module} theme='snow' className='h-[200px]' defaultValue={formValues.body} onChange={(value) => setFormValues({ ...formValues, body: value})}/>
                     </div>
                 <div className='flex mt-10 justify-end'>
                     <Button

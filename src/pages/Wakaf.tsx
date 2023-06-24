@@ -21,13 +21,14 @@ import { ArchiveState, removeWakafFromArchive } from '../stores/archiveSlice';
 import { useLocation } from 'react-router-dom';
 
 const initialEditValue: WakafType = {
+    id: 0,
     title: "",
     category: "",
     picture: null,
     detail: '',
-    due_date: '',
+    due_date: null,
     fund_target: 0,
-    collected: 0,
+    collected: 0, 
     due_date_string: '',
     is_completed: false
 }
@@ -49,7 +50,7 @@ const Wakaf = () => {
     const [filter, setFilter] = useState('')
     const [filterParams, setFilterParams] = useState('')
     const [filterLocation, setFilterLocation] = useState(location?.state?.forFilter)
-    const [sort, setSort] = useState('')
+    const [sort, setSort] = useState<string>('desc')
     const [toggle, setToggle] = useState(false)
     
     useEffect(() => {
@@ -82,8 +83,23 @@ const Wakaf = () => {
             handleArchive(archive.wakaf[0])
         }
     },[archive.wakaf])
-    console.log("archive",archive.wakaf);
     
+    const handleShowModal = () => {
+        setShowModal(true)
+        setEditValue({
+            id: 0,
+            title: "",
+            category: "",
+            picture: null,
+            detail: '',
+            due_date: null,
+            fund_target: 0,
+            collected: 0, 
+            due_date_string: '',
+            is_completed: false
+        });
+    }
+
     const handlePageChange = (page: number) => {
         setPage(page)// data for the specified page
     };
@@ -93,12 +109,14 @@ const Wakaf = () => {
                 setShowModal(false);
                 setEditMode(false)
                 setEditValue({
-                    title: '',
-                    category: '',
+                    id: 0,
+                    title: "",
+                    category: "",
+                    picture: null,
                     detail: '',
                     due_date: null,
                     fund_target: 0,
-                    collected: 0,
+                    collected: 0, 
                     due_date_string: '',
                     is_completed: false
                 });
@@ -155,7 +173,7 @@ const Wakaf = () => {
         setEditMode(true);
         setSelectedId(id);
     }
-
+    
     const handleEdit = async (formValues: WakafType) => {
         setEditValue({ title: formValues.title, category: formValues.category, picture: formValues.picture, detail: formValues.detail, due_date: formValues.due_date, fund_target: formValues.fund_target, collected: formValues.collected, due_date_string: formValues.due_date_string })
         const validation = await ConfirmAlert('edit')
@@ -310,7 +328,7 @@ const Wakaf = () => {
                     id='wakaf'
                     size=''
                     className='w-72'
-                    onClick={()=> setShowModal(true)}
+                    onClick={handleShowModal}
                     color='orange'
                     label="+ Buat Wakaf"
                     />

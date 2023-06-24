@@ -32,7 +32,7 @@ import 'react-quill/dist/quill.snow.css'
         category: "",
         picture: null,
         detail: '',
-        due_date: 0,
+        due_date: null,
         fund_target: 0,
         collected: 0, 
         due_date_string: '',
@@ -87,7 +87,7 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
     useEffect(() => {
         if (editMode || !editMode) {
             setFormValues(editValues);
-        }
+        } 
     }, [editValues, editMode]);
 
     useEffect(() => {
@@ -219,7 +219,6 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
         }
     }
 
-    console.log(formValues);
     var toolbarOptions = [['bold', 'italic', 'underline'], [{'align': []}]];
     const module = {
         toolbar: toolbarOptions
@@ -291,7 +290,7 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                                 style={{ width: 238}}
                                 options={options}
                                 className='mt-1'
-                                disabled={formValues.is_completed || formValues.due_date === 0 && !isArchive && !isDraft}
+                                disabled={formValues.is_completed || formValues.due_date === 0 && !isArchive && !isDraft && editMode}
                                 />
                             <Typography variant='body3' color='error80' type='normal' className='my-2'>
 
@@ -362,7 +361,7 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                                 Deskripsi Produk
                             </Typography>
                         </label>
-                        <ReactQuill modules={module} theme='snow' className='h-[200px]' value={formValues.detail} onChange={(value) => setFormValues({ ...formValues, detail: value})}/>
+                        <ReactQuill modules={module} theme='snow' className='h-[200px]' defaultValue={formValues.detail} onChange={(value) => setFormValues({ ...formValues, detail: value})}/>
                     </div>
                     <div className='flex mt-10 justify-end'>
                     <Button

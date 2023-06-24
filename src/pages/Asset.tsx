@@ -37,7 +37,7 @@ const Asset = () => {
     const dispatch = useDispatch()
     const {asset,totalOnlineAsset, getAsset,createAsset, editedAsset, deleteAsset, draftAsset, archiveAsset} = useAsset()
     const [cookie] = useCookies(['token', 'id', 'name', 'email', 'foto'])
-    const [sort, setSort] = useState('')
+    const [sort, setSort] = useState<string>('desc')
     const [toggle, setToggle] = useState(false)
 
     useEffect(() => {
