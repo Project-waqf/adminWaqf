@@ -11,6 +11,9 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.5",
+    "@tiptap/extension-text-style": "^2.0.3",
+    "@tiptap/react": "^2.0.3",
+    "@tiptap/starter-kit": "^2.0.3",
     "antd": "^5.4.6",
     "axios": "^1.4.0",
     "clsx": "^1.2.1",
@@ -27,6 +30,8 @@
     "sass": "^1.62.1",
     "styled-components": "^5.3.10",
     "sweetalert2": "^11.7.5",
+    "tiptap": "^1.32.2",
+    "tiptap-extensions": "^1.35.2",
     "use-query-params": "^2.2.1"
   },
   "devDependencies": {

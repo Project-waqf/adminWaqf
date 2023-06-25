@@ -12,6 +12,9 @@ import { useDispatch } from 'react-redux';
 import CurrencyInput from 'react-currency-input-field';
 import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
+import TiptapEditor from '../CustomInput/TipTap';
+import { useEditor } from '@tiptap/react';
+import { StarterKit } from '@tiptap/starter-kit';
 
     interface FormProps {
         onSubmit: (formValues: WakafType) => void;
@@ -218,7 +221,22 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
             }
         }
     }
-
+    const editor = useEditor({
+        extensions: [
+        StarterKit,
+        // Bold,
+        // Italic,
+        // Underline,
+        // TextAlign.configure({
+        //     types: ['paragraph'], // Apply text alignment to paragraphs
+        // }),
+        ],
+        content: '<p>Initial content</p>', // Set initial content
+        onUpdate({ editor }) {
+        const content = editor.getHTML(); // Get the updated HTML content
+        console.log('Content:', content); // Log the updated content
+        },
+    });
     var toolbarOptions = [['bold', 'italic', 'underline'], [{'align': []}]];
     const module = {
         toolbar: toolbarOptions
@@ -361,7 +379,8 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                                 Deskripsi Produk
                             </Typography>
                         </label>
-                        <ReactQuill modules={module} theme='snow' className='h-[200px]' defaultValue={formValues.detail} onChange={(value) => setFormValues({ ...formValues, detail: value})}/>
+                        <TiptapEditor editor={editor}/>
+                        {/* <ReactQuill modules={module} theme='snow' className='h-[200px]' defaultValue={formValues.detail} onChange={(value) => setFormValues({ ...formValues, detail: value})}/> */}
                     </div>
                     <div className='flex mt-10 justify-end'>
                     <Button

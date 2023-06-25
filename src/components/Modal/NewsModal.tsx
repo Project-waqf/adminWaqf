@@ -142,7 +142,6 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, ed
                                 className={`mt-2 h-12 w-[430px] border-neutral-80`}
                                 value={formValues.title}
                                 onChange={handleInputChange}
-                                disabled={search}
                             />
                             <Typography variant='body3' color='error80' type='normal' className='my-2'>
 
@@ -157,7 +156,7 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, ed
                                 <Typography variant='h5' color='' type='normal' className='mt-0.5 text-whiteBg'>
                                     Upload Gambar
                                 </Typography>
-                            <input name='picture' onChange={handleImageChange} disabled={search} className="hidden w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50" aria-describedby="file_input_help" id="file_input" type="file"/>
+                            <input name='picture' onChange={handleImageChange} className="hidden w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50" aria-describedby="file_input_help" id="file_input" type="file"/>
                             </label>
                             <Typography variant='text' color={error ? 'error80' : 'neutral-90'} type='normal' className=''>
                                 {error ? error : 'Max 5 mb'}
