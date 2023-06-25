@@ -45,6 +45,7 @@ const Wakaf = () => {
     const { wakaf, getWakaf, totalOnlineWakaf, createWakaf, editedWakaf, draftWakaf, archiveWakaf, deleteWakaf } = useWakaf()
     const [selectedId, setSelectedId] = useState<number>(0)
     const [cookie] = useCookies(['token'])
+    const [wakafValue , setWakafValue] = useState<WakafType>(initialEditValue)
     const [editValue , setEditValue] = useState<WakafType>(initialEditValue)
     const [editMode, setEditMode] = useState(false)
     const [filter, setFilter] = useState('')
@@ -363,7 +364,7 @@ const Wakaf = () => {
                 editMode={editMode}
                 handleDelete={handleDelete}
                 onSubmit={editMode ? handleEdit : handleAdd}
-                editValues={editValue}
+                editValues={editMode ? editValue : wakafValue}
                 /> 
                 </div>
             </Display>

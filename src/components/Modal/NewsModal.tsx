@@ -9,9 +9,12 @@ import { TbFileDescription } from "react-icons/tb";
 import { DraftState, newsToDraft } from "../../stores/draftSilce";
 import { newsToArchive, ArchiveState } from '../../stores/archiveSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import ReactQuill from 'react-quill'
-import 'react-quill/dist/quill.snow.css'
 import { FaRegTrashAlt } from 'react-icons/fa';
+import TiptapEditor from '../CustomInput/TipTap';
+import Underline from '@tiptap/extension-underline';
+import { useEditor } from '@tiptap/react';
+import TextAlign from '@tiptap/extension-text-align';
+import StarterKit from '@tiptap/starter-kit';
 
 
     interface FormProps {
@@ -58,6 +61,15 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, ed
             setDisabled(true);
         }
     }, [formValues]);
+
+    useEffect(() => {
+        if (formValues && editMode ){
+            editor?.commands.setContent(formValues.body)
+        } 
+        if (formValues && !editMode) {
+            editor?.commands.setContent(formValues.body)
+        }
+    }, [formValues.body])
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormValues({ ...formValues, [e.target.name]: e.target.value });
@@ -109,10 +121,28 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, ed
         
     };
 
-    var toolbarOptions = [['bold', 'italic', 'underline'], [{'align': []}]];
-    const module = {
-        toolbar: toolbarOptions
-    }
+    const editor = useEditor({
+        extensions: [
+        StarterKit,
+        Underline,
+        TextAlign.configure({
+            types: ['heading', 'paragraph'],
+        }),
+        ],
+        content: formValues.body.toString(),
+         // Set initial content
+        onUpdate({ editor }) {
+        const content = editor.getHTML();
+         // Get the updated HTML content
+        setFormValues({...formValues, body: editor.getHTML()})
+        },
+        editorProps: {
+            attributes: {
+                class: 'focus:outline-none text-[18px] w-full h-[200px] overflow-auto border-solid border-neutral-80 border-solid border-slate-100 rounded-xl'
+            }
+        }
+    });
+    
     return (
         <Modal
         open={open}
@@ -164,19 +194,13 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, ed
                             {loading ? <SmallLoading/> : <></>}
                         </div>
                     </div>
-                    {/* <TextArea
-                    label='Deskripsi Berita'
-                    name='body'
-                    value={formValues.body}
-                    onChange={handleTextAreaChange}
-                    /> */}
                     <div className="h-[280px]">
                         <label htmlFor='due_date'>
                             <Typography variant='h4' color='text01' type='medium' className='mb-1'>
                                 Deskripsi Berita
                             </Typography>
                         </label>
-                        <ReactQuill modules={module} theme='snow' className='h-[200px]' defaultValue={formValues.body} onChange={(value) => setFormValues({ ...formValues, body: value})}/>
+                        <TiptapEditor editor={editor} value={formValues.body}/>
                     </div>
                 <div className='flex mt-10 justify-end'>
                     <Button

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { Input, Modal, Select,InputNumber, DatePicker, DatePickerProps } from "antd";
 import Typography from '../Typography';
 import Button from '../CustomButton/Button';
@@ -10,12 +10,13 @@ import { wakafToDraft } from "../../stores/draftSilce";
 import { wakafToArchive } from '../../stores/archiveSlice';
 import { useDispatch } from 'react-redux';
 import CurrencyInput from 'react-currency-input-field';
-import ReactQuill from 'react-quill'
-import 'react-quill/dist/quill.snow.css'
 import TiptapEditor from '../CustomInput/TipTap';
-import { useEditor } from '@tiptap/react';
-import { StarterKit } from '@tiptap/starter-kit';
-
+import { Extension, useEditor } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import Underline from '@tiptap/extension-underline';
+import TextAlign from '@tiptap/extension-text-align';
+import { EditorState } from 'prosemirror-state';
+import { EditorView } from 'prosemirror-view';
     interface FormProps {
         onSubmit: (formValues: WakafType) => void;
         handleDelete?: (id: any) => void
@@ -86,12 +87,25 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
     const [totalDays, setTotalDays] = useState(0);
     const [disabled, setDisabled] = useState(true);
     const dispatch = useDispatch()
+    const [content, setContent] = useState<string>(formValues.detail);
+    const editorRef = useRef<any>(null);
+    const [resetFlag, setResetFlag] = useState<boolean>(false);
 
     useEffect(() => {
         if (editMode || !editMode) {
             setFormValues(editValues);
         } 
     }, [editValues, editMode]);
+
+    useEffect(() => {
+        if (formValues && editMode ){
+            editor?.commands.setContent(formValues.detail)
+        } 
+        if (formValues && !editMode) {
+            editor?.commands.setContent(formValues.detail)
+        }
+    }, [formValues.detail])
+    
 
     useEffect(() => {
         if (formValues.due_date) {
@@ -194,6 +208,7 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
         e.preventDefault();
         onSubmit(formValues);
         setFormValues(initialFormValues);
+        setResetFlag(true)
     };
 
     useEffect(() => {
@@ -221,26 +236,30 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
             }
         }
     }
+    
     const editor = useEditor({
         extensions: [
         StarterKit,
-        // Bold,
-        // Italic,
-        // Underline,
-        // TextAlign.configure({
-        //     types: ['paragraph'], // Apply text alignment to paragraphs
-        // }),
+        Underline,
+        TextAlign.configure({
+            types: ['heading', 'paragraph'],
+        }),
         ],
-        content: '<p>Initial content</p>', // Set initial content
+        content: content.toString(),
+         // Set initial content
         onUpdate({ editor }) {
-        const content = editor.getHTML(); // Get the updated HTML content
-        console.log('Content:', content); // Log the updated content
+        const content = editor.getHTML();
+         // Get the updated HTML content
+        setResetFlag(false)
+        setFormValues({...formValues, detail: editor.getHTML()})
         },
+        editorProps: {
+            attributes: {
+                class: 'focus:outline-none text-[18px] w-full h-[200px] overflow-auto border-solid border-slate-100 rounded-xl'
+            }
+        }
     });
-    var toolbarOptions = [['bold', 'italic', 'underline'], [{'align': []}]];
-    const module = {
-        toolbar: toolbarOptions
-    }
+
     return (
         <Modal
         open={open}
@@ -373,14 +392,13 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                     name={formValues.detail} 
                     onChange={handleChangeEditor}
                     /> */}
-                    <div className={formValues.is_completed ? "h-[310px]" : "h-[280px]"}>
+                    <div className={"h-[310px]"}>
                         <label htmlFor='due_date'>
                             <Typography variant='h4' color='text01' type='medium' className='mb-1'>
                                 Deskripsi Produk
                             </Typography>
                         </label>
-                        <TiptapEditor editor={editor}/>
-                        {/* <ReactQuill modules={module} theme='snow' className='h-[200px]' defaultValue={formValues.detail} onChange={(value) => setFormValues({ ...formValues, detail: value})}/> */}
+                        <TiptapEditor editor={editor} value={formValues.detail}/>
                     </div>
                     <div className='flex mt-10 justify-end'>
                     <Button
