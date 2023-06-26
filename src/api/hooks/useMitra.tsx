@@ -10,7 +10,7 @@ export default function useMitra() {
 
     const getMitra = useCallback(async (payload?: any) => {
         try {
-            const response = await axios.get(`${HOST}partners?limit=10&offset=${payload.offset}&status=${payload.status}`)
+            const response = await axios.get(`${HOST}partners?limit=20&offset=${payload.offset}&status=${payload.status}&sort=${payload.sort}`)
             setMitra(response.data.data)
             return response
         } catch (error) {}

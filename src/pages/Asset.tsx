@@ -84,21 +84,27 @@ const Asset = () => {
 
     const handleAdd = async (formValues: AssetType) => {
         setValue({ name: formValues.name, detail: formValues.detail, picture: formValues.picture })
-        const validation = await ConfirmAlert('upload')
-        if (validation.isConfirmed) {
-            setLoading(true)
-            try {
-                const result = await createAsset({name: formValues.name, detail: formValues.detail, picture: formValues.picture, token: cookie.token})
-                getAsset({status: "online", page: page, sort: sort})
-                setLoading(false);
-                setIsModal(false)
-                setValue({name: '', detail: '', picture: null});
-                Alert('upload')
-                return result
-            } catch (error) {}
+        if (formValues.picture) {
+            const validation = await ConfirmAlert('upload')
+            if (validation.isConfirmed) {
+                setLoading(true)
+                try {
+                    const result = await createAsset({name: formValues.name, detail: formValues.detail, picture: formValues.picture, token: cookie.token})
+                    getAsset({status: "online", page: page, sort: sort})
+                    setLoading(false);
+                    setIsModal(false)
+                    setValue({name: '', detail: '', picture: null});
+                    Alert('upload')
+                    return result
+                } catch (error) {}
             }
+        } else {
+            Alert('failImage')
+            setValue({ name: formValues.name, detail: formValues.detail, picture: formValues.picture })
+        }
         setLoading(false)
     };
+    
     const handleEditModal = (id: number) => {
         setIsModal(true)
         setEditMode(true)

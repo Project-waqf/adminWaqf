@@ -7,20 +7,22 @@ export const sweetAlert = (options: SweetAlertOptions) => {
 
 
 
-const Alert = ( icon?: 'upload' | 'edit' | 'draft' | 'archive' | 'delete' | 'fail' ): Promise<any> => {
+const Alert = ( icon?: 'upload' | 'edit' | 'draft' | 'archive' | 'delete' | 'fail' | 'failImage' ): Promise<any> => {
     return sweetAlert({
         title: icon === 'upload' ? '<p class="text-text01 text-[20px] mb-10">Upload Sukses</p>' : 
         icon === "edit" ? '<p class="text-text01 text-[20px] mb-10">Berhasil Mengedit</p>' :
         icon === "draft" ? '<p class="text-text01 text-[20px] mb-10">Berhasil Simpan Ke Draft</p>' : 
         icon === "archive" ? '<p class="text-text01 text-[20px] mb-10">Berhasil Simpan Ke Archive</p>' :
         icon === "delete" ? '<p class="text-text01 text-[20px] mb-10">Berhasil Menghapus</p>' : 
-        icon === 'fail' ? '<p class="text-red-500 text-[20px] mb-10">Terjadi kesalahan, coba ulangi kembali</p>' : '<p class="text-text01 text-[20px] mb-10">Login Sukses</p>',
+        icon === 'fail' ? '<p class="text-red-500 text-[20px] mb-10">Terjadi kesalahan, coba ulangi kembali</p>' : 
+        icon === 'failImage' ? '<p class="text-red-500 text-[20px] mb-10">Upload gagal, anda harus memasukan Gambar atau Foto</p>' :'<p class="text-text01 text-[20px] mb-10">Login Sukses</p>',
         imageUrl: `data:image/svg+xml,${encodeURIComponent(icon === 'upload' ? UploadSuccess : 
         icon === "edit" ? EditSuccess :
         icon === "draft" ? DraftSuccess : 
         icon === "archive" ? ArchiveSuccess :
         icon === "delete" ? DeleteSuccess : 
-        icon === "fail" ? Failed : UploadSuccess)}`,
+        icon === "fail" ? Failed :
+        icon === 'failImage' ? Failed : UploadSuccess)}`,
         customClass: {
             title: 'text-red-500 mb-80'
             },

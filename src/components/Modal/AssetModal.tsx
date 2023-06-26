@@ -35,7 +35,7 @@ const AssetModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, e
     const [formValues, setFormValues] = useState<AssetType>(initialFormValues);
     const dispatch  = useDispatch()
     const [loading , setLoading] = useState(false)
-    
+    const [error, setError] = useState('')
     
     useEffect(() => {
         if (editMode || !editMode) {
@@ -62,11 +62,23 @@ const AssetModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, e
 
     const handleImageChange = (e: any) => {
         setLoading(true)
-        const selectedImage = e.target.files[0];
-        setFormValues((prev: any) => ({
-            ...prev,
-            picture: selectedImage
-        }));
+        const file = e.target.files[0];
+        const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+        if (file && file.size <= maxSize) {
+            setFormValues((prev) => ({
+                ...prev,
+                picture: file
+            }));
+            setError('');
+            setLoading(false)
+        } else {
+            setFormValues((prev) => ({
+                ...prev,
+                picture: null
+            }));
+            setError('File size exceeds the maximum allowed limit (5MB).');
+            setLoading(false)
+        }
         setLoading(false)
     };
 
@@ -144,6 +156,9 @@ const AssetModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, e
                                 </Typography>
                             <input name='picture' onChange={handleImageChange} className="hidden w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50" aria-describedby="file_input_help" id="file_input" type="file"/>
                             </label>
+                            <Typography variant='text' color={error ? 'error80' : 'neutral-90'} type='normal' className=''>
+                                {error ? error : formValues.picture ? formValues.picture.name : "Max 5 mb" }
+                            </Typography>
                             {loading ? <SmallLoading/> : <></>}
                         </div>
                     </div>

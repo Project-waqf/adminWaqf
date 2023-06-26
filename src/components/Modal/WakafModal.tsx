@@ -121,7 +121,7 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
     }, [formValues.due_date]);
 
     useEffect(() => {
-        if (formValues.title && formValues.detail) {
+        if (formValues.title && formValues.category && formValues.fund_target && formValues.due_date_string && formValues.detail) {
             setDisabled(false);
         } else {
             setDisabled(true);
@@ -130,6 +130,7 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormValues({ ...formValues, [e.target.name]: e.target.value });
     }
+    console.log(formValues);
     
     const handleChange = (value: string) => {
         setFormValues({...formValues, category: value})
@@ -187,7 +188,6 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
         setLoading(true)
         const file = e.target.files[0];
         const maxSize = 5 * 1024 * 1024; // 5MB in bytes
-
         if (file && file.size <= maxSize) {
             setFormValues((prev) => ({
                 ...prev,
@@ -210,7 +210,7 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
         setFormValues(initialFormValues);
         setResetFlag(true)
     };
-
+    
     useEffect(() => {
         const numberInput = document.getElementById('number-input') as HTMLInputElement | null;
         if (numberInput) {
@@ -223,6 +223,7 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
             }
         };
     }, []);
+    
     function formatCurrency() {
         const numberInput = document.getElementById('number-input') as HTMLInputElement | null;
         if (numberInput) {
@@ -252,6 +253,9 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
          // Get the updated HTML content
         setResetFlag(false)
         setFormValues({...formValues, detail: editor.getHTML()})
+        if (formValues.detail === "<p></p>") {
+            setFormValues({...formValues, detail: ''})
+        }
         },
         editorProps: {
             attributes: {
@@ -308,7 +312,7 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                             <input disabled={formValues.is_completed ||formValues.due_date === 0 && !isArchive && !isDraft} name='picture' onChange={handleImageChange} className="hidden w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50" aria-describedby="file_input_help" id="file_input" type="file"/>
                             </label>
                             <Typography variant='text' color={error ? 'error80' : 'neutral-90'} type='normal' className=''>
-                                {error ? error : 'Max 5 mb'}
+                                {error ? error : formValues.picture ? formValues.picture.name : "Max 5 mb" }
                             </Typography>
                             {loading ? <SmallLoading/> : <></>}
                         </div>

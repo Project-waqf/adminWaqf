@@ -97,7 +97,7 @@ export default function useWakaf(){
         const formData = new FormData()
         formData.append('title', payload.title)
         formData.append('category', payload.category)
-        formData.append('detail', payload.detail ? payload.category : '')
+        formData.append('detail', payload.detail ? payload.detail : '')
         formData.append('due_date', typeof payload.due_date === 'string' || payload.due_date ? payload.due_date : '')
         formData.append('fund_target', payload.fund_target ? payload.fund_target : 0)
         formData.append('picture', payload.picture || '')

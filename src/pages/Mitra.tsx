@@ -30,7 +30,7 @@ const Mitra = () => {
   const [editMode, setEditMode] = useState(false)
   const [loading, setLoading] = useState(false)
   const [selectedId, setSelectedId] = useState<number>(0)
-  const [sort, setSort] = useState('')
+  const [sort, setSort] = useState('desc')
   const [toggle, setToggle] = useState(false)
 
   useEffect(() => {
@@ -65,28 +65,34 @@ const Mitra = () => {
 
   const handleAdd = async (formValues: MitraType) => {
     setEditMitra({ name: formValues.name, link: formValues.link, picture: formValues.picture })
-    const validation = await ConfirmAlert('upload')
-    if (validation.isConfirmed) {
-        setLoading(true)
-        try {
-        const result = await createMitra({
-            name: formValues.name, 
-            link:formValues.link, 
-            picture:formValues.picture,
-            token: cookie.token
-        })
-        setLoading(false);
-        setShowModal(false)
-        setEditMitra({
-          name: '',
-          link: '',        
-          picture: null,
-        });
-        getMitra({offset: page})
-        return result
-        } catch (error) {}
-        setLoading(false)
-    }          
+    if (formValues.picture) {
+      const validation = await ConfirmAlert('upload')
+      if (validation.isConfirmed) {
+          setLoading(true)
+          try {
+          const result = await createMitra({
+              name: formValues.name, 
+              link:formValues.link, 
+              picture:formValues.picture,
+              token: cookie.token
+          })
+          setLoading(false);
+          setShowModal(false)
+          setEditMitra({
+            name: '',
+            link: '',        
+            picture: null,
+          });
+          Alert('upload')
+          getMitra({offset: page, sort: sort})
+          return result
+          } catch (error) {}
+          setLoading(false)
+      }          
+    } else {
+      Alert('failImage')
+      setEditMitra({ name: formValues.name, link: formValues.link, picture: formValues.picture })
+    }
   }
 
   const handleEditModal = (id: number) => {
@@ -117,9 +123,10 @@ const Mitra = () => {
         id: selectedId,
         token: cookie.token
         })
+        Alert('edit')
         setShowModal(false)
         setLoading(false)
-        getMitra({offset: page})
+        getMitra({offset: page, sort: sort})
         return result
         } catch (error) {}
         setLoading(false)
@@ -134,7 +141,7 @@ const Mitra = () => {
             id: id,
             token: cookie.token
             })
-            getMitra({offset: page})
+            getMitra({offset: page, sort: sort})
             setLoading(false)
             return result
         } catch (error) {}
@@ -144,6 +151,7 @@ const Mitra = () => {
   const handleSort = () => {
     setToggle(!toggle)
   }
+
   return (
     <>
       <Sidebar/>
@@ -158,7 +166,7 @@ const Mitra = () => {
           size='normal'
           onClick={showModalMitra}
           color='orange'
-          label="+ Buat Asset"
+          label="+ Buat Mitra"
           />
         </div> 
         <div className="flex flex-col justify-center space-y-5 mx-auto w-11/12 my-10">

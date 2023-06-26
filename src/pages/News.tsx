@@ -89,26 +89,31 @@ const News = () => {
     
     const handleAdd = async (formValues: NewsType) => {
         setEditNews({ title: formValues.title, body: formValues.body, picture: formValues.picture })
-        const validation = await ConfirmAlert('upload')
-        if (validation.isConfirmed) {
-            setLoading(true)
-            try {
-                const result = await createNews({
-                    title: formValues.title, 
-                    body:formValues.body, 
-                    picture:formValues.picture,
-                    token: cookie.token
-                })
-                setLoading(false);
+        if (formValues.picture) {
+            const validation = await ConfirmAlert('upload')
+            if (validation.isConfirmed) {
+                setLoading(true)
+                try {
+                    const result = await createNews({
+                        title: formValues.title, 
+                        body:formValues.body, 
+                        picture:formValues.picture,
+                        token: cookie.token
+                    })
+                    setLoading(false);
+                    setisModalNews(false)
+                    getNews({status: 'online', page: page, sort: sort})
+                    setEditNews({title: '', body: '', picture: null});
+                    Alert('upload')
+                    return result
+                } catch (error) {}
                 setisModalNews(false)
-                getNews({status: 'online', page: page, sort: sort})
-                setEditNews({title: '', body: '', picture: null});
-                Alert('upload')
-                return result
-            } catch (error) {}
-            setisModalNews(false)
-            setLoading(false)
-        }          
+                setLoading(false)
+            }          
+        } else {
+            Alert('failImage')
+            setEditNews({ title: formValues.title, body: formValues.body, picture: formValues.picture })
+        }
     } 
     
 

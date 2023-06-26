@@ -21,9 +21,10 @@ const initialFormValues: MitraType = {
     picture: null
 };
 const MitraModal: React.FC<FormProps> = ({onSubmit, editMode, editValues, open, handleCancel}) => {
+    
     const [formValues, setFormValues] = useState<MitraType>(initialFormValues);
     const [loading , setLoading] = useState(false)
-    
+    const [error, setError] = useState('')
     
     useEffect(() => {
         if (editMode || !editMode) {
@@ -51,11 +52,23 @@ const MitraModal: React.FC<FormProps> = ({onSubmit, editMode, editValues, open, 
 
     const handleImageChange = (e: any) => {
         setLoading(true)
-        const selectedImage = e.target.files[0];
-        setFormValues((prev) => ({
-            ...prev,
-            picture: selectedImage
-        }));
+        const file = e.target.files[0];
+        const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+        if (file && file.size <= maxSize) {
+            setFormValues((prev) => ({
+                ...prev,
+                picture: file
+            }));
+            setError('');
+            setLoading(false)
+        } else {
+            setFormValues((prev) => ({
+                ...prev,
+                picture: null
+            }));
+            setError('File size exceeds the maximum allowed limit (5MB).');
+            setLoading(false)
+        }
         setLoading(false)
     };
 
@@ -108,6 +121,9 @@ const MitraModal: React.FC<FormProps> = ({onSubmit, editMode, editValues, open, 
                                 </Typography>
                             <input name='picture' onChange={handleImageChange} className="hidden w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50" aria-describedby="file_input_help" id="file_input" type="file"/>
                             </label>
+                            <Typography variant='text' color={error ? 'error80' : 'neutral-90'} type='normal' className='overflow-hidden'>
+                                {error ? error : formValues.picture ? formValues.picture.name : "Max 5 mb" }
+                            </Typography>
                             {loading ? <SmallLoading/> : <></>}
                         </div>
                     </div>

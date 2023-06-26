@@ -78,6 +78,7 @@ const Wakaf = () => {
             handleDraft(draft.wakaf[0])
         }
     },[draft.wakaf])
+    console.log(draft.wakaf);
     
     useEffect(()=> {
         if (archive.wakaf[0] && editMode) {
@@ -127,28 +128,33 @@ const Wakaf = () => {
     
     const handleAdd = async (formValues: WakafType) => {
         setEditValue({ title: formValues.title, category: formValues.category, picture: formValues.picture, detail: formValues.detail, due_date: formValues.due_date, fund_target: formValues.fund_target, collected: formValues.collected, due_date_string: formValues.due_date_string })
-        const validation = await ConfirmAlert('upload')
-        if (validation.isConfirmed) {
-            setLoading(true)
-            try {
-                const result = await createWakaf({
-                    title: formValues.title,
-                    category: formValues.category,
-                    picture: formValues.picture,
-                    detail: formValues.detail,
-                    due_date: formValues.due_date_string,
-                    fund_target: formValues.fund_target,
-                    id: selectedId,
-                    token: cookie.token
-                }) 
-                setEditValue({title: '', category: '', detail: '', due_date: '', fund_target: 0, collected: 0, due_date_string: ''});
-                setLoading(false);
-                setShowModal(false)
-                Alert('upload')
-                getWakaf({page: page, status: 'online', sort: sort, filter: filterParams})
-                return result
-            } catch (error) {}
-        }          
+        if (formValues.picture) {
+            const validation = await ConfirmAlert('upload')
+            if (validation.isConfirmed) {
+                setLoading(true)
+                try {
+                    const result = await createWakaf({
+                        title: formValues.title,
+                        category: formValues.category,
+                        picture: formValues.picture,
+                        detail: formValues.detail,
+                        due_date: formValues.due_date_string,
+                        fund_target: formValues.fund_target,
+                        id: selectedId,
+                        token: cookie.token
+                    }) 
+                    setEditValue({title: '', category: '', detail: '', due_date: '', fund_target: 0, collected: 0, due_date_string: ''});
+                    setLoading(false);
+                    setShowModal(false)
+                    Alert('upload')
+                    getWakaf({page: page, status: 'online', sort: sort, filter: filterParams})
+                    return result
+                } catch (error) {}
+            }          
+        } else {
+            Alert('failImage')
+            setEditValue({ title: formValues.title, category: formValues.category, picture: formValues.picture, detail: formValues.detail, due_date: formValues.due_date, fund_target: formValues.fund_target, collected: formValues.collected, due_date_string: formValues.due_date_string })
+        }
     } 
     
 

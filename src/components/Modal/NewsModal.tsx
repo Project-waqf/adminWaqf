@@ -135,6 +135,9 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, ed
         const content = editor.getHTML();
          // Get the updated HTML content
         setFormValues({...formValues, body: editor.getHTML()})
+        if (formValues.body === "<p></p>") {
+            setFormValues({...formValues, body: ''})
+        }
         },
         editorProps: {
             attributes: {
@@ -189,7 +192,7 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, ed
                             <input name='picture' onChange={handleImageChange} className="hidden w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50" aria-describedby="file_input_help" id="file_input" type="file"/>
                             </label>
                             <Typography variant='text' color={error ? 'error80' : 'neutral-90'} type='normal' className=''>
-                                {error ? error : 'Max 5 mb'}
+                                {error ? error : formValues.picture ? formValues.picture.name : 'Max 5 mb'}
                             </Typography>
                             {loading ? <SmallLoading/> : <></>}
                         </div>

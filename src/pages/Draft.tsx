@@ -20,6 +20,7 @@ import WakafTable from '../components/Table/WakafTable';
 import { useDispatch, useSelector } from 'react-redux';
 import { DraftState, removeAssetFromDraft, removeNewsFromDraft, removeWakafFromDraft } from '../stores/draftSilce';
 import Swal from 'sweetalert2';
+import LoadingAlert from '../components/Modal/LoadingAlert';
 
 const initialEditNewsValue: NewsType = {
   title: "",
@@ -170,23 +171,29 @@ console.log('draft', draft.news);
 
   const handleEditNews = async (formValues: NewsType) => {
     setEditNews({ title: formValues.title, body: formValues.body, picture: formValues.picture })
-    const validation = await ConfirmAlert('upload')
-    if (validation.isConfirmed) {
-        setLoading(true);
-        try {
-        const result = await editedNews({
-        title: formValues.title,
-        body: formValues.body,
-        picture: formValues.picture,
-        id: selectedId,
-        token: cookie.token
-        })
-        setIsModalNews(false)
-        setLoading(false)
-        getNews({status: 'draft', page: page, sort: sortNews})
-        return result
-        } catch (error) {}
-        setLoading(false)
+    if (formValues.picture) {
+      const validation = await ConfirmAlert('upload')
+      if (validation.isConfirmed) {
+          setLoading(true);
+          try {
+          const result = await editedNews({
+          title: formValues.title,
+          body: formValues.body,
+          picture: formValues.picture,
+          id: selectedId,
+          token: cookie.token
+          })
+          Alert("edit")
+          setIsModalNews(false)
+          setLoading(false)
+          getNews({status: 'draft', page: page, sort: sortNews})
+          return result
+          } catch (error) {}
+          setLoading(false)
+      }
+    } else {
+      Alert('failImage')
+      setEditNews({ title: formValues.title, body: formValues.body, picture: formValues.picture })
     }
   }
 
@@ -254,27 +261,32 @@ console.log('draft', draft.news);
 
   const handleEditWakaf = async (formValues: WakafType) => {
       setEditWakaf({ title: formValues.title, category: formValues.category, picture: formValues.picture, detail: formValues.detail, due_date: formValues.due_date, fund_target: formValues.fund_target, collected: formValues.collected, due_date_string: formValues.due_date_string })
-      const validation = await ConfirmAlert('edit')
-      if (validation.isConfirmed) {
-          setLoading(true);
-          try {
-          const result = await editedWakaf({
-              title: formValues.title,
-              category: formValues.category,
-              picture: formValues.picture,
-              detail: formValues.detail,
-              due_date: formValues.due_date_string,
-              fund_target: formValues.fund_target,
-              id: selectedId,
-              token: cookie.token
-          })
-          setIsModalWakaf(false)
-          setLoading(false)
-          getWakaf({status: 'draft', page: pageWakaf, sort: sortWakaf, filter: ''})
-          Alert('edit')
-          return result
-          } catch (error) {}
-          setLoading(false)
+      if (formValues.picture) {
+        const validation = await ConfirmAlert('edit')
+        if (validation.isConfirmed) {
+            setLoading(true);
+            try {
+            const result = await editedWakaf({
+                title: formValues.title,
+                category: formValues.category,
+                picture: formValues.picture,
+                detail: formValues.detail,
+                due_date: formValues.due_date_string,
+                fund_target: formValues.fund_target,
+                id: selectedId,
+                token: cookie.token
+            })
+            setIsModalWakaf(false)
+            setLoading(false)
+            getWakaf({status: 'draft', page: pageWakaf, sort: sortWakaf, filter: ''})
+            Alert('edit')
+            return result
+            } catch (error) {}
+            setLoading(false)
+        }
+      } else {
+        Alert('failImage')
+        setEditWakaf({ title: formValues.title, category: formValues.category, picture: formValues.picture, detail: formValues.detail, due_date: formValues.due_date, fund_target: formValues.fund_target, collected: formValues.collected, due_date_string: formValues.due_date_string })
       }
   }
 
@@ -331,24 +343,30 @@ console.log('draft', draft.news);
 
   const handleEditAsset = async(formValues: AssetType) => {
     setEditAsset({ name: formValues.name, detail: formValues.detail, picture: formValues.picture })
-    const validation = await ConfirmAlert('edit')
-    if (validation.isConfirmed) {
-        setLoading(true);
-        try {
-            const result = await editedAsset({
-            name: formValues.name,
-            detail: formValues.detail,
-            picture: formValues.picture,
-            id: selectedId,
-            token: cookie.token
-            })
-            setIsModalAsset(false)
-            setLoading(false)
-            getAsset({status: 'draft', page: pageAsset, sort: sortAsset})
-            setEditAsset({name: '', detail: '', picture: null})
-            return result
-        } catch (error) {}
-        setLoading(false)
+    if (formValues.picture) {
+      const validation = await ConfirmAlert('edit')
+      if (validation.isConfirmed) {
+          setLoading(true);
+          try {
+              const result = await editedAsset({
+              name: formValues.name,
+              detail: formValues.detail,
+              picture: formValues.picture,
+              id: selectedId,
+              token: cookie.token
+              })
+              setIsModalAsset(false)
+              setLoading(false)
+              Alert('edit')
+              getAsset({status: 'draft', page: pageAsset, sort: sortAsset})
+              setEditAsset({name: '', detail: '', picture: null})
+              return result
+          } catch (error) {}
+          setLoading(false)
+      }
+    } else {
+      Alert('failImage')
+      setEditAsset({ name: formValues.name, detail: formValues.detail, picture: formValues.picture })
     }
   }
 
@@ -361,6 +379,7 @@ console.log('draft', draft.news);
             setLoading(false)
             setIsModalAsset(false)
             getAsset({status: 'draft', page: pageAsset, sort: sortAsset})
+            Alert('edit')
             dispatch(removeAssetFromDraft(formValues.name))
             return response
         } catch (error) {}
@@ -394,6 +413,7 @@ console.log('draft', draft.news);
     <>
       <Sidebar/>
       <Display>
+        <LoadingAlert open={loading} loading={loading} />
         <Headers
         label='Draft'
         />
