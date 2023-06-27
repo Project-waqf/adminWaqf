@@ -74,7 +74,6 @@ const News = () => {
     const showModalNews = () => {
         setisModalNews(true);
     };
-    console.log("eddasdashd", editNews);
     
 
     const handleCancel = () => {

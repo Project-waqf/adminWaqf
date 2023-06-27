@@ -109,7 +109,6 @@ const AssetModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, e
     
     const charCount = formValues.detail.length
     const maxLength = 160;
-    console.log(formValues);
     
     return (
         <Modal

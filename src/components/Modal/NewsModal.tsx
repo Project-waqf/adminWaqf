@@ -44,8 +44,7 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, ed
     const [error, setError] = useState<string>()
     const dispatch = useDispatch()
     const draft = useSelector((state: {draft: DraftState}) => state.draft)
-    console.log(formValues);
-    
+
     useEffect(() => {
         if (editMode || !editMode) {
             setFormValues({title: editValues.title, body:editValues.body, picture: editValues.picture});

@@ -73,7 +73,6 @@ export default function useMitra() {
             const response = await axios.delete(`${HOST}partner/${payload.id}`, config)
             const deletedValue = response.data
             getMitra()
-            console.log(deletedValue);
             Alert('delete')
             return deletedValue           
         } catch (error) {

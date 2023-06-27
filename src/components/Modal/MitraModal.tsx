@@ -31,7 +31,6 @@ const MitraModal: React.FC<FormProps> = ({onSubmit, editMode, editValues, open, 
             setFormValues(editValues);
         }
     }, [editValues, editMode]);
-    console.log(formValues);
     
     const [disabled, setDisabled] = useState(true);
 
@@ -149,7 +148,6 @@ const MitraModal: React.FC<FormProps> = ({onSubmit, editMode, editValues, open, 
                         color={'orange'}
                         size='base'
                         disabled={disabled}
-                        onClick={()=> console.log(formValues)}
                     />
             </div>
             </form >

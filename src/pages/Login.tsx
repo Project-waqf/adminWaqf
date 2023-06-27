@@ -59,7 +59,6 @@ const Login = () => {
     axios
       .post(`${APIUrl}admin/login`, user)
       .then((response) => {
-        console.log("Responese", response.data);
         setCookie("token", response.data.data.token, { path: "/", expires: expiration});
         setCookie("id", response.data.data.id, { path: "/" });
         setCookie("name", response.data.data.name, { path: "/" });
@@ -140,7 +139,6 @@ const Login = () => {
                 label={loading ? "loading..." : 'Masuk'}
                 color='orange'
                 size='full'
-                onClick={()=> console.log(value)}
                 disabled={disabled} 
                 />
             </form>

@@ -96,8 +96,7 @@ const ForgotPassword = () => {
             label='Kirim Reset Intruksi'
             size='semiLarge' 
             color='orange'
-            disabled={disabled}
-            onClick={()=> console.log(value)}/>
+            disabled={disabled}/>
           </form>
         </Space>
       </Box>

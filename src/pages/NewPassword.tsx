@@ -12,6 +12,7 @@ import axios from 'axios';
 import { APIUrl } from '../string';
 import logo from '../assets/logo.svg'
 import Alert from '../components/Alert/Alert';
+import CustomInput from '../components/CustomInput/CustomInput';
 
 const initalFormValues : LoginType = {
   password: ''
@@ -42,11 +43,9 @@ const NewPassword = () => {
       navigate('/')
       Alert('upload')
     })
-    .catch((error) => {
-      console.log(error);
-    }).finally(() => setLoading(false))
+    .catch((error) => {})
+    .finally(() => setLoading(false))
   }
-  console.log(token);
   
   return (
     <div className="flex flex-cols w-screen">
@@ -71,8 +70,11 @@ const NewPassword = () => {
               </Typography>
             </div>
             <div className="">
-              <InputPassword
+              <CustomInput
+              type='password'
+              name='password'
               label='Password'
+              placeholder='masukan password baru'
               minilabel='* minimal 6 karakter'
               onChange={handleInputChange}
               value={value.password}
@@ -82,8 +84,8 @@ const NewPassword = () => {
             id='resest-intruksi'
             label='Reset Password'
             size='semiLarge' 
-            color='orange' 
-            onClick={()=> console.log(value)}/>
+            color='orange'
+            />
           </form>
         </Space>
       </Box>

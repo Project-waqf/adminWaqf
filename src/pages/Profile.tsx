@@ -56,9 +56,7 @@ const Profile = () => {
         if (changeImage) {
             setChangeFoto(true)
         }
-    }, [changeImage])
-    console.log(withPassword);
-    
+    }, [changeImage])    
     
     const handleInputChange = (e:React.ChangeEvent<HTMLInputElement>) => {
         setValue({ ...value, [e.target.name]: e.target.value})

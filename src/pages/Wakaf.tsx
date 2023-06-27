@@ -78,7 +78,6 @@ const Wakaf = () => {
             handleDraft(draft.wakaf[0])
         }
     },[draft.wakaf])
-    console.log(draft.wakaf);
     
     useEffect(()=> {
         if (archive.wakaf[0] && editMode) {

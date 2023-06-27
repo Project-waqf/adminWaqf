@@ -116,7 +116,6 @@ const Draft = () => {
         handleDraftWakaf(draft.wakaf[0])
     }
   },[draft.wakaf])
-console.log('draft', draft.news);
 
   useEffect(()=> {
     if (draft.asset[0] && editMode) {

@@ -142,7 +142,6 @@ export default function useNews() {
             const response = await axios.delete(`${HOST}admin/news/${payload.id}`, config)
             const deletedValue = response.data
             getNews()
-            console.log(deletedValue);
             Alert('delete')
             return deletedValue           
         } catch (error) {

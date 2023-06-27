@@ -130,7 +130,6 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormValues({ ...formValues, [e.target.name]: e.target.value });
     }
-    console.log(formValues);
     
     const handleChange = (value: string) => {
         setFormValues({...formValues, category: value})
