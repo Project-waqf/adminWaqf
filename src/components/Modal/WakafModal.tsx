@@ -45,6 +45,10 @@ import { EditorView } from 'prosemirror-view';
 
     const options = [
         {
+            value: '',
+            label: 'Pilih Kategori',
+        },
+        {
             value: 'kesehatan',
             label: 'Program Kesehatan',
         },
@@ -88,8 +92,21 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
     const [disabled, setDisabled] = useState(true);
     const dispatch = useDispatch()
     const [content, setContent] = useState<string>(formValues.detail);
-    const editorRef = useRef<any>(null);
     const [resetFlag, setResetFlag] = useState<boolean>(false);
+    const [detail, setDetail] = useState<string>('')
+    const [imageString, setImageString] = useState('')
+
+    useEffect(() => {
+        if (formValues.picture) {
+            if (formValues.picture.name) {
+                setImageString(formValues.picture.name)
+            } else if (typeof formValues.picture === 'string') {
+                const img: string = formValues.picture
+                const modifiedUrl = img.replace('https://ik.imagekit.io/', '');
+                setImageString(modifiedUrl)
+            }
+        }
+    }, [formValues.picture])
 
     useEffect(() => {
         if (editMode || !editMode) {
@@ -119,6 +136,14 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
             }
         }
     }, [formValues.due_date]);
+
+    useEffect(()=>{
+        if(detail){
+            setFormValues({...formValues, detail: detail})
+        } if(detail === '<p></p>') {
+            setFormValues({...formValues, detail: ''})
+        }
+    }, [detail])
 
     useEffect(() => {
         if (formValues.title && formValues.category && formValues.fund_target && formValues.due_date_string && formValues.detail) {
@@ -186,7 +211,7 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
     const handleImageChange = (e: any) => {
         setLoading(true)
         const file = e.target.files[0];
-        const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+        const maxSize = 2 * 1024 * 1024; // 5MB in bytes
         if (file && file.size <= maxSize) {
             setFormValues((prev) => ({
                 ...prev,
@@ -248,19 +273,18 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
         content: content.toString(),
          // Set initial content
         onUpdate({ editor }) {
-        const content = editor.getHTML();
          // Get the updated HTML content
-        setResetFlag(false)
-        setFormValues({...formValues, detail: editor.getHTML()})
-        if (formValues.detail === "<p></p>") {
-            setFormValues({...formValues, detail: ''})
+        // setResetFlag(false)
+        const content = editor.getHTML()
+        if (content) {
+            setDetail(content)
         }
         },
         editorProps: {
             attributes: {
                 class: 'focus:outline-none text-[18px] w-full h-[200px] overflow-auto border-solid border-slate-100 rounded-xl'
             }
-        }
+        },
     });
 
     return (
@@ -282,7 +306,7 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                         <div className="">
                                 <label htmlFor='title'>
                                     <Typography variant='h4' color='text01' type='medium' className=''>
-                                        Judul <span className='text-error-90'>*</span>
+                                        Judul Produk <span className='text-error-90'>*</span>
                                     </Typography>
                                 </label>
                                 <Input
@@ -300,18 +324,18 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                             </Typography>
                         </div>
                         <div className="">
-                            <Typography variant='h4' color='text01' type='medium' className=''>
-                                Gambar
+                            <Typography variant='h4' color='text01' type='medium' className='flex'>
+                                Gambar <span className={`ml-3 text-error-90 ${isDraft || isArchive ? 'block' : 'hidden'}`}>*</span>
                             </Typography>
                             <label className="block mt-1 bg-btnColor flex justify-center space-x-1 px-2 py-1 w-52 h-10 rounded-lg cursor-pointer" htmlFor="file_input">
                                 <TbFileDescription className='text-[24px] mt-0.5 text-whiteBg' />
                                 <Typography variant='body1' color='' type='normal' className='text-whiteBg'>
                                     Upload Gambar
                                 </Typography>
-                            <input disabled={formValues.is_completed ||formValues.due_date === 0 && !isArchive && !isDraft} name='picture' onChange={handleImageChange} className="hidden w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50" aria-describedby="file_input_help" id="file_input" type="file"/>
+                            <input disabled={formValues.is_completed || formValues.due_date === 0 && !isArchive && !isDraft} name='picture' onChange={handleImageChange} className="hidden w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50" aria-describedby="file_input_help" id="file_input" type="file"/>
                             </label>
                             <Typography variant='text' color={error ? 'error80' : 'neutral-90'} type='normal' className=''>
-                                {error ? error : formValues.picture ? formValues.picture.name : "Max 5 mb" }
+                                {error ? error : formValues.picture ? imageString : "Max 2 mb" }
                             </Typography>
                             {loading ? <SmallLoading/> : <></>}
                         </div>
@@ -336,7 +360,7 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
 
                             </Typography>
                         </div>
-                        <div className={editMode ? "block" : "hidden"}>
+                        <div className={editMode && !isDraft ? "block" : "hidden"}>
                                 <label >
                                     <Typography variant='h4' color='text01' type='medium' className=''>
                                         Terkumpul
@@ -406,7 +430,7 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                     <div className='flex mt-10 justify-end'>
                     <Button
                         type={'submit'}
-                        label={editMode ? "Simpan & dan Perbarui" : 'Upload'}
+                        label={editMode && !isDraft && !isArchive ? "Simpan & dan Perbarui" : 'Upload'}
                         id={`tidak`}
                         color={'orange'}
                         size='normal'

@@ -30,7 +30,7 @@ module.exports = {
         whiteBg: "#FAFAFA",
         Green: "#10A016",
         disable: "#FEEEE2",
-        hoverBtn: "#BB9171",
+        hoverBtn: "#FBBB8B",
         error: {
           70: "#ED3D3D",
           80: "#EB2525",

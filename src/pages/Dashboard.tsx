@@ -80,7 +80,7 @@ const Dashboard = () => {
                 {
                     id: 1,
                     icon: aktifIcon,
-                    header: 'Wakaf Aktif',
+                    header: 'Wakaf Online',
                     count: summary.total_wakif,
                 },
                 {
@@ -251,7 +251,7 @@ const Dashboard = () => {
                             icon={item.icon}
                             header={item.header}
                             count={item.count}
-                            onClick={()=> {item.header === "Wakaf Aktif" ?  navigate('/wakaf') : item.header === "Wakaf Selesai" ? navigate('/wakaf', {state: {forFilter: 'aktif'}}) : navigate('/asset')}}
+                            onClick={()=> {item.header === "Wakaf Online" ?  navigate('/wakaf', {state: {forFilter: 'aktif'}}) : item.header === "Wakaf Selesai" ? navigate('/wakaf', {state: {forFilter: 'complete'}}) : navigate('/asset')}}
                             />
                         )
                     })}

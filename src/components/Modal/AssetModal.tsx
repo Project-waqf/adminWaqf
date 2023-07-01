@@ -36,6 +36,19 @@ const AssetModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, e
     const dispatch  = useDispatch()
     const [loading , setLoading] = useState(false)
     const [error, setError] = useState('')
+    const [imageString, setImageString] = useState('')
+
+    useEffect(() => {
+        if (formValues.picture) {
+            if (formValues.picture.name) {
+                setImageString(formValues.picture.name)
+            } else if (typeof formValues.picture === 'string') {
+                const img: string = formValues.picture
+                const modifiedUrl = img.replace('https://ik.imagekit.io/', '');
+                setImageString(modifiedUrl)
+            }
+        }
+    }, [formValues.picture])
     
     useEffect(() => {
         if (editMode || !editMode) {
@@ -63,7 +76,7 @@ const AssetModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, e
     const handleImageChange = (e: any) => {
         setLoading(true)
         const file = e.target.files[0];
-        const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+        const maxSize = 2 * 1024 * 1024; // 5MB in bytes
         if (file && file.size <= maxSize) {
             setFormValues((prev) => ({
                 ...prev,
@@ -156,7 +169,7 @@ const AssetModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, e
                             <input name='picture' onChange={handleImageChange} className="hidden w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50" aria-describedby="file_input_help" id="file_input" type="file"/>
                             </label>
                             <Typography variant='text' color={error ? 'error80' : 'neutral-90'} type='normal' className=''>
-                                {error ? error : formValues.picture ? formValues.picture.name : "Max 5 mb" }
+                                {error ? error : formValues.picture ? imageString : "Max 2 mb" }
                             </Typography>
                             {loading ? <SmallLoading/> : <></>}
                         </div>
@@ -172,7 +185,7 @@ const AssetModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, e
                     <div className='flex mt-10 justify-end'>
                     <Button
                         type={'submit'}
-                        label='Upload'
+                        label={editMode && !isDraft && !isArchive ? "Simpan & dan Perbarui" : 'Upload'}
                         id={`tidak`}
                         color={'orange'}
                         size='base'

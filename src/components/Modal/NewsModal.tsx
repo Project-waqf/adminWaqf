@@ -44,6 +44,20 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, ed
     const [error, setError] = useState<string>()
     const dispatch = useDispatch()
     const draft = useSelector((state: {draft: DraftState}) => state.draft)
+    const [detail, setDetail] = useState<string>('')
+    const [imageString, setImageString] = useState('')
+
+    useEffect(() => {
+        if (formValues.picture) {
+            if (formValues.picture.name) {
+                setImageString(formValues.picture.name)
+            } else if (typeof formValues.picture === 'string') {
+                const img: string = formValues.picture
+                const modifiedUrl = img.replace('https://ik.imagekit.io/', '');
+                setImageString(modifiedUrl)
+            }
+        }
+    }, [formValues.picture])
 
     useEffect(() => {
         if (editMode || !editMode) {
@@ -70,6 +84,14 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, ed
         }
     }, [formValues.body])
 
+    useEffect(()=>{
+        if(detail){
+            setFormValues({...formValues, body: detail})
+        } if(detail === '<p></p>') {
+            setFormValues({...formValues, body: ''})
+        }
+    }, [detail])
+
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormValues({ ...formValues, [e.target.name]: e.target.value });
     }
@@ -82,6 +104,7 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, ed
         }
         dispatch(newsToDraft(newItem))
     }
+
     const handleTOArchive = async (formValues: NewsType) => {
         const newItem: NewsType = {
             title: formValues.title,
@@ -90,13 +113,11 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, ed
         }
         dispatch(newsToArchive(newItem))
     }
-    const handleChangeEditor = (newContent: string) => {
-        setFormValues({...formValues, body: newContent});
-    };
+
     const handleImageChange = (e: any) => {
         setLoading(true)
         const file = e.target.files[0];
-        const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+        const maxSize = 2 * 1024 * 1024; // 5MB in bytes
         if (file && file.size <= maxSize) {
             setFormValues((prev) => ({
                 ...prev,
@@ -119,7 +140,7 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, ed
         setFormValues(initialFormValues);
         
     };
-
+    
     const editor = useEditor({
         extensions: [
         StarterKit,
@@ -133,10 +154,7 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, ed
         onUpdate({ editor }) {
         const content = editor.getHTML();
          // Get the updated HTML content
-        setFormValues({...formValues, body: editor.getHTML()})
-        if (formValues.body === "<p></p>") {
-            setFormValues({...formValues, body: ''})
-        }
+        setDetail(content)
         },
         editorProps: {
             attributes: {
@@ -191,7 +209,7 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, ed
                             <input name='picture' onChange={handleImageChange} className="hidden w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50" aria-describedby="file_input_help" id="file_input" type="file"/>
                             </label>
                             <Typography variant='text' color={error ? 'error80' : 'neutral-90'} type='normal' className=''>
-                                {error ? error : formValues.picture ? formValues.picture.name : 'Max 5 mb'}
+                                {error ? error : formValues.picture ? imageString : 'Max 2 mb'}
                             </Typography>
                             {loading ? <SmallLoading/> : <></>}
                         </div>
@@ -207,7 +225,7 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, ed
                 <div className='flex mt-10 justify-end'>
                     <Button
                         type={'submit'}
-                        label='Upload'
+                        label={editMode && !isDraft && !isArchive ? "Simpan & dan Perbarui" : 'Upload'}
                         id={`tidak`}
                         color={'orange'}
                         size='base'

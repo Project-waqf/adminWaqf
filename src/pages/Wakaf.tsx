@@ -45,7 +45,6 @@ const Wakaf = () => {
     const { wakaf, getWakaf, totalOnlineWakaf, createWakaf, editedWakaf, draftWakaf, archiveWakaf, deleteWakaf } = useWakaf()
     const [selectedId, setSelectedId] = useState<number>(0)
     const [cookie] = useCookies(['token'])
-    const [wakafValue , setWakafValue] = useState<WakafType>(initialEditValue)
     const [editValue , setEditValue] = useState<WakafType>(initialEditValue)
     const [editMode, setEditMode] = useState(false)
     const [filter, setFilter] = useState('')
@@ -64,8 +63,8 @@ const Wakaf = () => {
     
     useEffect(() => {
         if (filterLocation && filterParams === '') {
-            setFilterParams('aktif')
-            setFilter("Wakaf Aktif")
+            setFilterParams(filterLocation)
+            setFilter(filterLocation === 'aktif' ? "Online" : "Completed")
         }
     }, [filterLocation, filterParams])
 
@@ -126,8 +125,9 @@ const Wakaf = () => {
     };
     
     const handleAdd = async (formValues: WakafType) => {
-        setEditValue({ title: formValues.title, category: formValues.category, picture: formValues.picture, detail: formValues.detail, due_date: formValues.due_date, fund_target: formValues.fund_target, collected: formValues.collected, due_date_string: formValues.due_date_string })
+        setEditValue({id: 1, is_completed: false, title: formValues.title, category: formValues.category, picture: formValues.picture, detail: formValues.detail, due_date: formValues.due_date, fund_target: formValues.fund_target, collected: formValues.collected, due_date_string: formValues.due_date_string })
         if (formValues.picture) {
+            setEditValue({ title: formValues.title, category: formValues.category, picture: formValues.picture, detail: formValues.detail, due_date: formValues.due_date, fund_target: formValues.fund_target, collected: formValues.collected, due_date_string: formValues.due_date_string })
             const validation = await ConfirmAlert('upload')
             if (validation.isConfirmed) {
                 setLoading(true)
@@ -261,8 +261,8 @@ const Wakaf = () => {
     const items: MenuProps['items'] = [
         {
             label: (
-                <div className={`font-normal text-sm ${filter === "Wakaf Aktif" ? "text-btnColor" : "text-text01"} hover:text-btnColor h-30`}>
-                Wakaf Aktif
+                <div className={`font-normal text-sm ${filter === "Wakaf Online" ? "text-btnColor" : "text-text01"} hover:text-btnColor h-30`}>
+                Online
                 </div>
             ),
             key: 0,
@@ -273,7 +273,7 @@ const Wakaf = () => {
         {
             label: (
                 <div className={`font-normal text-sm ${filter === "Completed" ? "text-btnColor" : "text-text01"} hover:text-btnColor h-30`}>
-                Complete
+                Completed
                 </div>
             ),
             key: 1,
@@ -294,8 +294,8 @@ const Wakaf = () => {
         },
     ];
     const handleMenuClick: MenuProps['onClick'] = (e) => {
-        if (e.key === "0" && filter !== "Wakaf Aktif") {
-            setFilter("Wakaf Aktif")
+        if (e.key === "0" && filter !== "Online") {
+            setFilter("Online")
             setFilterParams('aktif')
             setFilterLocation('')
         } else if (e.key === "1" && filter !== "Completed") {
@@ -369,7 +369,7 @@ const Wakaf = () => {
                 editMode={editMode}
                 handleDelete={handleDelete}
                 onSubmit={editMode ? handleEdit : handleAdd}
-                editValues={editMode ? editValue : wakafValue}
+                editValues={editValue}
                 /> 
                 </div>
             </Display>
