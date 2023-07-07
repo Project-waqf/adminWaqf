@@ -26,16 +26,16 @@ const CustomTable: React.FC<TableProps> = ({ draft, archives, mitra, data, handl
         <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
             <thead className="text-[16px] text-neutral-80 bg-white border">
                 <tr>
-                    <th scope="col" className="px-6 py-3 font-normal flex items-center w-44">
+                    <th scope="col" className="px-6 py-3 font-semibold flex items-center w-44">
                         Tanggal
                         <div onClick={handleSort} className='transition-all ml-2 cursor-pointer'>
                             <DownOutlined rotate={isSort ? 180 : 0} className='mt-1 text-btnColor transition-all'/>
                         </div>
                     </th>
-                    <th scope="col" className="px-6 py-3 w-[1000px] font-normal">
+                    <th scope="col" className="px-6 py-3 w-[1000px] font-semibold">
                         Judul
                     </th>
-                    <th scope="col" className="py-3 font-normal text-center">
+                    <th scope="col" className="py-3 font-semibold text-center">
                         Alat
                     </th>
                 </tr>

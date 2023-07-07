@@ -67,8 +67,8 @@ const WakafTable: React.FC<TableProps> = ({ dashboard, archives, draft, data, ha
                                 {item.created_at}
                             </Typography>
                             </td>
-                            <td className="px-2 py-4 w-[450px]">
-                                <Typography color='text01' variant='body3' type='semibold' className='w-[400px] truncate'>
+                            <td className={draft || archives ? "px-2 py-4 w-[700px]" : "px-2 py-4 w-[450px]"}>
+                                <Typography color='text01' variant='body3' type='semibold' className={draft || archives ? "w-[650px] truncate" :'w-[400px] truncate'}>
                                 {item.title}
                                 </Typography>
                             </td>
