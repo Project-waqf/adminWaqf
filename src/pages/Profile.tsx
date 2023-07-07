@@ -195,8 +195,8 @@ const Profile = () => {
                         <></>
                     }
                 </div>
-                    <div className="flex mt-6 w-[1000px]">
-                        <Typography color='text01' variant='h5' type='medium' className='w-44 my-4'>
+                    <div className="flex space-x-10 mt-6 w-[1000px]">
+                        <Typography color='text01' variant='h5' type='normal' className='w-20 my-4'>
                             Nama
                         </Typography>
                         <div className="w-[523px]">
@@ -217,8 +217,8 @@ const Profile = () => {
                             <></>
                         }
                     </div>
-                    <div className="flex mt-6 w-[1000px]">
-                        <Typography color='text01' variant='h5' type='medium' className='w-44 my-4'>
+                    <div className="flex space-x-10 mt-6 w-[1000px]">
+                        <Typography color='text01' variant='h5' type='normal' className='w-20 my-4'>
                             Email
                         </Typography>
                         <div className="w-[523px]">
@@ -232,8 +232,8 @@ const Profile = () => {
                             />
                         </div>
                     </div>
-                    <div className="flex mt-6 w-[1000px]">
-                        <Typography color='text01' variant='h5' type='medium' className='w-44 my-4'>
+                    <div className="flex space-x-10 mt-6 w-[1000px]">
+                        <Typography color='text01' variant='h5' type='normal' className='w-20 my-4'>
                             Password
                         </Typography>
                         <div className="w-[523px]">
@@ -254,7 +254,7 @@ const Profile = () => {
                     >
                         <Panel
                         key={1}
-                        header={<Typography variant='btnXS' color="btnColor" type='normal' className="cursor-pointer ml-36">Ganti Password?</Typography>}
+                        header={<Typography variant='btnXS' color="btnColor" type='normal' className="cursor-pointer ml-24">Ganti Password?</Typography>}
 
                         className=" overflow-hidden bg-white"
                         >
@@ -263,8 +263,8 @@ const Profile = () => {
                                     Ganti Password
                                 </Typography>
                             </div>
-                            <div className="flex mt-6 w-[1000px]">
-                                <Typography color='text01' variant='h5' type='medium' className='w-44 my-4'>
+                            <div className="flex space-x-10 mt-6 w-[1000px]">
+                                <Typography color='text01' variant='h5' type='normal' className='w-20 my-2'>
                                     Password Lama
                                 </Typography>
                                 <div className="w-[523px]">
@@ -286,8 +286,8 @@ const Profile = () => {
                                 <></>
                                 }
                             </div>
-                            <div className="flex mt-6 w-[1000px]">
-                                <Typography color='text01' variant='h5' type='medium' className='w-44 my-4'>
+                            <div className="flex space-x-10 mt-6 w-[1000px]">
+                                <Typography color='text01' variant='h5' type='normal' className='w-20 my-2'>
                                     Password Baru
                                 </Typography>
                                 <div className="w-[523px] flex flex-col">
@@ -311,8 +311,8 @@ const Profile = () => {
                                 <></>
                                 }
                             </div>
-                            <div className="flex mt-6 w-[1000px]">
-                                <Typography color='text01' variant='h5' type='medium' className='w-44 my-4'>
+                            <div className="flex space-x-10 mt-6 w-[1000px]">
+                                <Typography color='text01' variant='h5' type='normal' className='w-20 my-2'>
                                     Ulangin Password
                                 </Typography>
                                 <div className="w-[523px]">

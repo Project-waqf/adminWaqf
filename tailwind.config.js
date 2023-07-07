@@ -18,6 +18,7 @@ module.exports = {
           60: "#7A96C3",
         },
         neutral: {
+          50: '#E3E5EB',
           60: "#D6D7DE",
           80: "#A5A6AC",
           90: "#828387",

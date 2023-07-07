@@ -46,7 +46,7 @@ import { EditorView } from 'prosemirror-view';
     const options = [
         {
             value: '',
-            label: 'Pilih Kategori',
+            label: `Pilih Kategori`,
         },
         {
             value: 'kesehatan',
@@ -176,7 +176,6 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
         if (!displayValue) {
             return undefined;
         }
-        
         const numericValue = displayValue.replace(/\$\s?|(,*)/g, '');
         return Number(numericValue);
     };
@@ -297,9 +296,9 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
         width={1120}
         footer={<></>}>
                 <div className="relative mx-5 my-8">
-                    <Typography variant='body1' color='text01' type='medium' className={search ? 'block mb-5' : 'hidden' }>
-                        Status: <span className={status === "online" ? 'text-green-500':'text-primary-100'}>{status}</span> - 
-                        <span className={formValues.is_completed ? 'text-green-500' : !formValues.is_completed && formValues.due_date > 0 ? 'text-green-500' : 'text-error-90'}>{formValues.is_completed ? ' Completed' : !formValues.is_completed && formValues.due_date > 0 ? ' Aktif' : ' Not Completed'}</span>
+                    <Typography variant='body1' color='neutral-80' type='reguler' className={search ? 'block mb-5' : 'hidden' }>
+                        Status: <span className={status === "online" ? 'text-primary-100':'text-neutral-90'}>{status}</span> 
+                        <span className={ formValues.is_completed ? 'text-green-500' : !formValues.is_completed && formValues.due_date > 0 ? 'text-green-500' : 'text-error-90'}>{status === 'draft' ? '' : formValues.is_completed ? '- Completed' : !formValues.is_completed && formValues.due_date > 0 ? '' : '- Not Completed'}</span>
                     </Typography>
                     <form className='flex flex-col space-y-5 mb-10' onSubmit={handleSubmit}>
                     <div className="flex space-x-8">
@@ -419,7 +418,7 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                     name={formValues.detail} 
                     onChange={handleChangeEditor}
                     /> */}
-                    <div className={"h-[310px]"}>
+                    <div className={"h-[280px]"}>
                         <label htmlFor='due_date'>
                             <Typography variant='h4' color='text01' type='medium' className='mb-1'>
                                 Deskripsi Produk

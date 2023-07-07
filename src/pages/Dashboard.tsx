@@ -244,7 +244,7 @@ const Dashboard = () => {
                 <Headers
                 label={`Hello, ${cookie.name}!!!`}
                 />
-                <div className="grid grid-cols-3 gap-20 mx-auto w-11/12 my-10">
+                <div className="grid grid-cols-3 gap-10 mx-auto w-11/12 my-10">
                     {dashboardData.data.map((item)=> {
                         return(
                             <Card
@@ -270,6 +270,8 @@ const Dashboard = () => {
                 handleEdit={handleEditModal}
                 handleSort={handleSort}
                 isSort={toggle}
+                draft={false}
+                archives={false}
                 />
                 <Pagination size='small' total={totalOnlineWakaf} onChange={handlePageChange} showSizeChanger={false} className='z-90 my-7 float-right'/>
                 </CustomCollapse>

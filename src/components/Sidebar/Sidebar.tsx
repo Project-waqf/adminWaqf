@@ -23,15 +23,14 @@ const Sidebar= () => {
         )
     return (
         <aside id="default-sidebar" className="fixed top-0 left-0 h-screen w-[97px] hover:w-[235px] z-50 transition-all -translate-x-0" aria-label="Sidebar">
-            <div className="h-full py-4 overflow-y-auto bg-white shadow-2xl flex flex-col overflow-hidden">
+            <div className="h-full py-4 overflow-y-auto bg-white shadow flex flex-col overflow-hidden">
                 <NavLink to={'/dashboard'} className='mb-8 mt-5 w-[235px] flex items-center no-underline relative'>
                     <img src={logo} alt="Logo" className='w-[56px] ml-5 h-[56px]' />
                     <Typography variant='h5' color='primary-90' type='bold' className='ml-5 w-26'>
-                        AL-HAMBRA
+                        Al Hambra
                     </Typography>
                 </NavLink>
                 <ul className="flex flex-col text-[40px] list-none">
-
                     <NavLink to={'/dashboard'} style={navLinkStyle} className="no-underline flex w-[235px] h-14 transition-transform hover:bg-[#FBFBFB]">
                         <NavLink to={'/dashboard'} style={borderStyle} className={`w-[12px] h-[50px] my-auto rounded-r-xl`}></NavLink>
                         <li className='flex mx-6 my-auto hover:text-btnColor'>

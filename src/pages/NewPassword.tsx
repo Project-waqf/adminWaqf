@@ -65,7 +65,7 @@ const NewPassword = () => {
         <Space direction="vertical" className='my-auto w-[450px]'>
           <form onSubmit={handleResetPassword} className='flex flex-col space-y-5'>
             <div className="">
-              <Typography variant='h3' color='white' type='normal'>
+              <Typography variant='h1' color='white' type='normal'>
                 Reset Password
               </Typography>
             </div>

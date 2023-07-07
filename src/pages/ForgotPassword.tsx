@@ -11,6 +11,8 @@ import axios from 'axios';
 import Alert from '../components/Alert/Alert';
 import logo from '../assets/logo.svg'
 import Swal from 'sweetalert2';
+import { IoIosArrowBack } from "react-icons/io";
+import { useNavigate } from 'react-router-dom';
 
 const initalFormValues : LoginType = {
   email: ''
@@ -20,6 +22,7 @@ const ForgotPassword = () => {
   const [loading, setLoading] = useState(false)
   const [disabled, setDisabled] = useState(true);
   const [errorEmail, setErrorEmail] = useState('')
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (value.email) {
@@ -70,15 +73,20 @@ const ForgotPassword = () => {
       <Box
       id='box-rigth'
       bg='bg-primary-100'
-      customStyle='flex justify-center'
+      customStyle='relative flex justify-center'
       >
-        <Space direction="vertical" className='my-auto w-[450px]'>
+        <button 
+        onClick={()=> navigate('/')}
+        className="btn btn-circle bg-white text-btnColor hover:text-white text-[25px] w-12 h-10 hover:bg-btnColor hover:border-none border-none absolute top-14 left-10">
+          <IoIosArrowBack className='text-40'/>
+        </button>
+        <Space direction="vertical" className='my-auto w-[490px]'>
           <form onSubmit={handleForgot} className='flex flex-col space-y-7'>
             <div className="">
-              <Typography variant='h3' color='white' type='normal'>
+              <Typography variant='h1' color='white' type='normal'>
                 Lupa Password?
                 <Typography variant='body3' color='white' type='normal' className='mt-2'>
-                  Masukkan alamat email yang Anda gunakan saat bergabung dan kami akan mengirimkan instruksi untuk mengatur ulang kata sandi Anda.
+                Masukan alamat email yang anda gunakan saat bergabung dan kami akan mengirimkan instruksi untuk mengatur ulang kata sandi anda.
                 </Typography>
               </Typography>
             </div>

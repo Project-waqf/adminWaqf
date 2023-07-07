@@ -71,10 +71,10 @@ const Login = () => {
       .catch((error) => {
         if(error.response.status === 404){
           setValue({email: value.email})
-          setErrorEmail("Email tidak terdaftar atau salah")
+          setErrorEmail("Email yang anda masukan tidak terdaftar atau salah")
         } else if (error.response.status === 401){
           setValue({email: value.email, password: value.password})
-          setErrorPassword("Password salah")
+          setErrorPassword("Password yang anda masukan salah!")
         }
       })
       .finally(() => setLoading(false));
@@ -104,10 +104,10 @@ const Login = () => {
       >
         <Space direction="vertical" className='my-auto w-[450px]'>
             <div className="mb-5">
-              <Typography variant='h3' color='white' type='normal'>
+              <Typography variant='h1' color='white' type='normal'>
                 Selamat Datang!
                 <Typography variant='body3' color='white' type='normal' className='mt-2'>
-                  Mohon masukan akun anda
+                  Silahkan masukan email dan password anda 
                 </Typography>
               </Typography>
             </div>

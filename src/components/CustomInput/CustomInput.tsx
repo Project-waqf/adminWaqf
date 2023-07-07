@@ -41,7 +41,7 @@ const CustomInput: React.FC<InputProps> = ({
         <>
             <Input.Password
                 name={name}
-                placeholder="masukan password"
+                placeholder={placeholder}
                 size='large'
                 status={error ? 'error' : ''}
                 color='#EB2525'

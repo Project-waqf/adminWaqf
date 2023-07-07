@@ -27,9 +27,9 @@ const CustomCollapse: React.FC<CollapseProps> = ({header, children , autoOpen, k
             defaultActiveKey={autoOpen ? 1 : key}
             expandIconPosition={"end"}
             size='large'
-            className='w-full border-white shadow-xl'
+            className='w-full border-white shadow'
             ghost
-            expandIcon={({isActive})=> autoOpen ? <></> : <DownOutlined rotate={isActive? 0 : 270} className='text-btnColor'/>}
+            expandIcon={({isActive})=> autoOpen ? <></> : <DownOutlined rotate={isActive? 0 : 270} style={{color: "#F98D3E"}} />}
             >
             <Panel
                 key={autoOpen ? 1 : key}
