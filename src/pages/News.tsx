@@ -18,6 +18,7 @@ import { DraftState, removeNewsFromDraft } from '../stores/draftSilce'
 import { ArchiveState, removeNewsFromArchive } from '../stores/archiveSlice'
 import useNews from '../api/hooks/useNews'
 import Swal from 'sweetalert2'
+import tambah from '../assets/Tambah.svg'
 
 const initialEditNewsValue: NewsType = {
     title: "",
@@ -231,7 +232,7 @@ const News = () => {
                 size='normal'
                 onClick={showModalNews}
                 color='orange'
-                label="+ Buat Berita"
+                label={<div className='flex justify-center items-center space-x-2'><img src={tambah} /> <span>Buat Berita</span></div>}
                 />
             </div>                
             <div className="flex flex-col justify-center space-y-5 mx-auto w-11/12 my-10">

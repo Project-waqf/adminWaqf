@@ -18,6 +18,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { DraftState, removeAssetFromDraft } from '../stores/draftSilce';
 import Swal from 'sweetalert2';
 import { ArchiveState, removeAssetFromArchive } from '../stores/archiveSlice';
+import tambah from '../assets/Tambah.svg'
 
 const initialFormValues: AssetType ={
     name: '',
@@ -221,7 +222,7 @@ const Asset = () => {
                     size='normal'
                     onClick={showModal}
                     color='orange'
-                    label="+ Buat Asset"
+                    label={<div className='flex justify-center items-center space-x-2'><img src={tambah} /> <span>Buat asset</span></div>}
                     />
                 </div> 
                 <div className="flex flex-col justify-center space-y-5 mx-auto w-11/12 my-10">

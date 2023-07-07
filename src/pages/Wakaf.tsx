@@ -19,6 +19,7 @@ import { DownOutlined } from '@ant-design/icons';
 import Swal from 'sweetalert2';
 import { ArchiveState, removeWakafFromArchive } from '../stores/archiveSlice';
 import { useLocation } from 'react-router-dom';
+import tambah from '../assets/Tambah.svg'
 
 const initialEditValue: WakafType = {
     id: 0,
@@ -336,7 +337,7 @@ const Wakaf = () => {
                     className='w-72'
                     onClick={handleShowModal}
                     color='orange'
-                    label="+ Buat Wakaf"
+                    label={<div className='flex justify-center items-center space-x-2'><img src={tambah} /> <span>Buat Wakaf</span></div>}
                     />
                     <Dropdown menu={menuProps} className='w-[156px]'>
                         <a onClick={(e) => e.preventDefault()}>

@@ -13,6 +13,7 @@ import Alert from '../components/Alert/Alert';
 import { MitraType } from '../utils/types/DataType';
 import { useCookies } from 'react-cookie';
 import LoadingAlert from '../components/Modal/LoadingAlert';
+import tambah from '../assets/Tambah.svg'
 
 const initialEditValues: MitraType = {
   name: "",
@@ -166,7 +167,7 @@ const Mitra = () => {
           size='normal'
           onClick={showModalMitra}
           color='orange'
-          label="+ Buat Mitra"
+          label={<div className='flex justify-center items-center space-x-2'><img src={tambah} /> <span>Buat Mitra</span></div>}
           />
         </div> 
         <div className="flex flex-col justify-center space-y-5 mx-auto w-11/12 my-10">
