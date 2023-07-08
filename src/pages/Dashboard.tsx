@@ -75,7 +75,7 @@ const Dashboard = () => {
     }, [allWakaf])
 
     useEffect(() => {
-        if (summary && wakafCompleted) {
+        if (summary) {
             const initialData: DashboardType[] = [
                 {
                     id: 1,
@@ -87,7 +87,7 @@ const Dashboard = () => {
                     id: 2,
                     icon: succesIcon,
                     header: 'Wakaf Selesai',
-                    count: wakafCompleted,
+                    count: wakafCompleted ? wakafCompleted : 0,
                 },
                 {
                     id: 2,
