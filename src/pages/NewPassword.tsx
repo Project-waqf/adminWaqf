@@ -43,9 +43,10 @@ const NewPassword = () => {
       navigate('/')
       Alert('newPass')
     })
-    .catch((error) => {})
+    .catch((error) => {
+      Alert('fail')
+    })
     .finally(() => setLoading(false))
-    Alert('fail')
   }
   
   return (
