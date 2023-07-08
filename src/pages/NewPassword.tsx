@@ -41,10 +41,11 @@ const NewPassword = () => {
     })
     .then((response) => {
       navigate('/')
-      Alert('upload')
+      Alert('newPass')
     })
     .catch((error) => {})
     .finally(() => setLoading(false))
+    Alert('fail')
   }
   
   return (
