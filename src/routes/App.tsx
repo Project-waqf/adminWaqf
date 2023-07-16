@@ -28,7 +28,7 @@ function App() {
     <BrowserRouter>
       <QueryParamProvider adapter={ReactRouter6Adapter}>
         <Layout>
-          <Suspense fallback={ <div className="ml-[50%] mt-[250px]"> <Loading/> </div> }>
+          <Suspense fallback={ <div className="ml-[45%] mt-[250px]"> <Loading/> </div> }>
             <Routes>
               <Route path='/' element={<Login/>}/>
               <Route path='/forgot-password' element={<ForgotPassword/>}/>
