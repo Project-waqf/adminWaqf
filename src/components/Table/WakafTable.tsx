@@ -29,7 +29,7 @@ const WakafTable: React.FC<TableProps> = ({ dashboard, archives, draft, data, ha
     }
     return (
         <div className="relative overflow-x-auto sm:rounded-lg">
-        <div className="absolute top-3 border-solid border-b-2 border-x-0 border-t-0 border-b-neutral-60 w-full h-10"></div>
+        <div className="absolute top-12 border-solid border-b-2 border-x-0 border-t-0 border-b-neutral-60 w-full"></div>
         <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
             <thead className="text-[14px] text-text03 bg-white">
                 <tr className=''>
