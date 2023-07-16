@@ -129,18 +129,18 @@ const AssetModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, e
         onCancel={handleCancel} 
         centered closeIcon={search ? false : true}
         style={{padding: 0}}
-        title={<Typography color='text01' variant='h1' type='semibold' className='ml-[32px]'>{editMode && !search ? 'Edit Asset' : editMode && search ? "Detail Asset" : 'Tambah Asset'}</Typography>}
+        title={<Typography color='text01' variant='h3' type='semibold' className='ml-[32px]'>{editMode && !search ? 'Edit Asset' : editMode && search ? "Detail Asset" : 'Tambah Asset'}</Typography>}
         width={938}
         footer={<></>}>
                 <div className="relative mx-[32px] my-[36px]">
                     <Typography variant='body1' color='text01' type='medium' className={search ? 'block mb-5' : 'hidden' }>
                         Status: <span className={status === "online" ? 'text-green-500':'text-primary-100'}>{status}</span>
                     </Typography>
-                    <form className='flex flex-col space-y-5' onSubmit={handleSubmit}>
+                    <form className='flex flex-col space-y-2' onSubmit={handleSubmit}>
                     <div className="flex space-x-8">
                         <div className="">
                                 <label htmlFor='title'>
-                                    <Typography variant='h4' color='text01' type='medium' className=''>
+                                    <Typography variant='body1' color='text01' type='medium' className=''>
                                         Judul Aset <span className='text-error-90'>*</span>
                                     </Typography>
                                 </label>
@@ -158,7 +158,7 @@ const AssetModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, e
                             </Typography>
                         </div>
                         <div className="">
-                            <Typography variant='h4' color='text01' type='medium' className=''>
+                            <Typography variant='body1' color='text01' type='medium' className=''>
                                 Gambar <span className='text-error-90'>*</span>
                             </Typography>
                             <label className="block mt-2 bg-btnColor flex justify-center space-x-1 p-2 w-52 h-12 rounded-lg cursor-pointer" htmlFor="file_input">
@@ -175,7 +175,7 @@ const AssetModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, e
                         </div>
                     </div>
                     <div className='flex flex-col relative w-full rounded-lg overflow-hidden' x-data="{maximum: ''}">
-                        <Typography variant='h4' color='text01' type='medium' className='mt-0.5'>
+                        <Typography variant='body1' color='text01' type='medium' className='mt-0.5'>
                         Deskrip Aset
                         </Typography>
                         <textarea rows={4} x-model="maximum" maxLength={maxLength} x-ref="maximum" style={{ resize: 'none' }}

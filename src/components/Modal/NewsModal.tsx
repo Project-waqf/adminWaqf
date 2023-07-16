@@ -169,18 +169,18 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, ed
         onCancel={handleCancel} 
         centered closeIcon
         style={{padding: 5}}
-        title={<Typography color='text01' variant='h1' type='semibold'>{editMode && !search ? 'Edit Berita' : editMode && search ? 'Detail Berita' : 'Tambah Berita'}</Typography>}
+        title={<Typography color='text01' variant='h3' type='semibold'>{editMode && !search ? 'Edit Berita' : editMode && search ? 'Detail Berita' : 'Tambah Berita'}</Typography>}
         width={1120}
         footer={<></>}>
                 <div className="relative mx-5 my-8">
                     <Typography variant='body1' color='text01' type='medium' className={search ? 'block mb-5' : 'hidden' }>
                         Status: <span className={status === "online" ? 'text-green-500':'text-primary-100'}>{status}</span>
                     </Typography>
-                    <form className='flex flex-col space-y-5' onSubmit={handleSubmit}>
+                    <form className='flex flex-col space-y-2' onSubmit={handleSubmit}>
                     <div className="flex space-x-8">
                         <div className="">
                             <label htmlFor='title'>
-                                <Typography variant='h4' color='text01' type='medium' className=''>
+                                <Typography variant='body1' color='text01' type='medium' className=''>
                                     Judul <span className='text-error-90'>*</span>
                                 </Typography>
                             </label>
@@ -198,7 +198,7 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, ed
                             </Typography>
                         </div>
                         <div className="">
-                            <Typography variant='h4' color='text01' type='medium' className=''>
+                            <Typography variant='body1' color='text01' type='medium' className=''>
                                 Gambar <span className='text-error-90'>*</span>
                             </Typography>
                             <label className={"block mt-2 bg-btnColor flex justify-center space-x-1 p-2 w-52 h-12 rounded-lg cursor-pointer"} htmlFor="file_input">
@@ -216,7 +216,7 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, ed
                     </div>
                     <div className="h-[280px]">
                         <label htmlFor='due_date'>
-                            <Typography variant='h4' color='text01' type='medium' className='mb-1'>
+                            <Typography variant='body1' color='text01' type='medium' className='mb-1'>
                                 Deskripsi Berita
                             </Typography>
                         </label>

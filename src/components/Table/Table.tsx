@@ -24,18 +24,18 @@ const CustomTable: React.FC<TableProps> = ({ draft, archives, mitra, data, handl
       <div className="relative overflow-x-auto sm:rounded-lg">
       <div className="absolute top-12 border-solid border-b-2 border-x-0 border-t-0 border-b-neutral-60 w-full"></div>
         <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-            <thead className="text-[16px] text-neutral-80 bg-white border">
+            <thead className="text-sm text-neutral-80 bg-white border">
                 <tr>
-                    <th scope="col" className="px-2 py-3 font-semibold flex items-center w-32 z-50">
+                    <th scope="col" className="px-2 py-3 font-normal flex w-32 z-50">
                         Tanggal
                         <div onClick={handleSort} className='transition-all ml-2 cursor-pointer'>
                             <DownOutlined rotate={isSort ? 180 : 0} className='mt-1 text-btnColor transition-all'/>
                         </div>
                     </th>
-                    <th scope="col" className="py-3 w-[1000px] font-semibold">
+                    <th scope="col" className="py-3 w-[1000px] font-normal">
                         Judul
                     </th>
-                    <th scope="col" className="py-3 font-semibold text-center">
+                    <th scope="col" className="py-3 font-normal text-center">
                         Alat
                     </th>
                 </tr>
@@ -46,12 +46,12 @@ const CustomTable: React.FC<TableProps> = ({ draft, archives, mitra, data, handl
                   return(
                   <tr key={item.id} className="bg-white">
                       <th scope="row" className="text-start py-4 w-32">
-                      <Typography color='text03' variant='body2' type='semibold'>
+                      <Typography color='text03' variant='body3' type='normal'>
                           {item.created_at}
                       </Typography>
                       </th>
                       <td className=" py-4 w-[1000px]">
-                        <Typography color='text01' variant='body2' type='semibold' >
+                        <Typography color='text01' variant='body3' type='semibold' >
                           {item.title || item.name}
                         </Typography>
                       </td>
@@ -103,6 +103,8 @@ const CustomTable: React.FC<TableProps> = ({ draft, archives, mitra, data, handl
                   Data Kosong
                   </Typography>
                   </td>
+                <td className='w-40'></td>
+
               </tr>
               }
             </tbody>

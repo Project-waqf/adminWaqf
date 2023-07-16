@@ -17,6 +17,8 @@ import Underline from '@tiptap/extension-underline';
 import TextAlign from '@tiptap/extension-text-align';
 import { EditorState } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
+import moment from 'moment';
+import dayjs from 'dayjs';
     interface FormProps {
         onSubmit: (formValues: WakafType) => void;
         handleDelete?: (id: any) => void
@@ -285,6 +287,10 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
             }
         },
     });
+    function disabledDate(current: any) {
+        // Disable yesterday's date
+        return current && current.isBefore(moment().startOf('day'));
+    }
 
     return (
         <Modal
@@ -292,7 +298,7 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
         onCancel={handleCancel} 
         centered closeIcon={search ? false : true}
         style={{padding: 5}}
-        title={<Typography color='text01' variant='h2' type='semibold'>{editMode && !search ? 'Edit Wakaf' : editMode && search ? 'Detail Wakaf' : 'Tambah Wakaf'}</Typography>}
+        title={<Typography color='text01' variant='h3' type='semibold'>{editMode && !search ? 'Edit Wakaf' : editMode && search ? 'Detail Wakaf' : 'Tambah Wakaf'}</Typography>}
         width={1120}
         footer={<></>}>
                 <div className="relative mx-5 my-8">
@@ -300,11 +306,11 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                         Status: <span className={status === "online" ? 'text-primary-100':'text-neutral-90'}>{status}</span> 
                         <span className={ formValues.is_completed ? 'text-green-500' : !formValues.is_completed && formValues.due_date > 0 ? 'text-green-500' : 'text-error-90'}>{status === 'draft' ? '' : formValues.is_completed ? '- Completed' : !formValues.is_completed && formValues.due_date > 0 ? '' : '- Not Completed'}</span>
                     </Typography>
-                    <form className='flex flex-col space-y-5 mb-10' onSubmit={handleSubmit}>
+                    <form className='flex flex-col space-y-2 mb-10' onSubmit={handleSubmit}>
                     <div className="flex space-x-8">
                         <div className="">
                                 <label htmlFor='title'>
-                                    <Typography variant='h4' color='text01' type='medium' className=''>
+                                    <Typography variant='body1' color='text01' type='medium' className=''>
                                         Judul Produk <span className='text-error-90'>*</span>
                                     </Typography>
                                 </label>
@@ -323,7 +329,7 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                             </Typography>
                         </div>
                         <div className="">
-                            <Typography variant='h4' color='text01' type='medium' className='flex'>
+                            <Typography variant='body1' color='text01' type='medium' className='flex'>
                                 Gambar <span className={`ml-3 text-error-90 ${isDraft || isArchive ? 'block' : 'hidden'}`}>*</span>
                             </Typography>
                             <label className="block mt-1 bg-btnColor flex justify-center space-x-1 px-2 py-1 w-52 h-10 rounded-lg cursor-pointer" htmlFor="file_input">
@@ -342,7 +348,7 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                     <div className="flex space-x-8">
                         <div className="">
                                 <label htmlFor='category'>
-                                    <Typography variant='h4' color='text01' type='medium' className=''>
+                                    <Typography variant='body1' color='text01' type='medium' className=''>
                                         Kategori <span className='text-error-90'>*</span>
                                     </Typography>
                                 </label>
@@ -361,7 +367,7 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                         </div>
                         <div className={editMode && !isDraft ? "block" : "hidden"}>
                                 <label >
-                                    <Typography variant='h4' color='text01' type='medium' className=''>
+                                    <Typography variant='body1' color='text01' type='medium' className=''>
                                         Terkumpul
                                     </Typography>
                                 </label>
@@ -381,7 +387,7 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                         </div>
                         <div className="">
                                 <label htmlFor='fund_date'>
-                                    <Typography variant='h4' color='text01' type='medium' className=''>
+                                    <Typography variant='body1' color='text01' type='medium' className=''>
                                         Target <span className='text-error-90'>*</span>
                                     </Typography>
                                 </label>
@@ -404,11 +410,11 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                         </div>
                         <div className="">
                                 <label htmlFor='due_date'>
-                                    <Typography variant='h4' color='text01' type='medium' className=''>
+                                    <Typography variant='body1' color='text01' type='medium' className=''>
                                         Hari <span className='text-error-90'>*</span>
                                     </Typography>
                                 </label>
-                                <DatePicker name='due_date_string' defaultValue={formValues.due_date_string} onChange={dateChange} placeholder={`${formValues.due_date_string ? formValues.due_date_string : 'hari' }`} style={{width: 200}} size='large' className='mt-1' disabled={formValues.is_completed} />
+                                <DatePicker disabledDate={disabledDate} name='due_date_string' defaultValue={formValues.due_date_string} onChange={dateChange} placeholder={`${formValues.due_date_string ? formValues.due_date_string : 'hari' }`} style={{width: 200}} size='large' className='mt-1' disabled={formValues.is_completed} />
                             <Typography variant='body3' color={formValues.due_date < 5 ? 'error90' : 'text01'} type='normal' className={editMode ? 'block my-1' : 'hidden'}>
                                 sisa {formValues.due_date} hari
                             </Typography>
@@ -420,7 +426,7 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                     /> */}
                     <div className={"h-[280px]"}>
                         <label htmlFor='due_date'>
-                            <Typography variant='h4' color='text01' type='medium' className='mb-1'>
+                            <Typography variant='body1' color='text01' type='medium' className='mb-1'>
                                 Deskripsi Produk
                             </Typography>
                         </label>

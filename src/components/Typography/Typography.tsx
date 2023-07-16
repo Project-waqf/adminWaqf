@@ -37,7 +37,7 @@ const Typography : React.FC<TypographyProps> = ({ children, color, variant, type
             "text-[24px] leading-[32px]": variant === "h3",
             "text-2xl leading-7": variant === "h4",
             "text-xl leading-6": variant === "h5",
-            "text-lg leading-7": variant === "body1",
+            "text-[14px] leading-7": variant === "body1",
             "text-base leading-6": variant === "body2",
             "text-sm leading-5": variant === "body3",
             "text-lg leading-6": variant === " btnL",
