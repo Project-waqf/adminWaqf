@@ -263,34 +263,29 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
             }
         }
     }
-    const onUpdate = ({ editor }: { editor: any }) => {
-        const htmlContent = customSerializer.serialize(editor.state.doc);
-        setDetail(htmlContent);
-        console.log(htmlContent);
-    };
-// Custom serializer to preserve consecutive spaces
+
     const editor = useEditor({
-    extensions: [
-        StarterKit,
-        Underline,
-        TextAlign.configure({
-            types: ['heading', 'paragraph'],
-        }),
-    ],
-    content: content.toString(),
-    // Set initial content
-    onUpdate({ editor }) {
-        // Get the updated HTML content
-        // setResetFlag(false)
-        setDetail(editor.getHTML())
-        console.log(editor.getHTML());
-    },
-    editorProps: {
-        attributes: {
-            class: 'focus:outline-none text-[18px] w-full h-[200px] overflow-auto border-solid border-slate-100 rounded-xl'
-        }
-    },
-});
+        extensions: [
+            StarterKit,
+            Underline,
+            TextAlign.configure({
+                types: ['heading', 'paragraph'],
+            }),
+        ],
+        content: content.toString(),
+        // Set initial content
+        onUpdate({ editor }) {
+            // Get the updated HTML content
+            // setResetFlag(false)
+            setDetail(editor.getHTML())
+            console.log(editor.getHTML());
+        },
+        editorProps: {
+            attributes: {
+                class: 'focus:outline-none text-[18px] w-full h-[200px] overflow-auto border-solid border-slate-100 rounded-xl'
+            }
+        },
+    });
 function disabledDate(current: any) {
     // Disable yesterday's date
     return current && current.isBefore(moment().startOf('day'));
