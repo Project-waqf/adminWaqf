@@ -1,3 +1,4 @@
+import { DOMSerializer } from 'prosemirror-model';
 import React, { useEffect, useState, useRef } from 'react'
 import { Input, Modal, Select,InputNumber, DatePicker, DatePickerProps } from "antd";
 import Typography from '../Typography';
@@ -262,35 +263,39 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
             }
         }
     }
-    
+    const onUpdate = ({ editor }: { editor: any }) => {
+        const htmlContent = customSerializer.serialize(editor.state.doc);
+        setDetail(htmlContent);
+        console.log(htmlContent);
+    };
+// Custom serializer to preserve consecutive spaces
     const editor = useEditor({
-        extensions: [
+    extensions: [
         StarterKit,
         Underline,
         TextAlign.configure({
             types: ['heading', 'paragraph'],
         }),
-        ],
-        content: content.toString(),
-         // Set initial content
-        onUpdate({ editor }) {
-         // Get the updated HTML content
+    ],
+    content: content.toString(),
+    // Set initial content
+    onUpdate({ editor }) {
+        // Get the updated HTML content
         // setResetFlag(false)
-        const content = editor.getHTML()
-        if (content) {
-            setDetail(content)
+        setDetail(editor.getHTML())
+        console.log(editor.getHTML());
+    },
+    editorProps: {
+        attributes: {
+            class: 'focus:outline-none text-[18px] w-full h-[200px] overflow-auto border-solid border-slate-100 rounded-xl'
         }
-        },
-        editorProps: {
-            attributes: {
-                class: 'focus:outline-none text-[18px] w-full h-[200px] overflow-auto border-solid border-slate-100 rounded-xl'
-            }
-        },
-    });
-    function disabledDate(current: any) {
-        // Disable yesterday's date
-        return current && current.isBefore(moment().startOf('day'));
+    },
+});
+function disabledDate(current: any) {
+    // Disable yesterday's date
+    return current && current.isBefore(moment().startOf('day'));
     }
+console.log(formValues);
 
     return (
         <Modal
@@ -392,7 +397,7 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                                     </Typography>
                                 </label>
                                 <CurrencyInput
-                                className='input input-bordered h-10 shadow-sm focus:outline-0 focus:border-sky-500 hover:border-sky-500 transition-all placeholder-gray-400 mt-1 w-[200px]'
+                                className='input input-bordered h-10 shadow-sm focus:outline-0 focus:border-sky-500 hover:border-sky-500 transition-all placeholder-gray-400 mt-1 w-[200px] dark:bg-white dark:text-text01'
                                 id="fund_target"
                                 name="fund_target"
                                 prefix='Rp. '
@@ -414,7 +419,10 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                                         Hari <span className='text-error-90'>*</span>
                                     </Typography>
                                 </label>
-                                <DatePicker disabledDate={disabledDate} name='due_date_string' defaultValue={formValues.due_date_string} onChange={dateChange} placeholder={`${formValues.due_date_string ? formValues.due_date_string : 'hari' }`} style={{width: 200}} size='large' className='mt-1' disabled={formValues.is_completed} />
+                                <DatePicker 
+                                disabledDate={disabledDate} 
+                                name='due_date_string' 
+                                defaultValue={formValues.due_date_string} onChange={dateChange} placeholder={`${formValues.due_date_string ? formValues.due_date_string : 'hari' }`} style={{width: 200}} size='large' className='mt-1' disabled={formValues.is_completed} />
                             <Typography variant='body3' color={formValues.due_date < 5 ? 'error90' : 'text01'} type='normal' className={editMode ? 'block my-1' : 'hidden'}>
                                 sisa {formValues.due_date} hari
                             </Typography>

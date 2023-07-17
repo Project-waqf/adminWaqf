@@ -179,7 +179,7 @@ const AssetModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, e
                         Deskrip Aset
                         </Typography>
                         <textarea rows={4} x-model="maximum" maxLength={maxLength} x-ref="maximum" style={{ resize: 'none' }}
-                        disabled={search} className="block w-full mt-2 py-2 px-3 text-base text-text01 rounded-lg border-neutral-80 focus:outline-none focus:border-blue-500" name='detail' value={formValues.detail} onChange={handleTextAreaChange}></textarea>
+                        disabled={search} className="transition-all block w-full mt-2 py-2 px-3 text-base text-text01 rounded-lg border-neutral-80 focus:outline-none focus:border-sky-200 dark:bg-white dark:border-neutral-60" name='detail' value={formValues.detail} onChange={handleTextAreaChange}></textarea>
                         <span className="absolute px-2 py-1 text-xs text-neutral-90 right-2 bottom-2">{charCount} / {maxLength}</span>
                     </div>
                     <div className='flex mt-10 justify-end'>
