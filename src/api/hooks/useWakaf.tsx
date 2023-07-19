@@ -85,7 +85,7 @@ export default function useWakaf(){
             )
             setWakaf(updatedWakaf)
             Alert('edit')
-            return updatedValue                
+            return Alert('edit')                
         } catch (error) {
             Alert("fail")}
     },[])

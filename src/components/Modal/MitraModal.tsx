@@ -5,6 +5,7 @@ import Typography from '../Typography';
 import { TbFileDescription } from 'react-icons/tb';
 import { SmallLoading } from '../../assets/svg/SmallLoading';
 import Button from '../CustomButton/Button';
+import "../../styles/main.scss"
 
 
 interface FormProps {
@@ -25,10 +26,23 @@ const MitraModal: React.FC<FormProps> = ({onSubmit, editMode, editValues, open, 
     const [formValues, setFormValues] = useState<MitraType>(initialFormValues);
     const [loading , setLoading] = useState(false)
     const [error, setError] = useState('')
-    
+    const [imageString, setImageString] = useState('')
+
+    useEffect(() => {
+        if (formValues.picture) {
+            if (formValues.picture.name) {
+                setImageString(formValues.picture.name)
+            } else if (typeof formValues.picture === 'string') {
+                const img: string = formValues.picture
+                const modifiedUrl = img.replace('https://ik.imagekit.io/', '');
+                setImageString(modifiedUrl)
+            }
+        }
+    }, [formValues.picture])
     useEffect(() => {
         if (editMode || !editMode) {
             setFormValues(editValues);
+            setError('')
         }
     }, [editValues, editMode]);
     
@@ -52,14 +66,23 @@ const MitraModal: React.FC<FormProps> = ({onSubmit, editMode, editValues, open, 
     const handleImageChange = (e: any) => {
         setLoading(true)
         const file = e.target.files[0];
-        const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+        const maxSize = 2 * 1024 * 1024; // 5MB in bytes
         if (file && file.size <= maxSize) {
-            setFormValues((prev) => ({
-                ...prev,
-                picture: file
-            }));
-            setError('');
-            setLoading(false)
+            const fileName = file.name.toLowerCase()
+            const validExtensions = [".png", ".jpg", ".jpeg"];
+            if (validExtensions.some((extension) => fileName.endsWith(extension))) {
+                // Image is valid
+                // Do something with the image file, such as upload or display it
+                setFormValues((prev) => ({
+                    ...prev,
+                    picture: file
+                }));
+                setError('');
+                setLoading(false)
+            } else {
+                // Invalid image file type
+                setError('File must be PNG, JPG or JPEG')
+            }
         } else {
             setFormValues((prev) => ({
                 ...prev,
@@ -77,6 +100,7 @@ const MitraModal: React.FC<FormProps> = ({onSubmit, editMode, editValues, open, 
         setFormValues(initialFormValues);
         
     };
+    
     return (
         <Modal
         open={open}
@@ -118,10 +142,10 @@ const MitraModal: React.FC<FormProps> = ({onSubmit, editMode, editValues, open, 
                                 <Typography variant='h5' color='' type='normal' className='mt-0.5 text-whiteBg'>
                                     Upload Gambar
                                 </Typography>
-                            <input name='picture' onChange={handleImageChange} className="hidden w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50" aria-describedby="file_input_help" id="file_input" type="file"/>
+                            <input name='picture' onChange={handleImageChange} className="hidden w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50" id="file_input" type="file"/>
                             </label>
-                            <Typography variant='text' color={error ? 'error80' : 'neutral-90'} type='normal' className='overflow-hidden'>
-                                {error ? error : formValues.picture ? formValues.picture.name : "Max 5 mb" }
+                            <Typography variant='text' color={error ? 'error80' : 'neutral-90'} type='normal' className='overflow-hidden truncate w-40'>
+                                {error ? error : formValues.picture ? imageString : "Max 2 mb" }
                             </Typography>
                             {loading ? <SmallLoading/> : <></>}
                         </div>
@@ -140,16 +164,17 @@ const MitraModal: React.FC<FormProps> = ({onSubmit, editMode, editValues, open, 
                         onChange={handleInputChange}
                         />
                     </div>
-                    <div className='flex mt-10 justify-end'>
+                    <div className='flex justify-end'>
                     <Button
                         type={'submit'}
-                        label='Upload'
+                        label={ editMode ? 'Simpan & Perbarui' : 'Upload'}
                         id={`tidak`}
                         color={'orange'}
-                        size='base'
+                        size='normal'
+                        className='mt-10'
                         disabled={disabled}
                     />
-            </div>
+                    </div>
             </form >
                 <div className="w-[640px] absolute left-0 bottom-0">
                         <Button

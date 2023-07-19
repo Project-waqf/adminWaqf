@@ -48,7 +48,7 @@ export interface WakafType {
     id?: number
     title: string
     category: string
-    picture?: File | null
+    picture?: any
     detail: string
     due_date?: any
     due_date_string: any

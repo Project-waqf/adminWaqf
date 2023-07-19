@@ -42,7 +42,7 @@ const Dashboard = () => {
     const [loading, setLoading] = useState(false)
     const [page, setPage] = useState<number>(1)
     const [dashboardData, setDashboardData] = useState<DataDashboard>({data: [],});
-    const { wakaf, getWakaf, totalOnlineWakaf , editedWakaf, archiveWakaf, deleteWakaf, allWakaf } = useWakaf()
+    const { wakaf, getWakaf, totalOnlineWakaf , editedWakaf, archiveWakaf, deleteWakaf } = useWakaf()
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const archive = useSelector((state: {archive: ArchiveState}) => state.archive)
@@ -50,9 +50,9 @@ const Dashboard = () => {
     const [editMode, setEditMode] = useState(false)
     const [selectedId, setSelectedId] = useState<number>(0)
     const [summary, setSummary] = useState<any>({})
-    const [wakafCompleted, setWakafCompleted] = useState<number>(0) 
     const [sort, setSort] = useState<string>('desc')
     const [toggle, setToggle] = useState(false)
+    const [picture, setPicture] = useState<File | null>(null); 
     
     useEffect(() => {
         if (toggle === false) {
@@ -61,18 +61,6 @@ const Dashboard = () => {
             setSort('asc')
         }
     }, [toggle])
-    
-    useEffect(() => {
-        if(allWakaf){
-            let total: number = 0            
-            for (const wakaf of allWakaf) {
-                if (wakaf.collected === wakaf.fund_target) {
-                    total += 1
-                }
-            }
-            setWakafCompleted(total)
-        }
-    }, [allWakaf])
 
     useEffect(() => {
         if (summary) {
@@ -81,30 +69,30 @@ const Dashboard = () => {
                     id: 1,
                     icon: aktifIcon,
                     header: 'Wakaf Online',
-                    count: summary.total_wakif,
+                    count: summary.total_online,
                 },
                 {
                     id: 2,
                     icon: succesIcon,
                     header: 'Wakaf Selesai',
-                    count: wakafCompleted ? wakafCompleted : 0,
+                    count: summary.total_complete,
                 },
                 {
                     id: 2,
                     icon: assetIcon,
                     header: 'Jumlah Asset',
-                    count: summary.total_program,
+                    count: summary.total_asset,
                 },
             ];
             setDashboardData({data: initialData})
         }
-    }, [summary, wakafCompleted])
+    }, [summary])
     
 
     const getSummary = async () => {
         try {
-            const response = await axios.get(APIUrl + 'wakaf/summary')
-            setSummary(response.data.data) 
+            const response = await axios.get(APIUrl + 'wakaf/summary/dashboard')
+            setSummary(response.data.data)
             return response
         } catch (error) {}
     }
@@ -154,6 +142,7 @@ const Dashboard = () => {
             collected: selectedWakaf.collected,
             is_completed: selectedWakaf.is_complete
         });
+        setPicture(selectedWakaf.picture)
         setEditMode(true);
         setSelectedId(id);
     }
@@ -276,6 +265,7 @@ const Dashboard = () => {
                 <Pagination size='small' total={totalOnlineWakaf} onChange={handlePageChange} showSizeChanger={false} className='z-90 my-7 float-right'/>
                 </CustomCollapse>
                 <WakafModal
+                picture={picture}
                 open={showModal}
                 handleCancel={handleCancel}
                 editMode={editMode}

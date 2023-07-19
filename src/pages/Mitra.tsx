@@ -84,8 +84,9 @@ const Mitra = () => {
             link: '',        
             picture: null,
           });
-          Alert('upload')
+          // Alert('upload')
           getMitra({offset: page, sort: sort})
+          Alert('upload')
           return result
           } catch (error) {}
           setLoading(false)
@@ -126,6 +127,11 @@ const Mitra = () => {
         })
         Alert('edit')
         setShowModal(false)
+        setEditMitra({
+          name: '',
+          link: '',        
+          picture: null,
+        });
         setLoading(false)
         getMitra({offset: page, sort: sort})
         return result
@@ -138,10 +144,7 @@ const Mitra = () => {
     if (validation.isConfirmed) {
     setLoading(true)
         try {     
-            const result = await deleteMitra({
-            id: id,
-            token: cookie.token
-            })
+            const result = await deleteMitra({id: id, token: cookie.token})
             getMitra({offset: page, sort: sort})
             setLoading(false)
             return result

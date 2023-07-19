@@ -83,8 +83,7 @@ const Search = () => {
         }
         }
     }, [allNews, allWakaf, allAsset])
-    console.log(allData);
-    
+        
     useEffect(() => {
         if (search === "" && query!== '') {
             setSearch(query)

@@ -16,10 +16,7 @@ import { Extension, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
 import TextAlign from '@tiptap/extension-text-align';
-import { EditorState } from 'prosemirror-state';
-import { EditorView } from 'prosemirror-view';
 import moment from 'moment';
-import dayjs from 'dayjs';
     interface FormProps {
         onSubmit: (formValues: WakafType) => void;
         handleDelete?: (id: any) => void
@@ -30,6 +27,7 @@ import dayjs from 'dayjs';
         isDraft?: boolean
         search?: boolean
         status?: any
+        picture?: File | null
         handleCancel: React.MouseEventHandler
     }
 
@@ -84,7 +82,7 @@ import dayjs from 'dayjs';
             label: 'Kemanusiaan dan Lingkungan',
         },
     ] 
-const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, isArchive, isDraft, handleCancel, search, status, handleDelete}) => {
+const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open, isArchive, isDraft, handleCancel, search, status, handleDelete, picture: initialPicture }) => {
 
     const [formValues, setFormValues] = useState<WakafType>(initialFormValues);
     const [loading , setLoading] = useState(false)
@@ -98,7 +96,6 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
     const [resetFlag, setResetFlag] = useState<boolean>(false);
     const [detail, setDetail] = useState<string>('')
     const [imageString, setImageString] = useState('')
-
     useEffect(() => {
         if (formValues.picture) {
             if (formValues.picture.name) {
@@ -112,11 +109,20 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
     }, [formValues.picture])
 
     useEffect(() => {
-        if (editMode || !editMode) {
-            setFormValues(editValues);
-        } 
+        if (editMode) {
+            setFormValues({ ...editValues });
+        } else {
+            setFormValues(initialFormValues);
+        }
     }, [editValues, editMode]);
-
+    
+    useEffect(() => {
+        // When the modal is closed (open === false), reset the picture state to null
+        if (!open) {
+            setFormValues((prev) => ({ ...prev, picture: null }));
+        }
+    }, [open]);
+    
     useEffect(() => {
         if (formValues && editMode ){
             editor?.commands.setContent(formValues.detail)
@@ -209,18 +215,27 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
         }
         dispatch(wakafToArchive(newItem))
     }
-
-    const handleImageChange = (e: any) => {
-        setLoading(true)
-        const file = e.target.files[0];
+    
+    const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
         const maxSize = 2 * 1024 * 1024; // 5MB in bytes
-        if (file && file.size <= maxSize) {
-            setFormValues((prev) => ({
-                ...prev,
-                picture: file
-            }));
-            setError('');
-            setLoading(false)
+        try {
+            if (file && file.size <= maxSize) {
+            const fileName = file.name.toLowerCase()
+            const validExtensions = [".png", ".jpg", ".jpeg"];
+            if (validExtensions.some((extension) => fileName.endsWith(extension))) {
+                // Image is valid
+                // Do something with the image file, such as upload or display it
+                setFormValues((prev) => ({
+                    ...prev,
+                    picture: file
+                }));
+                setError('');
+                setLoading(false)
+            } else {
+                // Invalid image file type
+                setError('File must be PNG, JPG or JPEG')
+            }
         } else {
             setFormValues((prev) => ({
                 ...prev,
@@ -228,6 +243,9 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
             }));
             setError('File size exceeds the maximum allowed limit (5MB).');
             setLoading(false)
+        }
+        } catch (error) {
+            setError('Error occurred while processing the image.');
         }
     };
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -278,7 +296,6 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
             // Get the updated HTML content
             // setResetFlag(false)
             setDetail(editor.getHTML())
-            console.log(editor.getHTML());
         },
         editorProps: {
             attributes: {
@@ -286,12 +303,11 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
             }
         },
     });
-function disabledDate(current: any) {
+    function disabledDate(current: any) {
     // Disable yesterday's date
     return current && current.isBefore(moment().startOf('day'));
     }
-console.log(formValues);
-
+    
     return (
         <Modal
         open={open}
@@ -332,15 +348,22 @@ console.log(formValues);
                             <Typography variant='body1' color='text01' type='medium' className='flex'>
                                 Gambar <span className={`ml-3 text-error-90 ${isDraft || isArchive ? 'block' : 'hidden'}`}>*</span>
                             </Typography>
-                            <label className="block mt-1 bg-btnColor flex justify-center space-x-1 px-2 py-1 w-52 h-10 rounded-lg cursor-pointer" htmlFor="file_input">
+                            <label className="block mt-1 bg-btnColor flex justify-center space-x-1 px-2 py-1 w-52 h-10 rounded-lg cursor-pointer" htmlFor="input-picture">
                                 <TbFileDescription className='text-[24px] mt-0.5 text-whiteBg' />
                                 <Typography variant='body1' color='' type='normal' className='text-whiteBg'>
                                     Upload Gambar
                                 </Typography>
-                            <input disabled={formValues.is_completed || formValues.due_date === 0 && !isArchive && !isDraft} name='picture' onChange={handleImageChange} className="hidden w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50" aria-describedby="file_input_help" id="file_input" type="file"/>
+                            <input 
+                            name='picture' 
+                            defaultValue={formValues.picture} 
+                            disabled={formValues.is_completed || formValues.due_date === 0 && !isArchive && !isDraft} 
+                            onChange={handleImageChange} 
+                            className="hidden w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50" 
+                            id="input-picture" 
+                            type="file"/>
                             </label>
                             <Typography variant='text' color={error ? 'error80' : 'neutral-90'} type='normal' className=''>
-                                {error ? error : formValues.picture ? imageString : "Max 2 mb" }
+                                {error ? error : formValues.picture ? imageString : "PNG, JPG or JPEG (Max 2 mb)" }
                             </Typography>
                             {loading ? <SmallLoading/> : <></>}
                         </div>
@@ -423,10 +446,6 @@ console.log(formValues);
                             </Typography>
                         </div>
                     </div>
-                    {/* <Editor 
-                    name={formValues.detail} 
-                    onChange={handleChangeEditor}
-                    /> */}
                     <div className={"h-[280px]"}>
                         <label htmlFor='due_date'>
                             <Typography variant='body1' color='text01' type='medium' className='mb-1'>

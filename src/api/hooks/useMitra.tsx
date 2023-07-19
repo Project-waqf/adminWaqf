@@ -31,10 +31,14 @@ export default function useMitra() {
             const newValue = response.data
             setMitra([...mitra, newValue])
             getMitra()
-            Alert('upload')
-            return newValue
+            return Alert('upload')
         } catch (error) {
-            Alert('fail')
+            if (!error) {
+                return Alert('upload')
+            }
+            else if (error) {
+                return Alert('fail')
+            } 
         }
     },[])
 

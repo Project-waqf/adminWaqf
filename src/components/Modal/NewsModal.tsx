@@ -62,6 +62,7 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, ed
     useEffect(() => {
         if (editMode || !editMode) {
             setFormValues({title: editValues.title, body:editValues.body, picture: editValues.picture});
+            setError('')
         }
     }, [editValues, editMode]);
 
@@ -119,17 +120,28 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, ed
         const file = e.target.files[0];
         const maxSize = 2 * 1024 * 1024; // 5MB in bytes
         if (file && file.size <= maxSize) {
-            setFormValues((prev) => ({
-                ...prev,
-                picture: file
-            }));
-            setError('');
+            const fileName = file.name.toLowerCase()
+            const validExtensions = [".png", ".jpg", ".jpeg"];
+            if (validExtensions.some((extension) => fileName.endsWith(extension))) {
+                // Image is valid
+                // Do something with the image file, such as upload or display it
+                setFormValues((prev) => ({
+                    ...prev,
+                    picture: file
+                }));
+                setError('');
+                setLoading(false)
+            } else {
+                // Invalid image file type
+                setError('File must be PNG, JPG or JPEG')
+            }
         } else {
             setFormValues((prev) => ({
                 ...prev,
                 picture: null
             }));
             setError('File size exceeds the maximum allowed limit (5MB).');
+            setLoading(false)
         }
         setLoading(false)
     };
@@ -206,7 +218,13 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, ed
                                 <Typography variant='h5' color='' type='normal' className='mt-0.5 text-whiteBg'>
                                     Upload Gambar
                                 </Typography>
-                            <input name='picture' onChange={handleImageChange} className="hidden w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50" aria-describedby="file_input_help" id="file_input" type="file"/>
+                            <input 
+                            name='picture' 
+                            onChange={handleImageChange} 
+                            className="hidden w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50" 
+                            id="file_input" 
+                            type="file"
+                            />
                             </label>
                             <Typography variant='text' color={error ? 'error80' : 'neutral-90'} type='normal' className=''>
                                 {error ? error : formValues.picture ? imageString : 'Max 2 mb'}
@@ -228,7 +246,7 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, ed
                         label={editMode && !isDraft && !isArchive ? "Simpan & dan Perbarui" : 'Upload'}
                         id={`tidak`}
                         color={'orange'}
-                        size='base'
+                        size='normal'
                         disabled={editMode ? false : disabled}
                     />
                 </div>
@@ -251,7 +269,7 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, ed
                     </div>
                 </div>
                 : 
-                <div className="w-[845px] absolute left-0 bottom-0">
+                <div className="w-[780px] absolute left-0 bottom-0">
                     <div className="flex justify-between w-full">
                         <Button
                             label={isArchive ? " Simpan & Perbarui Archive" : isDraft ? "Simpan & Perbarui Draft" : editMode ? 'Simpan Ke Archive' : 'Simpan Ke Draft'}

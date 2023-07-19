@@ -53,7 +53,8 @@ const Wakaf = () => {
     const [filterLocation, setFilterLocation] = useState(location?.state?.forFilter)
     const [sort, setSort] = useState<string>('desc')
     const [toggle, setToggle] = useState(false)
-    
+    const [picture, setPicture] = useState<File | null>(null); 
+
     useEffect(() => {
         if (toggle === false) {
             setSort('desc')
@@ -91,13 +92,12 @@ const Wakaf = () => {
             id: 0,
             title: "",
             category: "",
-            picture: null,
             detail: '',
             due_date: null,
             fund_target: 0,
             collected: 0, 
             due_date_string: '',
-            is_completed: false
+            is_completed: false,
         });
     }
 
@@ -109,18 +109,7 @@ const Wakaf = () => {
             if (res.isConfirmed) {
                 setShowModal(false);
                 setEditMode(false)
-                setEditValue({
-                    id: 0,
-                    title: "",
-                    category: "",
-                    picture: null,
-                    detail: '',
-                    due_date: null,
-                    fund_target: 0,
-                    collected: 0, 
-                    due_date_string: '',
-                    is_completed: false
-                });
+                setEditValue(initialEditValue);
             }
         })
     };
@@ -168,20 +157,21 @@ const Wakaf = () => {
         setEditValue({
             id: id,
             title: selectedWakaf.title,
-            category: selectedWakaf.category,        
-            picture: selectedWakaf.picture,
+            category: selectedWakaf.category,
             detail: selectedWakaf.detail,
             due_date: selectedWakaf.due_date,
             due_date_string: selectedWakaf.due_date_string,
             fund_target: selectedWakaf.fund_target,
             collected: selectedWakaf.collected,
-            is_completed: selectedWakaf.is_complete
+            is_completed: selectedWakaf.is_complete,
+            picture: selectedWakaf.picture
         });
+        setPicture(selectedWakaf.picture)
         setEditMode(true);
         setSelectedId(id);
     }
     
-    const handleEdit = async (formValues: WakafType) => {
+    const handleEdit = async (formValues: WakafType) => {        
         setEditValue({ title: formValues.title, category: formValues.category, picture: formValues.picture, detail: formValues.detail, due_date: formValues.due_date, fund_target: formValues.fund_target, collected: formValues.collected, due_date_string: formValues.due_date_string })
         const validation = await ConfirmAlert('edit')
         if (validation.isConfirmed) {
@@ -365,6 +355,7 @@ const Wakaf = () => {
                 <Pagination size='small' total={totalOnlineWakaf} onChange={handlePageChange} showSizeChanger={false} className={filterParams ? 'hidden' : 'block z-90 my-7 float-right'}/>
                 </CustomCollapse>
                 <WakafModal
+                picture={picture}
                 open={showModal}
                 handleCancel={handleCancel}
                 editMode={editMode}
