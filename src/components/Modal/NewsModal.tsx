@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Input, Modal, } from "antd";
 import Typography from '../Typography';
 import Button from '../CustomButton/Button';
@@ -46,6 +46,7 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, ed
     const draft = useSelector((state: {draft: DraftState}) => state.draft)
     const [detail, setDetail] = useState<string>('')
     const [imageString, setImageString] = useState('')
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         if (formValues.picture) {
@@ -143,6 +144,9 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, ed
             setError('File size exceeds the maximum allowed limit (5MB).');
             setLoading(false)
         }
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
         setLoading(false)
     };
     
@@ -224,6 +228,7 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, ed
                             className="hidden w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50" 
                             id="file_input" 
                             type="file"
+                            ref={fileInputRef}
                             />
                             </label>
                             <Typography variant='text' color={error ? 'error80' : 'neutral-90'} type='normal' className=''>

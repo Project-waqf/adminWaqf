@@ -1,6 +1,6 @@
 import { Input, Modal } from 'antd';
 import { MitraType } from '../../utils/types/DataType';
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Typography from '../Typography';
 import { TbFileDescription } from 'react-icons/tb';
 import { SmallLoading } from '../../assets/svg/SmallLoading';
@@ -27,7 +27,8 @@ const MitraModal: React.FC<FormProps> = ({onSubmit, editMode, editValues, open, 
     const [loading , setLoading] = useState(false)
     const [error, setError] = useState('')
     const [imageString, setImageString] = useState('')
-
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    
     useEffect(() => {
         if (formValues.picture) {
             if (formValues.picture.name) {
@@ -91,6 +92,9 @@ const MitraModal: React.FC<FormProps> = ({onSubmit, editMode, editValues, open, 
             setError('File size exceeds the maximum allowed limit (5MB).');
             setLoading(false)
         }
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
         setLoading(false)
     };
 
@@ -142,7 +146,7 @@ const MitraModal: React.FC<FormProps> = ({onSubmit, editMode, editValues, open, 
                                 <Typography variant='h5' color='' type='normal' className='mt-0.5 text-whiteBg'>
                                     Upload Gambar
                                 </Typography>
-                            <input name='picture' onChange={handleImageChange} className="hidden w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50" id="file_input" type="file"/>
+                            <input name='picture' ref={fileInputRef} onChange={handleImageChange} className="hidden w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50" id="file_input" type="file"/>
                             </label>
                             <Typography variant='text' color={error ? 'error80' : 'neutral-90'} type='normal' className='overflow-hidden truncate w-40'>
                                 {error ? error : formValues.picture ? imageString : "Max 2 mb" }

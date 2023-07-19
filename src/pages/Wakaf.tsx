@@ -115,7 +115,7 @@ const Wakaf = () => {
     };
     
     const handleAdd = async (formValues: WakafType) => {
-        setEditValue({id: 1, is_completed: false, title: formValues.title, category: formValues.category, picture: formValues.picture, detail: formValues.detail, due_date: formValues.due_date, fund_target: formValues.fund_target, collected: formValues.collected, due_date_string: formValues.due_date_string })
+        setEditValue({ is_completed: false, title: formValues.title, category: formValues.category, picture: formValues.picture, detail: formValues.detail, due_date: formValues.due_date, fund_target: formValues.fund_target, collected: formValues.collected, due_date_string: formValues.due_date_string })
         if (formValues.picture) {
             setEditValue({ title: formValues.title, category: formValues.category, picture: formValues.picture, detail: formValues.detail, due_date: formValues.due_date, fund_target: formValues.fund_target, collected: formValues.collected, due_date_string: formValues.due_date_string })
             const validation = await ConfirmAlert('upload')

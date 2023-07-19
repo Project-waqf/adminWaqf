@@ -17,6 +17,7 @@ import StarterKit from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
 import TextAlign from '@tiptap/extension-text-align';
 import moment from 'moment';
+
     interface FormProps {
         onSubmit: (formValues: WakafType) => void;
         handleDelete?: (id: any) => void
@@ -96,6 +97,12 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
     const [resetFlag, setResetFlag] = useState<boolean>(false);
     const [detail, setDetail] = useState<string>('')
     const [imageString, setImageString] = useState('')
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+
+    console.log(formValues.picture);
+    
+
     useEffect(() => {
         if (formValues.picture) {
             if (formValues.picture.name) {
@@ -109,10 +116,8 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
     }, [formValues.picture])
 
     useEffect(() => {
-        if (editMode) {
-            setFormValues({ ...editValues });
-        } else {
-            setFormValues(initialFormValues);
+        if (editMode || !editMode) {
+            setFormValues(editValues)
         }
     }, [editValues, editMode]);
     
@@ -236,6 +241,10 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                 // Invalid image file type
                 setError('File must be PNG, JPG or JPEG')
             }
+
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
         } else {
             setFormValues((prev) => ({
                 ...prev,
@@ -358,6 +367,7 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
                             defaultValue={formValues.picture} 
                             disabled={formValues.is_completed || formValues.due_date === 0 && !isArchive && !isDraft} 
                             onChange={handleImageChange} 
+                            ref={fileInputRef}
                             className="hidden w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50" 
                             id="input-picture" 
                             type="file"/>

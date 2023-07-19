@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Input, Modal } from "antd";
 import Typography from '../Typography';
 import Button from '../CustomButton/Button';
@@ -37,6 +37,7 @@ const AssetModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, e
     const [loading , setLoading] = useState(false)
     const [error, setError] = useState('')
     const [imageString, setImageString] = useState('')
+    const fileInputRef = useRef<HTMLInputElement>(null)
 
     useEffect(() => {
         if (formValues.picture) {
@@ -101,6 +102,9 @@ const AssetModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, e
             }));
             setError('File size exceeds the maximum allowed limit (5MB).');
             setLoading(false)
+        }
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
         }
         setLoading(false)
     };
@@ -179,6 +183,7 @@ const AssetModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, e
                             <input 
                             name='picture' 
                             onChange={handleImageChange}
+                            ref={fileInputRef}
                             className="hidden w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50"
                             id="file_input"
                             type="file"/>
