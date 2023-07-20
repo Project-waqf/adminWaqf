@@ -61,27 +61,11 @@ const Search = () => {
     const [query, setQuery] = useState(location?.state?.query)
 
     useEffect(() => {
-        if (allNews) {
-        const newsData: any[] = [] 
-        const modifNews = allNews.map((item:any)=> {return {...item, type: 'news'}})
-            for (let i = 0; i < modifNews.length; i++) {
-            newsData.push(modifNews[i]);
-            } 
-            if (newsData.length === allNews.length && allAsset) {
-                const assetData: any[]= []
-                const modifAsset = allAsset.map((item:any)=>{return{...item, title: item.name, type: 'asset', name:undefined}})
-            for (let i = 0; i < modifAsset.length; i++) {
-                assetData.push(modifAsset[i]);
-            } if (assetData.length === allAsset.length && allWakaf) {
-                const wakafData: any[] = []
-                const modifWakaf = allWakaf.map((item:any)=> {return {...item, type: 'wakaf'}})
-                for (let i = 0; i < modifWakaf.length; i++) {
-                    wakafData.push(modifWakaf[i])
-                }
-                setAllData([...newsData, ...assetData, ...wakafData])
-            }
-        }
-        }
+        const newsData = allNews?.map((item:any)=> {return {...item, type: 'news'}}) ?? [];
+        const modifAsset = allAsset?.map((item:any) => ({ ...item, title: item.name, name: undefined, type: 'asset' })) ?? [];
+        const wakafData = allWakaf?.map((item:any)=> {return {...item, type: 'wakaf'}}) ?? [];
+
+        setAllData([...newsData, ...modifAsset, ...wakafData]);
     }, [allNews, allWakaf, allAsset])
         
     useEffect(() => {

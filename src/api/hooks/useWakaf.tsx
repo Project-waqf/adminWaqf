@@ -7,7 +7,7 @@ import { useCallback, useEffect, useState } from "react"
 
 export default function useWakaf(){
     const [wakaf, setWakaf] = useState<any>()
-    const [allWakaf, setAllWakaf] = useState<WakafType[]>()
+    const [allWakaf, setAllWakaf] = useState<any>()
     const [totalOnlineWakaf, setTotalOnlineWakaf] = useState<number>(0)
     const [totalDraftWakaf, setTotalDraftWakaf] = useState<number>(0)
     const [totalArchiveWakaf, setTotalArchiveWakaf] = useState<number>(0)

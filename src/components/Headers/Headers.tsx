@@ -38,27 +38,14 @@ const Headers: React.FC<props> = ({label, isSearch}) => {
     const {allAsset}= useAsset()
     const {allWakaf} = useWakaf()
     const [allData, setAllData] = useState<AllDataType[]>([])
+    console.log(allData);
     
     useEffect(() => {
-        if (allNews) {
-        const newsData: any[] = [] 
-            for (let i = 0; i < allNews.length; i++) {
-            newsData.push(allNews[i]);
-            } 
-            if (newsData.length === allNews.length && allAsset) {
-            const modifAsset = allAsset.map((item:any)=>{return{...item, title: item.name, name:undefined}})
-            const assetData: any[]= []
-            for (let i = 0; i < modifAsset.length; i++) {
-                assetData.push(modifAsset[i]);
-            } if (assetData.length === allAsset.length && allWakaf) {
-                const wakafData: any[] = []
-                for (let i = 0; i < allWakaf.length; i++) {
-                    wakafData.push(allWakaf[i])
-                }
-                setAllData([...newsData, ...assetData, ...wakafData])
-            }
-        }
-        }
+        const newsData = allNews?.map((item:any)=> {return {...item, type: 'news'}}) ?? [];
+        const modifAsset = allAsset?.map((item:any) => ({ ...item, title: item.name, name: undefined, type: 'asset' })) ?? [];
+        const wakafData = allWakaf?.map((item:any)=> {return {...item, type: 'wakaf'}}) ?? [];
+
+        setAllData([...newsData, ...modifAsset, ...wakafData]);
     }, [allNews, allWakaf, allAsset])
     
     const searchResult = async (query: string) => {
