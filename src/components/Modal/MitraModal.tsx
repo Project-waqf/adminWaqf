@@ -28,6 +28,7 @@ const MitraModal: React.FC<FormProps> = ({onSubmit, editMode, editValues, open, 
     const [error, setError] = useState('')
     const [imageString, setImageString] = useState('')
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const [disabled, setDisabled] = useState(true);
     
     useEffect(() => {
         if (formValues.picture) {
@@ -47,10 +48,9 @@ const MitraModal: React.FC<FormProps> = ({onSubmit, editMode, editValues, open, 
         }
     }, [editValues, editMode]);
     
-    const [disabled, setDisabled] = useState(true);
 
     useEffect(() => {
-        if (formValues.name && formValues.link) {
+        if (formValues.name && formValues.picture) {
             setDisabled(false);
         } else {
             setDisabled(true);
