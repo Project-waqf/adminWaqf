@@ -63,7 +63,7 @@ const Sidebar= () => {
                         <li className='flex mx-6 my-auto hover:text-btnColor'>
                             <AiOutlineGold className='h-[24px] w-[24px]'/>
                             <Typography variant='body2' color='' type='normal' className='ml-10'>
-                                Asset
+                                Aset
                             </Typography>
                         </li>
                     </NavLink>

@@ -45,6 +45,7 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, ed
     const dispatch = useDispatch()
     const draft = useSelector((state: {draft: DraftState}) => state.draft)
     const [detail, setDetail] = useState<string>('')
+    const [disabled, setDisabled] = useState(true);
     const [imageString, setImageString] = useState('')
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -67,8 +68,7 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, ed
         }
     }, [editValues, editMode]);
 
-    const [disabled, setDisabled] = useState(true);
-
+    
     useEffect(() => {
         if (formValues.title && formValues.body) {
             setDisabled(false);
@@ -156,7 +156,11 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, ed
         setFormValues(initialFormValues);
         
     };
-    
+    console.log(detail);
+    const handleEditorChange = (value: any) => {
+         // Get the updated HTML content
+        setDetail(value)
+    }
     const editor = useEditor({
         extensions: [
         StarterKit,
@@ -167,10 +171,9 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, ed
         ],
         content: formValues.body.toString(),
          // Set initial content
-        onUpdate({ editor }) {
-        const content = editor.getHTML();
-         // Get the updated HTML content
-        setDetail(content)
+        onUpdate:({editor})=>{
+            const content = editor.getHTML()
+            handleEditorChange(content)
         },
         editorProps: {
             attributes: {
@@ -243,7 +246,7 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, ed
                                 Deskripsi Berita
                             </Typography>
                         </label>
-                        <TiptapEditor editor={editor} value={formValues.body}/>
+                        <TiptapEditor editor={editor} value={formValues.body} />
                     </div>
                 <div className='flex mt-10 justify-end'>
                     <Button

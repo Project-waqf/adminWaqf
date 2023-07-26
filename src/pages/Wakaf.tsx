@@ -327,7 +327,7 @@ const Wakaf = () => {
                     className='w-72'
                     onClick={handleShowModal}
                     color='orange'
-                    label={<div className='flex justify-center items-center space-x-2'><img src={tambah} /> <span>Buat Wakaf</span></div>}
+                    label={<div className='flex justify-center items-center space-x-2'><img src={tambah} /> <span>Wakaf</span></div>}
                     />
                     <Dropdown menu={menuProps} className='w-[156px]'>
                         <a onClick={(e) => e.preventDefault()}>

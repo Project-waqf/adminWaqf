@@ -232,7 +232,7 @@ const News = () => {
                 size='normal'
                 onClick={showModalNews}
                 color='orange'
-                label={<div className='flex justify-center items-center space-x-2'><img src={tambah} /> <span>Buat Berita</span></div>}
+                label={<div className='flex justify-center items-center space-x-2'><img src={tambah} /> <span> Berita</span></div>}
                 />
             </div>                
             <div className="flex flex-col justify-center space-y-5 mx-auto w-11/12 my-10">

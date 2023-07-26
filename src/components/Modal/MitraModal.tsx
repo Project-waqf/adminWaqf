@@ -50,7 +50,7 @@ const MitraModal: React.FC<FormProps> = ({onSubmit, editMode, editValues, open, 
     
 
     useEffect(() => {
-        if (formValues.name && formValues.picture) {
+        if (formValues.name) {
             setDisabled(false);
         } else {
             setDisabled(true);

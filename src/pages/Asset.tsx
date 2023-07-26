@@ -214,7 +214,7 @@ const Asset = () => {
             <Display>
                 <LoadingAlert open={loading} loading={loading}/>
                 <Headers
-                label='Asset'
+                label='Aset'
                 />
                 <div className="flex flex-row justify-between space-x-5 mx-auto w-11/12 my-10">
                     <Button
@@ -222,7 +222,7 @@ const Asset = () => {
                     size='normal'
                     onClick={showModal}
                     color='orange'
-                    label={<div className='flex justify-center items-center space-x-2'><img src={tambah} /> <span>Buat asset</span></div>}
+                    label={<div className='flex justify-center items-center space-x-2'><img src={tambah} /> <span>Aset</span></div>}
                     />
                 </div> 
                 <div className="flex flex-col justify-center space-y-5 mx-auto w-11/12 my-10">
