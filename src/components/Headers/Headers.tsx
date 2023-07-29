@@ -38,7 +38,6 @@ const Headers: React.FC<props> = ({label, isSearch}) => {
     const {allAsset}= useAsset()
     const {allWakaf} = useWakaf()
     const [allData, setAllData] = useState<AllDataType[]>([])
-    console.log(allData);
     
     useEffect(() => {
         const newsData = allNews?.map((item:any)=> {return {...item, type: 'news'}}) ?? [];
@@ -72,7 +71,7 @@ const Headers: React.FC<props> = ({label, isSearch}) => {
         }        
     };
     const onSelect = (value: string) => {
-        navigate(`/search/${value}`,{
+        navigate(`/search/${value}?id=${1}`,{
             state: {
             query: value
             }

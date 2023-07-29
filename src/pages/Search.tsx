@@ -59,6 +59,13 @@ const Search = () => {
     const [search, setSearch] = useState('')
     const [allData, setAllData] = useState<AllDataType[]>([])
     const [query, setQuery] = useState(location?.state?.query)
+    
+    const searchParams = new URLSearchParams(location.search);
+    const id = searchParams.get('id');
+    const title = searchParams.get('title');
+
+    console.log(title, id);
+    
 
     useEffect(() => {
         const newsData = allNews?.map((item:any)=> {return {...item, type: 'news'}}) ?? [];

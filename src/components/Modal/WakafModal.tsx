@@ -97,11 +97,7 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
     const [resetFlag, setResetFlag] = useState<boolean>(false);
     const [detail, setDetail] = useState<string>('')
     const [imageString, setImageString] = useState('')
-    const fileInputRef = useRef<HTMLInputElement>(null);
-
-
-    console.log(formValues.picture);
-    
+    const fileInputRef = useRef<HTMLInputElement>(null);    
 
     useEffect(() => {
         if (formValues.picture) {

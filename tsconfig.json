@@ -19,6 +19,6 @@
     "paths": {
       "@/*": ["*"]}
   },
-  "include": ["src/"],
+  "include": ["src/", "env-config.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
