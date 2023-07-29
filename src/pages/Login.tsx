@@ -25,6 +25,8 @@ import Alert from '../components/Alert/Alert';
 
 const Login = () => {
 
+  console.log(APIUrl);
+  
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const [value, setValue] = useState<LoginType>(initalFormValues)
