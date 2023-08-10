@@ -62,10 +62,7 @@ const Search = () => {
     
     const searchParams = new URLSearchParams(location.search);
     const id = searchParams.get('id');
-    const title = searchParams.get('title');
-
-    console.log(title, id);
-    
+    const title = searchParams.get('title');    
 
     useEffect(() => {
         const newsData = allNews?.map((item:any)=> {return {...item, type: 'news'}}) ?? [];

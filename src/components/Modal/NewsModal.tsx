@@ -156,7 +156,6 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, ed
         setFormValues(initialFormValues);
         
     };
-    console.log(detail);
     // const handleEditorChange = async (value: EditorEvents['update'])  {
     //      // Get the updated HTML content
     //     setDetail(value)
