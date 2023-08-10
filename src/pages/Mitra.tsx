@@ -67,6 +67,7 @@ const Mitra = () => {
   const handleAdd = async (formValues: MitraType) => {
     setEditMitra({ name: formValues.name, link: formValues.link, picture: formValues.picture })
     if (formValues.picture) {
+      setEditMitra({ name: formValues.name, link: formValues.link, picture: formValues.picture })
       const validation = await ConfirmAlert('upload')
       if (validation.isConfirmed) {
           setLoading(true)

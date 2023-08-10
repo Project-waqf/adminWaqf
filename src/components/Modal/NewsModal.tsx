@@ -12,7 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { FaRegTrashAlt } from 'react-icons/fa';
 import TiptapEditor from '../CustomInput/TipTap';
 import Underline from '@tiptap/extension-underline';
-import { useEditor } from '@tiptap/react';
+import { useEditor, Editor, EditorEvents } from '@tiptap/react';
 import TextAlign from '@tiptap/extension-text-align';
 import StarterKit from '@tiptap/starter-kit';
 
@@ -157,10 +157,10 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, ed
         
     };
     console.log(detail);
-    const handleEditorChange = (value: any) => {
-         // Get the updated HTML content
-        setDetail(value)
-    }
+    // const handleEditorChange = async (value: EditorEvents['update'])  {
+    //      // Get the updated HTML content
+    //     setDetail(value)
+    // }
     const editor = useEditor({
         extensions: [
         StarterKit,
@@ -170,17 +170,15 @@ const NewsModal: React.FC<FormProps> = ({ onSubmit, handleDelete, editValues, ed
         }),
         ],
         content: formValues.body.toString(),
-         // Set initial content
-        onUpdate:({editor})=>{
-            const content = editor.getHTML()
-            handleEditorChange(content)
+        onBlur:({editor})=>{
+            setDetail(editor.getHTML())
         },
         editorProps: {
             attributes: {
                 class: 'focus:outline-none text-[18px] w-full h-[200px] overflow-auto border-solid border-neutral-80 border-solid border-slate-100 rounded-xl'
             }
         }
-    });
+    }, [detail]);
     
     return (
         <Modal

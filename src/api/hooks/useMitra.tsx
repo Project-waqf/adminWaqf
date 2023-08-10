@@ -32,14 +32,7 @@ export default function useMitra() {
             setMitra([...mitra, newValue])
             getMitra()
             return Alert('upload')
-        } catch (error) {
-            if (!error) {
-                return Alert('upload')
-            }
-            else if (error) {
-                return Alert('fail')
-            } 
-        }
+        } catch (error) {}
     },[])
 
     const editedMitra = useCallback(async (payload: any) => {

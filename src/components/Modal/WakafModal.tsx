@@ -296,18 +296,16 @@ const WakafModal: React.FC<FormProps> = ({ onSubmit, editValues, editMode, open,
             }),
         ],
         content: content.toString(),
-        // Set initial content
-        onUpdate({ editor }) {
-            // Get the updated HTML content
-            // setResetFlag(false)
+        onBlur:({editor})=>{
             setDetail(editor.getHTML())
         },
         editorProps: {
             attributes: {
-                class: 'focus:outline-none text-[18px] w-full h-[200px] overflow-auto border-solid border-slate-100 rounded-xl'
+                class: 'focus:outline-none text-[18px] w-full h-[200px] overflow-auto border-solid border-neutral-80 border-solid border-slate-100 rounded-xl'
             }
-        },
-    });
+        }
+    }, [detail]);
+    
     function disabledDate(current: any) {
     // Disable yesterday's date
     return current && current.isBefore(moment().startOf('day'));
