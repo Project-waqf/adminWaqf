@@ -55,6 +55,8 @@ const Profile = () => {
     useEffect(() => {
         if (changeImage) {
             setChangeFoto(true)
+        } else {
+            setChangeFoto(false)
         }
     }, [changeImage])    
     
@@ -161,6 +163,10 @@ const Profile = () => {
                 return response
             } catch (error) {}
         }
+    }
+    const handleCancel = async () => {
+        setValue(initialFormValues)
+        setChangeImage(null)
     }
     return (
     <>
@@ -336,7 +342,7 @@ const Profile = () => {
                             </div>
                         </Panel>
                     </Collapse>
-                    <div className="flex flex-row w-[720px] justify-end space-x-8">
+                    <div className="flex flex-row w-[650px] justify-end space-x-8">
                         <Button
                         type={'submit'}
                         id='simpan'
@@ -352,8 +358,9 @@ const Profile = () => {
                         id='cancel'
                         color='orangeBorder'
                         size='base'
+                        onClick={handleCancel}
                         label='Cancel'
-                        className={changeFoto ? 'absolute transition-all bottom-10 right-80 mt-0.5 mr-60' : withPassword ? 'absolute transition-all bottom-10 right-80 mt-0.5 mr-60' : value.name !== cookie.name ? 'absolute transition-all bottom-10 right-80 mt-0.5 mr-60' : 'hidden'}
+                        className={changeFoto ? 'absolute transition-all bottom-10 mt-1 ml-80' : withPassword ? 'absolute transition-all bottom-10 ml-80 mt-1 ' : value.name !== cookie.name ? 'absolute transition-all bottom-10 right-80 mt-0.5 mr-60' : 'hidden'}
                         />
             </div>
         </Display>
