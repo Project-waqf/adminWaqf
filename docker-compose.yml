@@ -1,0 +1,16 @@
+version: "3.8"
+
+services:
+  wakaf-fe-cms:
+    image: faturfawkes/alhambara-fe-cms:1.0.0
+    container_name: wakaf-fe-cms
+    ports:
+      - "5174:5173"
+    environment:
+      VITE_REACT_APP_BASE_URL: 
+    networks:
+      - wakaf-net
+
+networks:
+  wakaf-net:
+    external: true
