@@ -43,4 +43,4 @@ jobs:
                 docker stop wakaf-fe-cms
                 docker rm wakaf-fe-cms
                 docker rmi faturfawkes/alhambara-fe-cms:1.0.0
-                docker-compose -f fe-cms-compose.yml up -d
+                docker compose -f fe-cms-compose.yml up -d
